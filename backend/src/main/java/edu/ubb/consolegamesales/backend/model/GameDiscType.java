@@ -1,6 +1,6 @@
 package edu.ubb.consolegamesales.backend.model;
 
-enum GameDiscType {
+public enum GameDiscType {
     XBOX,
     PS
 }

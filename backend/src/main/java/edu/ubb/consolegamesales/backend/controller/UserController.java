@@ -6,7 +6,6 @@ import edu.ubb.consolegamesales.backend.controller.mapper.UserMapper;
 import edu.ubb.consolegamesales.backend.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,10 +14,13 @@ import org.springframework.web.bind.annotation.*;
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("/users")
 public class UserController {
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
+
+    public UserController(UserRepository userRepository, UserMapper userMapper) {
+        this.userRepository = userRepository;
+        this.userMapper = userMapper;
+    }
 
     @GetMapping("/{id}")
     public UserResponseDto findById(@PathVariable("id") Long id) throws NotFoundException {

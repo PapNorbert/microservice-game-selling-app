@@ -1,4 +1,4 @@
-package edu.ubb.consolegamesales.backend.controller.exception;
+package edu.ubb.consolegamesales.backend.controller.exception.handler;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

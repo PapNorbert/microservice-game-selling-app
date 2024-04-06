@@ -8,11 +8,12 @@ import java.util.Date;
 @Data
 public class UserResponseDto {
     @NotNull @Positive
-    private Long entityId;
+    private Long userId;
     @NotNull
     private String firstName;
     @NotNull
     private String lastName;
     @NotNull
     private Date registrationDate;
+
 }

@@ -1,5 +1,6 @@
 package edu.ubb.consolegamesales.backend.controller.exception.handler;
 
+import edu.ubb.consolegamesales.backend.model.ErrorData;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -15,9 +16,9 @@ public class ArgumentMismatchExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ResponseBody
-    public String handleFailedConstraintException(MethodArgumentTypeMismatchException exception) {
+    public ErrorData handleFailedConstraintException(MethodArgumentTypeMismatchException exception) {
         LOGGER.warn("Error converting path variable to required type: " + exception.getMessage());
-        return "Path variable type not supported";
+        return new ErrorData("Path variable type not supported");
     }
 
 }

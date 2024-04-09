@@ -18,5 +18,5 @@ public interface UserJpaRepository extends UserRepository, JpaRepository<User, L
             + "SET username= :#{#entity.username}, firstName= :#{#entity.firstName}, password= :#{#entity.password}, "
             + "lastName= :#{#entity.lastName} WHERE entityId = :id ")
     @Override
-    Long update(Long id, User entity);
+    Integer update(Long id, User entity);
 }

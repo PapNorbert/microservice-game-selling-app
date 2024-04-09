@@ -18,5 +18,5 @@ public interface GameDiscJpaRepository extends GameDiscRepository, JpaRepository
             + "SET name= :#{#entity.name}, type= :#{#entity.type}, sold = :#{#entity.sold}, "
             + "gameYear = :#{#entity.gameYear} WHERE entityId = :id ")
     @Override
-    Long update(Long id, GameDisc entity);
+    Integer update(Long id, GameDisc entity);
 }

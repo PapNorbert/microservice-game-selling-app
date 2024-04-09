@@ -18,5 +18,5 @@ public interface AnnouncementJpaRepository extends AnnouncementRepository, JpaRe
             + "SET soldGameDisc= :#{#entity.soldGameDisc}, price= :#{#entity.price}, "
             + "description= :#{#entity.description} WHERE entityId = :id ")
     @Override
-    Long update(Long id, Announcement entity);
+    Integer update(Long id, Announcement entity);
 }

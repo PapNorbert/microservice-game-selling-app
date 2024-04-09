@@ -1,6 +1,7 @@
 package edu.ubb.consolegamesales.backend.controller.mapper;
 
 import edu.ubb.consolegamesales.backend.controller.dto.incoming.GameDiscCreationDto;
+import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.GameDiscResponseDto;
 import edu.ubb.consolegamesales.backend.model.GameDisc;
 import org.mapstruct.Mapper;
@@ -15,6 +16,8 @@ public interface GameDiscMapper {
 
     @Mapping(target = "gameDiscId", source = "entityId")
     Collection<GameDiscResponseDto> modelsToResponseDtos(Collection<GameDisc> gameDisc);
+
+    CreatedObjectDto modelToCreatedObjDto(GameDisc gameDisc);
 
     @Mapping(target = "entityId", ignore = true)
     @Mapping(target = "sold", ignore = true)

@@ -1,5 +1,6 @@
 package edu.ubb.consolegamesales.backend.controller.mapper;
 
+import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.UserResponseDto;
 import edu.ubb.consolegamesales.backend.model.User;
 import org.mapstruct.Mapper;
@@ -14,5 +15,7 @@ public interface UserMapper {
 
     @Mapping(target = "userId", source = "entityId")
     Collection<UserResponseDto> modelsToResponseDtos(Collection<User> users);
+
+    CreatedObjectDto modelToCreatedObjDto(User user);
 
 }

@@ -1,6 +1,7 @@
 package edu.ubb.consolegamesales.backend.controller;
 
 import edu.ubb.consolegamesales.backend.controller.dto.incoming.GameDiscCreationDto;
+import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.GameDiscResponseDto;
 import edu.ubb.consolegamesales.backend.controller.exception.NotFoundException;
 import edu.ubb.consolegamesales.backend.controller.mapper.GameDiscMapper;
@@ -43,12 +44,12 @@ public class GameDiscController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Long create(@RequestBody @Valid GameDiscCreationDto gameDiscCreationDto) {
+    public CreatedObjectDto create(@RequestBody @Valid GameDiscCreationDto gameDiscCreationDto) {
         LOGGER.info("POST request at /games");
         GameDisc gameDisc = gameDiscMapper.creationDtoToModel(gameDiscCreationDto);
         gameDisc.setSold(false);
         gameDiscRepository.saveAndFlush(gameDisc);
-        return gameDisc.getEntityId();
+        return gameDiscMapper.modelToCreatedObjDto(gameDisc);
     }
 
 

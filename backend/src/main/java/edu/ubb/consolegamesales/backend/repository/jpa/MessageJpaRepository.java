@@ -18,5 +18,5 @@ public interface MessageJpaRepository extends MessageRepository, JpaRepository<M
             + "SET text= :#{#entity.text}, sentTime= :#{#entity.sentTime} "
             + " WHERE entityId = :id ")
     @Override
-    Long update(Long id, Message entity);
+    Integer update(Long id, Message entity);
 }

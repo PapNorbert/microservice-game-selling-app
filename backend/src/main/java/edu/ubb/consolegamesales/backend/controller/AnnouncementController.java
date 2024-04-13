@@ -23,7 +23,8 @@ public class AnnouncementController {
     private final AnnouncementRepository announcementRepository;
     private final AnnouncementMapper announcementMapper;
 
-    public AnnouncementController(AnnouncementRepository announcementRepository, AnnouncementMapper announcementMapper) {
+    public AnnouncementController(AnnouncementRepository announcementRepository,
+                                  AnnouncementMapper announcementMapper) {
         this.announcementRepository = announcementRepository;
         this.announcementMapper = announcementMapper;
     }

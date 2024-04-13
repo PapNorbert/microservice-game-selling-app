@@ -20,8 +20,8 @@ public class HttpMessageNotReadableExceptionHandler {
     @ResponseBody
     public ErrorData handleHttpMessageNotReadableException(InvalidFormatException exception) {
         if (exception.getTargetType().isEnum()) {
-            String message = "Invalid value '" + exception.getValue().toString() +
-                    "', possible option: " + Arrays.toString(exception.getTargetType().getEnumConstants());
+            String message = "Invalid value '" + exception.getValue().toString()
+                   + "', possible option: " + Arrays.toString(exception.getTargetType().getEnumConstants());
             LOGGER.warn(message);
             return new ErrorData(message);
         }

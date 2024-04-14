@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/announcements")
+@RequestMapping("${apiPrefix}/announcements")
 public class AnnouncementController {
     private final AnnouncementRepository announcementRepository;
     private final AnnouncementMapper announcementMapper;

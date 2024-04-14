@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/games")
+@RequestMapping("${apiPrefix}/games")
 public class GameDiscController {
     private final GameDiscRepository gameDiscRepository;
     private final GameDiscMapper gameDiscMapper;

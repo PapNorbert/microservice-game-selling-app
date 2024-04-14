@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @ResponseStatus(HttpStatus.OK)
-@RequestMapping("/users")
+@RequestMapping("${apiPrefix}/users")
 public class UserController {
     private final UserRepository userRepository;
     private final UserMapper userMapper;

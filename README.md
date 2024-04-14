@@ -10,6 +10,16 @@ that helps to get in touch with others.
 
 ## Functionalities 
 
+- Login
+- Registration
+- View announcements
+- Filter and search announcements
+- Create announcement about selling your game
+- Get in contact with the seller with the help of real time chat - WebSocket
+- Review users
+- Filter announcements based on user review rating
+- Save announcements
+
 ## API server
 
 The application uses Spring for it's REST API. 

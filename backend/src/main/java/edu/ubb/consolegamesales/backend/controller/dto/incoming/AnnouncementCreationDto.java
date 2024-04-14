@@ -15,5 +15,5 @@ public class AnnouncementCreationDto {
     @NotNull
     private String description;
     @NotNull @PositiveOrZero
-    private Integer price;
+    private Double price;
 }

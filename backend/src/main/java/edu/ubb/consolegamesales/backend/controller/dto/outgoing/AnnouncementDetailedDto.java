@@ -18,6 +18,6 @@ public class AnnouncementDetailedDto {
     @NotNull @NotEmpty
     private String description;
     @NotNull @PositiveOrZero
-    private Integer price;
+    private Double price;
 
 }

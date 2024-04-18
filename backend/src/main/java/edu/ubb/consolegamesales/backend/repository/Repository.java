@@ -7,6 +7,7 @@ public interface Repository<T extends BaseEntity, I> {
 
     T getById(I id);
 
+    // returns the number of updated entities
     Integer update(I id, T entity);
 
     void delete(T entity);

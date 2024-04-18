@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @Profile("jpa")
 public interface UserJpaRepository extends UserRepository, JpaRepository<User, Long> {
@@ -19,4 +21,7 @@ public interface UserJpaRepository extends UserRepository, JpaRepository<User, L
             + "lastName= :#{#entity.lastName} WHERE entityId = :id ")
     @Override
     Integer update(Long id, User entity);
+
+    Optional<User> findByUsername(String username);
+
 }

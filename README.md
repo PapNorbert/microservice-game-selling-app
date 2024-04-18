@@ -4,21 +4,23 @@ A web application for selling and buying used console video game discs.
 Users could re-sell their physical copies of a game they already played on gaming console, 
 and buyers would get a platform to easily connect with sellers and possibility to chat with them.
 
-The application does not cover the payment and transportation of the products, it is only a free announcement posting page, 
-that helps to get in touch with others.
 
 
 ## Functionalities 
 
 - Login
 - Registration
-- View announcements
-- Filter and search announcements
-- Create announcement about selling your game
+- View sale announcements
+- Filter and search sale announcements
+- Create sale announcement about selling your game
 - Get in contact with the seller with the help of real time chat - WebSocket
 - Review users
 - Filter announcements based on user review rating
 - Save announcements
+- See other announcements of the user
+- Order a sold game disc
+- Verified reviews - review after order
+- Check user reviews
 
 ## API server
 

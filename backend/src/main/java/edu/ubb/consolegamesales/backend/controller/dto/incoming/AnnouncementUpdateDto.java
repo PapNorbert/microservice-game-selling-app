@@ -13,4 +13,6 @@ public class AnnouncementUpdateDto {
     private String description;
     @NotNull @PositiveOrZero
     private Double price;
+    @NotNull
+    private Boolean transportPaidBySeller;
 }

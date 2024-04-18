@@ -9,15 +9,21 @@ import lombok.Data;
 
 @Data
 public class AnnouncementDetailedDto {
-    @NotNull @Positive
+    @NotNull
+    @Positive
     private Long announcementId;
-    @NotNull @Positive
+    @NotNull
+    @Positive
     private Long sellerId;
-    @NotNull @Positive
+    @NotNull
+    @Positive
     private GameDisc soldGameDisc;
-    @NotNull @NotEmpty
+    @NotNull
+    @NotEmpty
     private String description;
-    @NotNull @PositiveOrZero
+    @NotNull
+    @PositiveOrZero
     private Double price;
-
+    @NotNull
+    private Boolean transportPaidBySeller;
 }

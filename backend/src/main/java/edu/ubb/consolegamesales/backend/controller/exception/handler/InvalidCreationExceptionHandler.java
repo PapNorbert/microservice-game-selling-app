@@ -20,7 +20,7 @@ public class InvalidCreationExceptionHandler {
     public ErrorData handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         String errors = exception.getBindingResult().getFieldErrors().stream().map(fieldError ->
                 fieldError.getField() + " " + fieldError.getDefaultMessage()).collect(Collectors.joining(", "));
-        LOGGER.warn("Invalid entity at creation " + errors);
+        LOGGER.error("Invalid entity at creation " + errors);
         return new ErrorData(errors);
     }
 }

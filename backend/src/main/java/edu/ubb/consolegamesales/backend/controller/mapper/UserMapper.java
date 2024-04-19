@@ -1,5 +1,7 @@
 package edu.ubb.consolegamesales.backend.controller.mapper;
 
+import edu.ubb.consolegamesales.backend.controller.dto.incoming.LoginInformationDto;
+import edu.ubb.consolegamesales.backend.controller.dto.incoming.UserCreationDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.UserResponseDto;
 import edu.ubb.consolegamesales.backend.model.User;
@@ -17,5 +19,18 @@ public interface UserMapper {
     Collection<UserResponseDto> modelsToResponseDtos(Collection<User> users);
 
     CreatedObjectDto modelToCreatedObjDto(User user);
+
+    @Mapping(target = "entityId", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    User creationDtoToModel(UserCreationDto userCreationDto);
+
+    @Mapping(target = "entityId", ignore = true)
+    @Mapping(target = "firstName", ignore = true)
+    @Mapping(target = "lastName", ignore = true)
+    @Mapping(target = "registrationDate", ignore = true)
+    @Mapping(target = "address", ignore = true)
+    @Mapping(target = "role", ignore = true)
+    User LoginDtoToModel(LoginInformationDto loginInformationDto);
 
 }

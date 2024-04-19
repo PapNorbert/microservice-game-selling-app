@@ -32,7 +32,7 @@ public class AnnouncementController {
 
     @GetMapping("/{id}")
     public AnnouncementDetailedDto findById(@PathVariable("id") Long id) throws NotFoundException {
-        LOGGER.info("GET announcements at /announcements/" + id);
+        LOGGER.info("GET announcements at announcements/" + id + " api");
         try {
             AnnouncementDetailedDto announcementDetailedDto = announcementMapper.modelToDetailedDto(
                     announcementRepository.getById(id));
@@ -49,7 +49,7 @@ public class AnnouncementController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CreatedObjectDto create(@RequestBody @Valid AnnouncementCreationDto announcementCreationDto) {
-        LOGGER.info("POST request at /announcements");
+        LOGGER.info("POST request at announcements api");
         Announcement announcement = announcementMapper.creationDtoToModel(announcementCreationDto);
         announcementRepository.saveAndFlush(announcement);
         return announcementMapper.modelToCreatedObjDto(announcement);
@@ -59,7 +59,7 @@ public class AnnouncementController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable("id") Long id, @RequestBody @Valid AnnouncementUpdateDto announcementUpdateDto)
             throws NotFoundException, NotUpdatedException {
-        LOGGER.info("PUT request at /announcements/" + id);
+        LOGGER.info("PUT request at announcements/" + id + "api");
         try {
             if (announcementRepository.update(id,
                     announcementMapper.updateDtoToModel(announcementUpdateDto)) <= 0) {

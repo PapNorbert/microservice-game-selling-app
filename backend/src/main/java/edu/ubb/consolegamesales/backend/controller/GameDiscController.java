@@ -29,7 +29,7 @@ public class GameDiscController {
 
     @GetMapping("/{id}")
     public GameDiscResponseDto findById(@PathVariable("id") Long id) throws NotFoundException {
-        LOGGER.info("GET games at /games/" + id);
+        LOGGER.info("GET games at games/" + id + "api");
         try {
             GameDiscResponseDto gameDiscResponseDto = gameDiscMapper.modelToResponseDto(gameDiscRepository.getById(id));
             if (gameDiscResponseDto == null) {
@@ -45,7 +45,7 @@ public class GameDiscController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public CreatedObjectDto create(@RequestBody @Valid GameDiscCreationDto gameDiscCreationDto) {
-        LOGGER.info("POST request at /games");
+        LOGGER.info("POST request at games api");
         GameDisc gameDisc = gameDiscMapper.creationDtoToModel(gameDiscCreationDto);
         gameDisc.setSold(false);
         gameDiscRepository.saveAndFlush(gameDisc);

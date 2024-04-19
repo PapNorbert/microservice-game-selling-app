@@ -22,10 +22,10 @@ public class HttpMessageNotReadableExceptionHandler {
         if (exception.getTargetType().isEnum()) {
             String message = "Invalid value '" + exception.getValue().toString()
                    + "', possible option: " + Arrays.toString(exception.getTargetType().getEnumConstants());
-            LOGGER.warn(message);
+            LOGGER.error(message);
             return new ErrorData(message);
         }
-        LOGGER.warn("Invalid request body");
+        LOGGER.error("Invalid request body");
         return new ErrorData("Invalid request body");
     }
 

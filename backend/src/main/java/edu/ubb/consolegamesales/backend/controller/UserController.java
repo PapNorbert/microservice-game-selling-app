@@ -24,7 +24,7 @@ public class UserController {
 
     @GetMapping("/{id}")
     public UserResponseDto findById(@PathVariable("id") Long id) throws NotFoundException {
-        LOGGER.info("GET user at /users/" + id);
+        LOGGER.info("GET user at users/" + id  + "api");
         try {
             UserResponseDto userResponse = userMapper.modelToResponseDto(userRepository.getById(id));
             if (userResponse == null) {

@@ -1,4 +1,4 @@
-package edu.ubb.consolegamesales.backend.filer;
+package edu.ubb.consolegamesales.backend.filter;
 
 import edu.ubb.consolegamesales.backend.service.JwtService;
 import edu.ubb.consolegamesales.backend.service.security.UserDetailsServiceImp;

@@ -42,21 +42,20 @@ public class AuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         }
-
         if (token == null) {
             // user is not logged in
             filterChain.doFilter(request, response);
             return;
         }
 
-
         String username = jwtService.decodeUsername(token);
         SecurityContext securityContext = SecurityContextHolder.getContext();
 
         if (username != null && securityContext.getAuthentication() == null) {
             // user not already authenticated
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             // get user data from database
+            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+
             if (jwtService.verifyToken(token, userDetails)) {
                 // valid token, authenticate user
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,

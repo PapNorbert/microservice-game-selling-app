@@ -38,7 +38,7 @@ public class JwtService {
         // verify username is the same
         return claims.getSubject().equals(user.getUsername())
                 // verify token is not expired
-                && claims.getExpiration().before(new Date());
+                && claims.getExpiration().after(new Date());
     }
 
     public String decodeUsername(String token) {

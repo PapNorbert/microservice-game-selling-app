@@ -2,6 +2,8 @@ package edu.ubb.consolegamesales.backend.controller.exception.handler;
 
 import edu.ubb.consolegamesales.backend.model.ErrorData;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -11,6 +13,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Slf4j
 @ControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class DataIntegrityViolationExceptionHandler {
 
     @ExceptionHandler(DataIntegrityViolationException.class)

@@ -26,6 +26,7 @@ public class RegistrationController {
     public CreatedObjectDto register(@RequestBody @Valid UserCreationDto userCreationDto) {
         LOGGER.info("Registration request");
         User createdUser = authenticationService.register(userMapper.creationDtoToModel(userCreationDto));
+        LOGGER.info("User registered with username '" + createdUser.getUsername() + "'");
         return userMapper.modelToCreatedObjDto(createdUser);
     }
 

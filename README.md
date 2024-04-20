@@ -1,10 +1,14 @@
 # Gaming Console Game Sales
 
-A web application for selling and buying used console video game discs. 
-Users could re-sell their physical copies of a game they already played on gaming console, 
-and buyers would get a platform to easily connect with sellers and possibility to chat with them.
-
-
+A web application tailored for the gaming community that simplifies the process 
+of buying and selling used console video game discs. The platform allows users to 
+list their physical copies of games from various gaming consoles such as 
+PlayStation, Xbox, Nintendo Switch, fostering a vibrant marketplace. 
+Buyers can browse through a variety of titles and communicate directly with
+sellers through an integrated chat feature. In addition, buyers have the
+option to directly order the desired game disk. Their primary goal is to 
+facilitate seamless transactions within the gaming community while 
+prioritizing user convenience and security.
 
 ## Functionalities 
 

@@ -1,0 +1,7 @@
+spring:
+  profiles:
+    active: jpa
+
+apiPrefix: api
+
+jwtSecret: 2cdc5639dae1c27de9a074386c5dc8f526fc6c77921d4d34e07a1fceb7cfb9fb

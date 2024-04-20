@@ -2,9 +2,9 @@ package edu.ubb.consolegamesales.backend.filter;
 
 import edu.ubb.consolegamesales.backend.service.JwtService;
 import edu.ubb.consolegamesales.backend.service.security.UserDetailsServiceImp;
+import edu.ubb.consolegamesales.backend.util.TokenExtraction;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
@@ -32,16 +32,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
 
         // extract the jwt token from cookies
-        String token = null;
-        Cookie[] cookies = request.getCookies();
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("Auth")) {
-                    token = cookie.getValue();
-                    break;
-                }
-            }
-        }
+        String token = TokenExtraction.extractTokenFromRequestCookie(request);
         if (token == null) {
             // user is not logged in
             filterChain.doFilter(request, response);

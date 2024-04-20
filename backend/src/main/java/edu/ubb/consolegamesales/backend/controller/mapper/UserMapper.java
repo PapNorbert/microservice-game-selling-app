@@ -23,6 +23,7 @@ public interface UserMapper {
     @Mapping(target = "entityId", ignore = true)
     @Mapping(target = "registrationDate", ignore = true)
     @Mapping(target = "role", ignore = true)
+    @Mapping(target = "authorities", ignore = true)
     User creationDtoToModel(UserCreationDto userCreationDto);
 
     @Mapping(target = "entityId", ignore = true)
@@ -31,6 +32,7 @@ public interface UserMapper {
     @Mapping(target = "registrationDate", ignore = true)
     @Mapping(target = "address", ignore = true)
     @Mapping(target = "role", ignore = true)
-    User LoginDtoToModel(LoginInformationDto loginInformationDto);
+    @Mapping(target = "authorities", ignore = true)
+    User loginDtoToModel(LoginInformationDto loginInformationDto);
 
 }

@@ -26,7 +26,7 @@ public class LoginController {
     @PostMapping
     public TokenDto login(@RequestBody @Valid LoginInformationDto loginInformationDto, HttpServletResponse response) {
         LOGGER.info("Login request");
-        User loginUser = userMapper.LoginDtoToModel(loginInformationDto);
+        User loginUser = userMapper.loginDtoToModel(loginInformationDto);
         String jwtToken = authenticationService.authenticate(loginUser);
         Cookie authCookie = new Cookie("Auth", jwtToken);
         authCookie.setHttpOnly(true);

@@ -13,11 +13,13 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.logout.LogoutHandler;
 
 
 @Configuration
@@ -28,12 +30,15 @@ public class SecurityConfig {
     private final AuthenticationFilter authenticationFilter;
     private final String apiPrefix;
 
+    private final LogoutHandler logoutHandler;
+
 
     public SecurityConfig(UserDetailsServiceImp userDetailsServiceImp, AuthenticationFilter authenticationFilter,
-                          @Value("${apiPrefix}") String apiPrefix) {
+                          @Value("${apiPrefix}") String apiPrefix, LogoutHandler logoutHandler) {
         this.userDetailsServiceImp = userDetailsServiceImp;
         this.authenticationFilter = authenticationFilter;
         this.apiPrefix = apiPrefix;
+        this.logoutHandler = logoutHandler;
     }
 
     @Bean
@@ -41,17 +46,26 @@ public class SecurityConfig {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/" + apiPrefix + "/login/**", "/" + apiPrefix + "/register/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/" + apiPrefix + "/announcements/**").permitAll()
+                                .requestMatchers(
+                                        "/" + apiPrefix + "/login/**", "/" + apiPrefix + "/register/**")
+                                        .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/" + apiPrefix + "/announcements/**")
+                                        .permitAll()
                                 .anyRequest().authenticated())
                 .userDetailsService(userDetailsServiceImp)
                 // unauthorized response code for accesDenied
                 .exceptionHandling((exception) ->
-                        exception.accessDeniedHandler((request, response, accessDeniedException)->response.setStatus(403))
-                        .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)) )
+                        exception.accessDeniedHandler(
+                                        (request, response, accessDeniedException) -> response.setStatus(403))
+                                .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED)))
                 .sessionManagement((sessionManagement) ->
                         sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(authenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout((logout) ->
+                        logout.logoutUrl("/" + apiPrefix + "/logout")
+                                .addLogoutHandler(logoutHandler)
+                                .logoutSuccessHandler(
+                                        (request, response, authentication) -> SecurityContextHolder.clearContext()))
                 .build();
     }
 

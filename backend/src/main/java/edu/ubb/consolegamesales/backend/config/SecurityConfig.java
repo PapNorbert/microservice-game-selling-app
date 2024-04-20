@@ -47,7 +47,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers(
-                                        "/" + apiPrefix + "/login/**", "/" + apiPrefix + "/register/**")
+                                        "/" + apiPrefix + "/login/**", "/" + apiPrefix + "/register/**",
+                                        "/" + apiPrefix + "/refresh")
                                         .permitAll()
                                 .requestMatchers(HttpMethod.GET, "/" + apiPrefix + "/announcements/**")
                                         .permitAll()

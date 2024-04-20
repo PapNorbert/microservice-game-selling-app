@@ -18,10 +18,12 @@ public interface UserJpaRepository extends UserRepository, JpaRepository<User, L
     @Transactional
     @Query("UPDATE User "
             + "SET username= :#{#entity.username}, firstName= :#{#entity.firstName}, password= :#{#entity.password}, "
-            + "lastName= :#{#entity.lastName} WHERE entityId = :id ")
+            + "lastName= :#{#entity.lastName}, refreshToken= :#{#entity.refreshToken} WHERE entityId = :id ")
     @Override
     Integer update(Long id, User entity);
 
     Optional<User> findByUsername(String username);
+
+    User findByRefreshToken(String refreshToken);
 
 }

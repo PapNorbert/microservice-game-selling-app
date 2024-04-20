@@ -20,7 +20,7 @@ public class DataIntegrityViolationExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public ErrorData handleFailedConstraintException(DataIntegrityViolationException exception) {
-        LOGGER.error("Error creating GameDisc, " + exception.getMessage());
-        return new ErrorData("Path variable type not supported");
+        LOGGER.error("Invalid data " + exception.getMessage());
+        return new ErrorData("Invalid data");
     }
 }

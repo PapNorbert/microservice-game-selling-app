@@ -22,10 +22,8 @@ public class JwtService {
         this.jwtSecret = jwtSecret;
     }
 
-    public String generateToken(User user) {
+    public String generateToken(User user, int expirationTime) {
         // generate jwt token
-        int expirationTime = 12 * 60 * 60 * 1000;
-
         return Jwts.builder()
                 .subject(user.getUsername())
                 .issuedAt(new Date(System.currentTimeMillis()))

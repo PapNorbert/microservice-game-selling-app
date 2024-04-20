@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.util.Pair;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,8 +28,10 @@ public class LoginController {
     public TokenDto login(@RequestBody @Valid LoginInformationDto loginInformationDto, HttpServletResponse response) {
         LOGGER.info("Login request");
         User loginUser = userMapper.loginDtoToModel(loginInformationDto);
-        String jwtToken = authenticationService.authenticate(loginUser);
-        Cookie authCookie = new Cookie("Auth", jwtToken);
+        // first is the accesToken, second the refreshToken
+        Pair<String, String> tokens = authenticationService.authenticate(loginUser);
+        // refreshToken is used in cookie
+        Cookie authCookie = new Cookie("Auth", tokens.getSecond());
         authCookie.setHttpOnly(true);
         authCookie.setSecure(true);
         // max age to 5 hours
@@ -36,6 +39,7 @@ public class LoginController {
         authCookie.setAttribute("SameSite", "None");
         response.addCookie(authCookie);
         LOGGER.info("User with username '" + loginUser.getUsername() + "' logged in");
-        return new TokenDto(jwtToken);
+        // accesToken sent to the client application
+        return new TokenDto(tokens.getFirst());
     }
 }

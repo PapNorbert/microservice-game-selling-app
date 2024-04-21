@@ -1,14 +1,14 @@
 import { FormEvent, useState } from 'react';
-import { Form, FloatingLabel, Button, Alert, Nav, Row, Col } from 'react-bootstrap'
-import { useNavigate } from 'react-router-dom'
+import { Form, FloatingLabel, Button, Alert, Nav, Row, Col } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import { useMutation } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 
 import FormContainer from "../components/FromContainer";
 import configuredAxios from '../axios/configuredAxios';
-import { apiPrefix } from '../config/application.json'
-import { formatKeyToMessage } from '../util/stringFormatting'
-import { AxiosError } from 'axios';
-import { errorResponseData } from '../util/errorResponseInterface';
+import { apiPrefix } from '../config/application.json';
+import { formatKeyToMessage } from '../util/stringFormatting';
+import { errorResponseData } from '../interface/errorResponseInterface';
 
 interface FormData {
   firstName: string;
@@ -79,7 +79,6 @@ export default function Register() {
       // if no errors send the registration request
       mutate(form);
     }
-
   }
 
   function mutationFunction(data: FormData) {

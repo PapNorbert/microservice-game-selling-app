@@ -14,12 +14,20 @@ interface ContextData {
   setLoginExpired: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const AuthContext = createContext<ContextData | null>(null);
-
 const initialAuthState: AuthData = {
   logged_in: false,
   username: undefined
 }
+
+const initialContextData: ContextData = {
+  auth: initialAuthState,
+  setAuth: () => { },
+  loginExpired: false,
+  setLoginExpired: () => { },
+}
+
+export const AuthContext = createContext<ContextData>(initialContextData);
+
 
 export default function AuthContextProvider({ children }: ChildrenProps) {
 
@@ -37,7 +45,11 @@ export default function AuthContextProvider({ children }: ChildrenProps) {
   useEffect(() => {
     configuredAxios.get(`/${apiPrefix}/refresh`)
       .then((response) => {
-        setAuth(decodeJwtAccesToken(response?.data?.accesToken || null))
+        setAuth(decodeJwtAccesToken(response?.data?.token || null))
+        setLoading(false);
+      })
+      // in case of error user is not logged in
+      .catch(() => {
         setLoading(false);
       })
   }, []);

@@ -1,11 +1,7 @@
-import { ReactElement } from 'react';
 import { Container, Row, Col } from 'react-bootstrap'
+import { ChildrenProps } from '../interface/childrenPropsInterface'
 
-interface FormContainerProps {
-  children: ReactElement | ReactElement[];
-}
-
-export default function FormContainer({children} : FormContainerProps) {
+export default function FormContainer({children} : ChildrenProps) {
   return (
     <Container>
       <Row className='justify-content-md-center'>

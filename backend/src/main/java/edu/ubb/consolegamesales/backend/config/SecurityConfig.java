@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -20,6 +21,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutHandler;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 
 @Configuration
@@ -29,21 +36,25 @@ public class SecurityConfig {
     private final UserDetailsServiceImp userDetailsServiceImp;
     private final AuthenticationFilter authenticationFilter;
     private final String apiPrefix;
-
     private final LogoutHandler logoutHandler;
+    private final String allowedOrigin;
 
 
     public SecurityConfig(UserDetailsServiceImp userDetailsServiceImp, AuthenticationFilter authenticationFilter,
-                          @Value("${apiPrefix}") String apiPrefix, LogoutHandler logoutHandler) {
+                          @Value("${apiPrefix}") String apiPrefix, LogoutHandler logoutHandler,
+                          @Value("${cors.allowed-origin}") String allowedOrigins) {
         this.userDetailsServiceImp = userDetailsServiceImp;
         this.authenticationFilter = authenticationFilter;
         this.apiPrefix = apiPrefix;
         this.logoutHandler = logoutHandler;
+        this.allowedOrigin = allowedOrigins;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
+        return http
+                .cors(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
                                 .requestMatchers(
@@ -68,6 +79,19 @@ public class SecurityConfig {
                                 .logoutSuccessHandler(
                                         (request, response, authentication) -> SecurityContextHolder.clearContext()))
                 .build();
+    }
+
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        // configure cors to allow client requests
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(Collections.singletonList(allowedOrigin));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "Cache-Control", "Origin"));
+        configuration.setAllowCredentials(true);
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 
     @Bean

@@ -1,10 +1,14 @@
 import { Container } from "react-bootstrap";
+import SearchBar from "../layouts/SearchBar";
 
-export default function Home() : JSX.Element {
+export default function Home(): JSX.Element {
 
   return (
-    <Container>
-      <h1>Home</h1>
-    </Container>
+    <>
+      <SearchBar />
+      <Container>
+        <h1>Home</h1>
+      </Container>
+    </>
   )
 }

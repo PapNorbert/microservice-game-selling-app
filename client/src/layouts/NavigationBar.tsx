@@ -1,9 +1,10 @@
 import { useNavigate } from 'react-router-dom'
-import { Navbar, Nav, Container, NavDropdown } from 'react-bootstrap'
+import { Navbar, Nav, Container, NavDropdown, NavbarText } from 'react-bootstrap'
 
 import useAuth from '../hooks/useAuth'
 import configuredAxios from '../axios/configuredAxios';
 import { apiPrefix } from '../config/application.json';
+import { ChatFill, StarFill } from 'react-bootstrap-icons';
 
 
 export default function Navigationbar() {
@@ -27,29 +28,35 @@ export default function Navigationbar() {
   return (
     <Navbar collapseOnSelect expand='md' bg='customColor' sticky='top' className='px-5 pb-1 pt-1 mb-4' >
       <Container fluid className='mx-5 '>
-        <Navbar.Brand href="/" className='ms-5 me-auto' >
-        <img
-              alt=""
-              src="\src\assets\logo2.png"
-              width="230"
-              height="49"
-              className="d-inline-block align-top"
-            />
+        <Navbar.Brand className='ms-5 me-auto clickable' onClick={() => { navigate('/') }} >
+          <img
+            alt=""
+            src="\src\assets\logo2.png"
+            width="235"
+            height="43"
+            className="d-inline-block align-top"
+          />
         </Navbar.Brand>
 
         <Nav className='me-5'>
           <Nav.Link className='me-4 mr-4 nav-text fw-bold' >
-            Messages
+            <ChatFill className='me-1' />
+            <NavbarText > Messages </NavbarText>
           </Nav.Link>
           <Nav.Link className='me-4 mr-4 nav-text fw-bold' >
-            Favourites
+            <StarFill className='me-1' />
+            <NavbarText> Saved </NavbarText>
           </Nav.Link>
+          {auth.logged_in &&
+            <Nav.Link className='me-4 mr-4 nav-text fw-bold' >
+              Create Sale Announcement
+            </Nav.Link>}
         </Nav>
 
         {!auth.logged_in &&
           <Nav className='me-3'>
             <Nav.Link className='me-4 nav-text border border-dark rounded-5 px-3 auth-button'
-              onClick={() => { navigate('/login',) }}>
+              onClick={() => { navigate('/login') }}>
               Login
             </Nav.Link>
             <Nav.Link className='me-3 nav-text border border-dark rounded-5 px-3 auth-button'
@@ -61,7 +68,7 @@ export default function Navigationbar() {
         {
           auth.logged_in &&
           <Nav className='me-3'>
-            <Navbar.Text className='me-1 nav-text'>
+            <Navbar.Text className='me-1 nav-text fw-bold'>
               Logged in as:
             </Navbar.Text>
             <NavDropdown title={auth.username} className='me-4 nav-text'>

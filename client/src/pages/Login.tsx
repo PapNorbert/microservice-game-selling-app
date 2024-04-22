@@ -26,6 +26,7 @@ const emptyFormData = {
 
 export default function Login() {
   const loginUrl = `/${apiPrefix}/login`;
+  const { auth } = useAuth();
   const [form, setForm] = useState<FormData>(emptyFormData);
   const [errors, setErrors] = useState<FormData>(emptyFormData);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -88,6 +89,16 @@ export default function Login() {
       newErrors = { ...errors, [field]: '' }
     }
     setErrors(newErrors);
+  }
+
+
+  if (auth.logged_in) {
+    return (
+      <FormContainer>
+        <h2 className='text-center'>Login</h2>
+        <h4 className='text-center mt-5'>You are logged in! Logout first.</h4>
+      </FormContainer>
+    )
   }
 
 

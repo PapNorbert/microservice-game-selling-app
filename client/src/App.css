@@ -1,9 +1,5 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  /* text-align: center; */
-}
+@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url('https://fonts.googleapis.com/css?family=Lato:400,700');
 
 .logo {
   height: 6em;
@@ -52,3 +48,35 @@ h2 {
   margin-bottom: 0.7em !important;
 }
 
+.bg-customColor {
+  background-color: #e99000fa;
+}
+
+.tabs-nav {
+  margin-bottom: 1em;
+}
+
+.clickable {
+  cursor: pointer;
+}
+
+.nav-text {
+  font-family: 'Open Sans', sans-serif;
+}
+
+.nav-brand {
+  font-family: 'Lato', sans-serif;
+}
+
+
+.auth-button {  
+  background-color: #feb21bf1;
+}
+
+.center-large-text {
+  text-align: center;
+  font-size: larger;
+  margin-bottom: 1em;
+  padding-left: 10em;
+  padding-right: 10em;
+}

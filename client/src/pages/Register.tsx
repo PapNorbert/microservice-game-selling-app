@@ -9,6 +9,7 @@ import configuredAxios from '../axios/configuredAxios';
 import { apiPrefix } from '../config/application.json';
 import { formatKeyToMessage } from '../util/stringFormatting';
 import { errorResponseData } from '../interface/errorResponseInterface';
+import useAuth from '../hooks/useAuth';
 
 interface FormData {
   firstName: string;
@@ -31,6 +32,7 @@ const emptyFormData = {
 
 export default function Register() {
   const registerUrl = `/${apiPrefix}/register`;
+  const { auth } = useAuth();
   const [form, setForm] = useState<FormData>(emptyFormData);
   const [errors, setErrors] = useState<FormData>(emptyFormData);
   const [succesfullReg, setSuccesfullReg] = useState<boolean>(false);
@@ -112,6 +114,14 @@ export default function Register() {
     setErrors(newErrors);
   }
 
+  if (auth.logged_in) {
+    return (
+      <FormContainer>
+          <h2 className='text-center'>Registration</h2>
+          <h4 className='text-center mt-5'>You are logged in! Logout first.</h4>
+      </FormContainer>
+    )
+  }
 
   return (
     <FormContainer>

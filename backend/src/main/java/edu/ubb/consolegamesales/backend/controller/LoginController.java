@@ -35,7 +35,7 @@ public class LoginController {
         authCookie.setHttpOnly(true);
         authCookie.setSecure(true);
         // max age to 5 hours
-        authCookie.setMaxAge(5 * 60 * 60 * 1000);
+        authCookie.setMaxAge(5 * 60 * 60 );
         authCookie.setAttribute("SameSite", "None");
         response.addCookie(authCookie);
         LOGGER.info("User with username '" + loginUser.getUsername() + "' logged in");

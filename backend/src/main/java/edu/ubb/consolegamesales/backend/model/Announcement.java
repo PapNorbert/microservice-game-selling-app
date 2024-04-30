@@ -3,6 +3,8 @@ package edu.ubb.consolegamesales.backend.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Date;
+
 @Data()
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
@@ -20,11 +22,15 @@ public class Announcement extends BaseEntity {
     @Column(nullable = false)
     private String description;
     @Column(nullable = false)
+    private String title;
+    @Column(nullable = false)
     private Double price;
     @Column(nullable = false, name = "transport_paid_by_seller")
     private Boolean transportPaidBySeller;
-    @Column(nullable = false)
-    private Boolean sold;
     @Column(nullable = false, name = "new_disc")
     private Boolean newDisc;
+    @Column(nullable = false)
+    private Boolean sold;
+    @Column(nullable = false)
+    private Date creationDate;
 }

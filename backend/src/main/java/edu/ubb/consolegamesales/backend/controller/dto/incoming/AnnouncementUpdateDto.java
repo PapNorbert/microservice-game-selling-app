@@ -11,6 +11,8 @@ public class AnnouncementUpdateDto {
     private Long soldGameDiscId;
     @NotNull
     private String description;
+    @NotNull
+    private String title;
     @NotNull @PositiveOrZero
     private Double price;
     @NotNull

@@ -15,7 +15,7 @@ public class GameDiscResponseDto {
     @NotNull
     private GameDiscType type;
     @NotNull
-    private User user;
+    private User seller;
     @NotNull @Positive
     private Integer gameYear;
 

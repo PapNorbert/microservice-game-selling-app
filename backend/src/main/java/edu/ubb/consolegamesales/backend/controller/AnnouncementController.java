@@ -7,27 +7,30 @@ import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto
 import edu.ubb.consolegamesales.backend.controller.exception.NotFoundException;
 import edu.ubb.consolegamesales.backend.controller.exception.NotUpdatedException;
 import edu.ubb.consolegamesales.backend.controller.mapper.AnnouncementMapper;
+import edu.ubb.consolegamesales.backend.controller.mapper.GameDiscMapper;
 import edu.ubb.consolegamesales.backend.model.Announcement;
+import edu.ubb.consolegamesales.backend.model.GameDisc;
 import edu.ubb.consolegamesales.backend.repository.AnnouncementRepository;
+import edu.ubb.consolegamesales.backend.repository.GameDiscRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
 
 @Slf4j
 @RestController
 @ResponseStatus(HttpStatus.OK)
 @RequestMapping("${apiPrefix}/announcements")
+@AllArgsConstructor
 public class AnnouncementController {
     private final AnnouncementRepository announcementRepository;
+    private final GameDiscRepository gameDiscRepository;
     private final AnnouncementMapper announcementMapper;
-
-    public AnnouncementController(AnnouncementRepository announcementRepository,
-                                  AnnouncementMapper announcementMapper) {
-        this.announcementRepository = announcementRepository;
-        this.announcementMapper = announcementMapper;
-    }
+    private final GameDiscMapper gameDiscMapper;
 
 
     @GetMapping("/{id}")
@@ -50,8 +53,12 @@ public class AnnouncementController {
     @ResponseStatus(HttpStatus.CREATED)
     public CreatedObjectDto create(@RequestBody @Valid AnnouncementCreationDto announcementCreationDto) {
         LOGGER.info("POST request at announcements api");
+        GameDisc creationGameDisc = gameDiscMapper.creationDtoToModel(announcementCreationDto.getSoldGameDisc());
+        GameDisc savedGameDisc = gameDiscRepository.saveAndFlush(creationGameDisc);
         Announcement announcement = announcementMapper.creationDtoToModel(announcementCreationDto);
+        announcement.setSoldGameDisc(savedGameDisc);
         announcement.setSold(false);
+        announcement.setCreationDate(new Date());
         announcementRepository.saveAndFlush(announcement);
         return announcementMapper.modelToCreatedObjDto(announcement);
     }

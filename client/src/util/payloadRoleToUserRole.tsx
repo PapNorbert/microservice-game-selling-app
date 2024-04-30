@@ -1,6 +1,6 @@
 import { UserRoleTypes } from "../enums/UserRoleTypes";
 
-export default function payloadRoleToUserRole(userRoleName : String) : UserRoleTypes | undefined {
+export default function payloadRoleToUserRole(userRoleName : string | undefined) : UserRoleTypes | undefined {
   if (userRoleName === 'USER') {
     return UserRoleTypes.USER
   }

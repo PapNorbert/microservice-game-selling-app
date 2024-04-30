@@ -17,7 +17,8 @@ interface ContextData {
 const initialAuthState: AuthData = {
   logged_in: false,
   username: undefined,
-  role: undefined
+  role: undefined,
+  userId: undefined
 }
 
 const initialContextData: ContextData = {

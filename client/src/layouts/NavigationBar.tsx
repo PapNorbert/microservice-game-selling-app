@@ -15,7 +15,7 @@ export default function Navigationbar() {
   function logout() {
     configuredAxios.get(`/${apiPrefix}/logout`)
       .then(() => {
-        setAuth({ username: undefined, logged_in: false });
+        setAuth({ username: undefined, logged_in: false, role: undefined });
         navigate('/');
 
       })
@@ -48,7 +48,8 @@ export default function Navigationbar() {
             <NavbarText> Saved </NavbarText>
           </Nav.Link>
           {auth.logged_in &&
-            <Nav.Link className='me-4 mr-4 nav-text fw-bold' >
+            <Nav.Link className='me-4 mr-4 nav-text fw-bold'
+              onClick={() => { navigate('/announcements/create') }}>
               Create Sale Announcement
             </Nav.Link>}
         </Nav>

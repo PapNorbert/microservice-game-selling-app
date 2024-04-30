@@ -8,7 +8,7 @@ import FormContainer from "../components/FromContainer";
 import configuredAxios from '../axios/configuredAxios';
 import { apiPrefix } from '../config/application.json';
 import { formatKeyToMessage } from '../util/stringFormatting';
-import { errorResponseData } from '../interface/errorResponseInterface';
+import { ErrorResponseData } from '../interface/errorResponseInterface';
 import useAuth from '../hooks/useAuth';
 
 interface FormData {
@@ -93,7 +93,7 @@ export default function Register() {
     navigate('/login');
   }
 
-  function handleSubmitError(error: AxiosError<errorResponseData>) {
+  function handleSubmitError(error: AxiosError<ErrorResponseData>) {
     setSuccesfullReg(false);
     setSubmitError(error.response?.data.errorMessage || 'Error during registration');
   }

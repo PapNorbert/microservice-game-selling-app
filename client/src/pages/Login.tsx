@@ -9,7 +9,7 @@ import configuredAxios from '../axios/configuredAxios';
 import { apiPrefix } from '../config/application.json';
 import { formatKeyToMessage } from '../util/stringFormatting';
 import decodeJwtAccesToken from '../util/decodeJwt';
-import { errorResponseData } from '../interface/errorResponseInterface';
+import { ErrorResponseData } from '../interface/errorResponseInterface';
 import useAuth from '../hooks/useAuth'
 
 interface FormData {
@@ -73,7 +73,7 @@ export default function Login() {
     navigate(from, { replace: true });
   }
 
-  function handleSubmitError(error: AxiosError<errorResponseData>) {
+  function handleSubmitError(error: AxiosError<ErrorResponseData>) {
     setSubmitError(error.response?.data.errorMessage || 'Username or password not correct');
     setField('password', '');
     setErrors({ ...errors, password: '' });

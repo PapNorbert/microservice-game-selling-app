@@ -23,6 +23,7 @@ public interface AnnouncementMapper {
     CreatedObjectDto modelToCreatedObjDto(Announcement announcement);
 
     @Mapping(target = "entityId", ignore = true)
+    @Mapping(target = "sold", ignore = true)
     @Mapping(target = "seller.entityId", source = "sellerId")
     @Mapping(target = "soldGameDisc.entityId", source = "soldGameDiscId")
     Announcement creationDtoToModel(AnnouncementCreationDto announcementCreationDto);

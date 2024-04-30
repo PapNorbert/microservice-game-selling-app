@@ -23,4 +23,8 @@ public class Announcement extends BaseEntity {
     private Double price;
     @Column(nullable = false, name = "transport_paid_by_seller")
     private Boolean transportPaidBySeller;
+    @Column(nullable = false)
+    private Boolean sold;
+    @Column(nullable = false, name = "new_disc")
+    private Boolean newDisc;
 }

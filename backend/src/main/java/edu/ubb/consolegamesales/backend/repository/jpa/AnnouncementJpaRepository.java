@@ -16,7 +16,9 @@ public interface AnnouncementJpaRepository extends AnnouncementRepository, JpaRe
     @Transactional
     @Query("UPDATE Announcement "
             + "SET soldGameDisc= :#{#entity.soldGameDisc}, price= :#{#entity.price}, "
-            + "description= :#{#entity.description} WHERE entityId = :id ")
+            + "description= :#{#entity.description}, transportPaidBySeller= :#{#entity.transportPaidBySeller}, "
+            + "sold= :#{#entity.sold}, newDisc= :#{#entity.newDisc} "
+            + " WHERE entityId = :id ")
     @Override
     Integer update(Long id, Announcement entity);
 }

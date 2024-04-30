@@ -19,4 +19,6 @@ public class AnnouncementCreationDto {
     private Double price;
     @NotNull
     private Boolean transportPaidBySeller;
+    @NotNull
+    private Boolean newDisc;
 }

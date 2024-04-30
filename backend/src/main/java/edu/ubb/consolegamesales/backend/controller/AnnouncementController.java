@@ -51,6 +51,7 @@ public class AnnouncementController {
     public CreatedObjectDto create(@RequestBody @Valid AnnouncementCreationDto announcementCreationDto) {
         LOGGER.info("POST request at announcements api");
         Announcement announcement = announcementMapper.creationDtoToModel(announcementCreationDto);
+        announcement.setSold(false);
         announcementRepository.saveAndFlush(announcement);
         return announcementMapper.modelToCreatedObjDto(announcement);
     }

@@ -1,16 +1,37 @@
-import { useState } from 'react';
+import { useContext } from 'react';
+import { Form, Row, Col, Button, InputGroup } from 'react-bootstrap';
+import { Search } from 'react-bootstrap-icons';
 
-import { Form, Row, Col, Button, InputGroup } from 'react-bootstrap'
-import { Search } from 'react-bootstrap-icons'
+import { SearchContext } from '../context/SearchContextProvider';
+import { useNavigate } from 'react-router-dom';
+import {
+  limitQuerryParamDefault, limitQuerryParamName,
+  pageQuerryParamDefault, pageQuerryParamName,
+  productNameParamDefault, productNameParamName,
+  consoleTypeParamDefault, consoleTypeParamName
+} from '../config/application.json'
 
 export default function SearchBar() {
-  const [selectedConsole, setSelectedConsole] = useState<string>('ALL');
-  const [productName, setProductName] = useState<string>('');
+  const { selectedConsole, setSelectedConsole, productName, setProductName, limit, page } = useContext(SearchContext);
+  const navigate = useNavigate();
+
 
   function handleSearch() {
-
+    const queryParams = new URLSearchParams();
+    if (selectedConsole !== consoleTypeParamDefault) {
+      queryParams.set(consoleTypeParamName, selectedConsole);
+    }
+    if (productName !== productNameParamDefault) {
+      queryParams.set(productNameParamName, productName);
+    }
+    if (limit !== limitQuerryParamDefault) {
+      queryParams.set(limitQuerryParamName, limit);
+    }
+    if (page !== pageQuerryParamDefault) {
+      queryParams.set(pageQuerryParamName, limit);
+    }
+    navigate(`/announcements?${queryParams.toString()}`);
   }
-
 
   return (
     <Row className='mx-5 mt-5 mb-5'>

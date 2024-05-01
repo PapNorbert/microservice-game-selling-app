@@ -1,4 +1,12 @@
 {
   "serverUrl" : "http://localhost:8080",
-  "apiPrefix": "api"
+  "apiPrefix": "api",
+  "limitQuerryParamName": "limit",
+  "limitQuerryParamDefault": "5",
+  "pageQuerryParamName": "page",
+  "pageQuerryParamDefault": "10",
+  "productNameParamDefault": "",
+  "productNameParamName": "productName",
+  "consoleTypeParamDefault": "ALL",
+  "consoleTypeParamName": "consoleType"
 }

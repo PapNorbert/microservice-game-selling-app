@@ -7,9 +7,11 @@
   will-change: filter;
   transition: filter 300ms;
 }
+
 .logo:hover {
   filter: drop-shadow(0 0 2em #646cffaa);
 }
+
 .logo.react:hover {
   filter: drop-shadow(0 0 2em #61dafbaa);
 }
@@ -18,6 +20,7 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
@@ -69,7 +72,7 @@ h2 {
 }
 
 
-.auth-button {  
+.auth-button {
   background-color: #feb21bf1;
 }
 
@@ -79,4 +82,9 @@ h2 {
   margin-bottom: 1em;
   padding-left: 10em;
   padding-right: 10em;
+}
+
+.error {
+  color: #e13d02;
+  text-align: center;
 }

@@ -2,8 +2,7 @@ package edu.ubb.consolegamesales.backend.controller;
 
 import edu.ubb.consolegamesales.backend.controller.dto.incoming.AnnouncementCreationDto;
 import edu.ubb.consolegamesales.backend.controller.dto.incoming.AnnouncementUpdateDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.AnnouncementDetailedDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
+import edu.ubb.consolegamesales.backend.controller.dto.outgoing.*;
 import edu.ubb.consolegamesales.backend.controller.exception.NotFoundException;
 import edu.ubb.consolegamesales.backend.controller.exception.NotUpdatedException;
 import edu.ubb.consolegamesales.backend.controller.mapper.AnnouncementMapper;
@@ -14,11 +13,14 @@ import edu.ubb.consolegamesales.backend.repository.AnnouncementRepository;
 import edu.ubb.consolegamesales.backend.repository.GameDiscRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collection;
 import java.util.Date;
 
 @Slf4j
@@ -33,9 +35,21 @@ public class AnnouncementController {
     private final GameDiscMapper gameDiscMapper;
 
 
+    @GetMapping
+    public AnnouncementsListWithPaginationDto findPaginated(@RequestParam(defaultValue = "1") @Positive int page,
+                                                            @RequestParam(defaultValue = "10") @Positive int limit) {
+        LOGGER.info("GET paginated announcements at announcements api, page: {}, limit: {}", page, limit);
+        Collection<AnnouncementListShortDto> announcementListShortDtos = announcementMapper.modelsToListShortDto(
+                announcementRepository.findAllBySoldOrderByCreationDateDesc(
+                        false, PageRequest.of(page - 1, limit)));
+        // indexing starts from 0, page-1
+        Pagination pagination = new Pagination(page, limit, announcementRepository.countAllBySold(false));
+        return new AnnouncementsListWithPaginationDto(announcementListShortDtos, pagination);
+    }
+
     @GetMapping("/{id}")
     public AnnouncementDetailedDto findById(@PathVariable("id") Long id) throws NotFoundException {
-        LOGGER.info("GET announcements at announcements/" + id + " api");
+        LOGGER.info("GET announcements at announcements/{} api", id);
         try {
             AnnouncementDetailedDto announcementDetailedDto = announcementMapper.modelToDetailedDto(
                     announcementRepository.getById(id));
@@ -67,7 +81,7 @@ public class AnnouncementController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void update(@PathVariable("id") Long id, @RequestBody @Valid AnnouncementUpdateDto announcementUpdateDto)
             throws NotFoundException, NotUpdatedException {
-        LOGGER.info("PUT request at announcements/" + id + "api");
+        LOGGER.info("PUT request at announcements/{} api", id);
         try {
             if (announcementRepository.update(id,
                     announcementMapper.updateDtoToModel(announcementUpdateDto)) <= 0) {

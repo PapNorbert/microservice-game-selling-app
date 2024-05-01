@@ -5,6 +5,7 @@ import edu.ubb.consolegamesales.backend.controller.dto.incoming.AnnouncementCrea
 import edu.ubb.consolegamesales.backend.controller.dto.incoming.AnnouncementUpdateDto;
 import edu.ubb.consolegamesales.backend.controller.dto.incoming.GameDiscCreationDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.AnnouncementDetailedDto;
+import edu.ubb.consolegamesales.backend.controller.dto.outgoing.AnnouncementListShortDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
 import edu.ubb.consolegamesales.backend.model.Announcement;
 import edu.ubb.consolegamesales.backend.model.GameDisc;
@@ -12,6 +13,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.Collection;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface AnnouncementMapper {
@@ -36,4 +38,13 @@ public interface AnnouncementMapper {
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "soldGameDisc.entityId", source = "soldGameDiscId")
     Announcement updateDtoToModel(AnnouncementUpdateDto announcementUpdateDto);
+
+
+    @Mapping(target = "soldGameDiscName", source = "soldGameDisc.name")
+    @Mapping(target = "announcementId", source = "entityId")
+    AnnouncementListShortDto modelToListShortDto(Announcement announcement);
+
+    @Mapping(target = "soldGameDiscName", source = "soldGameDisc.name")
+    @Mapping(target = "announcementId", source = "entityId")
+    List<AnnouncementListShortDto> modelsToListShortDto(List<Announcement> announcements);
 }

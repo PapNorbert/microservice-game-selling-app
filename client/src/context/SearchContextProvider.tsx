@@ -1,10 +1,11 @@
-import { createContext, useState } from 'react';
+import { createContext } from 'react';
 import { ChildrenProps } from '../interface/childrenPropsInterface';
 
 import {
   limitQuerryParamDefault, pageQuerryParamDefault,
   productNameParamDefault, consoleTypeParamDefault,
-  productNameParamName, consoleTypeParamName
+  productNameParamName, consoleTypeParamName,
+  pageQuerryParamName, limitQuerryParamName
 } from '../config/application.json'
 import { useSearchParamsState } from '../hooks/useSearchParamsState';
 
@@ -14,9 +15,9 @@ interface ContextData {
   productName: string;
   setProductName: (newState: string) => void;
   limit: string;
-  setLimit: React.Dispatch<React.SetStateAction<string>>;
+  setLimit: (newState: string) => void;
   page: string;
-  setPage: React.Dispatch<React.SetStateAction<string>>;
+  setPage: (newState: string) => void;
 }
 
 
@@ -40,8 +41,10 @@ export default function SearchContextProvider({ children }: ChildrenProps) {
     useSearchParamsState(consoleTypeParamName, consoleTypeParamDefault);
   const [productName, setProductName] =
     useSearchParamsState(productNameParamName, productNameParamDefault);
-  const [limit, setLimit] = useState<string>(limitQuerryParamDefault);
-  const [page, setPage] = useState<string>(pageQuerryParamDefault);
+  const [limit, setLimit] =
+    useSearchParamsState(limitQuerryParamName, limitQuerryParamDefault);
+  const [page, setPage] =
+    useSearchParamsState(pageQuerryParamName, pageQuerryParamDefault);
 
 
 

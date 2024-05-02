@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.css';
 import './App.css'
+import './Buttons.css'
 
 import Home from './pages/Home'
 import Register from './pages/Register'

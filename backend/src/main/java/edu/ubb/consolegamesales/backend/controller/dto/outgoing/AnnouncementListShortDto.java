@@ -15,8 +15,9 @@ public class AnnouncementListShortDto {
     @Positive
     private Long announcementId;
     @NotNull
-    @Positive
     private String soldGameDiscName;
+    @NotNull
+    private String soldGameDiscType;
     @NotNull
     private String title;
     @NotNull

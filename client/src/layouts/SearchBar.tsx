@@ -45,7 +45,7 @@ export default function SearchBar() {
   }
 
   return (
-    <Row className='mx-5 mt-5 mb-5'>
+    <Row className='mx-5 mt-5 mb-4'>
       <Col xs lg={{ span: 6, offset: 1 }}  >
         <InputGroup>
           <InputGroup.Text>

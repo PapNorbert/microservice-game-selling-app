@@ -4,7 +4,7 @@
   "limitQuerryParamName": "limit",
   "limitQuerryParamDefault": "5",
   "pageQuerryParamName": "page",
-  "pageQuerryParamDefault": "10",
+  "pageQuerryParamDefault": "1",
   "productNameParamDefault": "",
   "productNameParamName": "productName",
   "consoleTypeParamDefault": "ALL",

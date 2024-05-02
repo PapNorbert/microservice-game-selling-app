@@ -43,8 +43,8 @@ public class AnnouncementController {
     @GetMapping()
     public AnnouncementsListWithPaginationDto findPaginated(
             @RequestParam(defaultValue = "1", required = false) @Positive int page,
-            @RequestParam(defaultValue = "10", required = false) @Positive int limit,
-            @RequestParam(defaultValue = "", required = false) String productName,
+            @RequestParam(defaultValue = "5", required = false) @Positive int limit,
+            @RequestParam(required = false) String productName,
             @RequestParam(defaultValue = "ALL", required = false) String consoleType) {
         LOGGER.info("GET paginated announcements at announcements api, "
                         + "page: {}, limit: {}, productName: {}, consoleType: {}",

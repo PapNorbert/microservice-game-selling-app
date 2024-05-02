@@ -15,6 +15,7 @@ import configuredAxios from "../../axios/configuredAxios";
 import { AnnouncementsListShort } from "../../interface/Announcements/announcementsListShortInterface";
 import AnnouncementListShort from "../../components/Announcements/AnnouncementListShort";
 import { Container } from "react-bootstrap";
+import PaginationElement from "../../components/PaginationElement";
 
 
 export default function AnnouncementsAll() {
@@ -38,7 +39,7 @@ export default function AnnouncementsAll() {
       queryParams.set(limitQuerryParamName, limit);
     }
     if (page !== pageQuerryParamDefault) {
-      queryParams.set(pageQuerryParamName, limit);
+      queryParams.set(pageQuerryParamName, page);
     }
     setAnnouncementsUrl(`/${apiPrefix}/announcements?${queryParams.toString()}`)
   }, [selectedConsole, productName, limit, page]);
@@ -51,7 +52,7 @@ export default function AnnouncementsAll() {
     return (
       <>
         <SearchBar />
-        <h2 className="center">Loading...</h2>
+        <h2 className="text-center">Loading...</h2>
       </>
     )
   }
@@ -73,12 +74,16 @@ export default function AnnouncementsAll() {
         <h3>Found {announcementsData?.data.pagination.totalCount} results</h3>
         {
           announcementsData?.data.announcements &&
-            announcementsData.data.announcements.length > 0 ?
-            announcementsData?.data.announcements.map(currentElement => {
-              return (
+            announcementsData.data.announcements.length > 0 ? (
+            <Container>
+              {announcementsData?.data.announcements.map(currentElement => (
                 <AnnouncementListShort announcement={currentElement} key={currentElement.announcementId} />
-              );
-            })
+
+              ))}
+              < PaginationElement totalPages={announcementsData?.data.pagination.totalPages} />
+            </Container>
+          )
+
             :
             <h3>No Announcements found!</h3>
         }

@@ -8,6 +8,7 @@ export interface AnnouncementsListShort {
 export interface AnnouncementShort {
     announcementId: number;
     soldGameDiscName: string;
+    soldGameDiscType: string;
     title: string;
     price: number;
     transportPaidBySeller: boolean;

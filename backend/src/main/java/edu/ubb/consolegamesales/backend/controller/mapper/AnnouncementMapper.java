@@ -41,6 +41,7 @@ public interface AnnouncementMapper {
 
 
     @Mapping(target = "soldGameDiscName", source = "soldGameDisc.name")
+    @Mapping(target = "soldGameDiscType", source = "soldGameDisc.type")
     @Mapping(target = "announcementId", source = "entityId")
     AnnouncementListShortDto modelToListShortDto(Announcement announcement);
 

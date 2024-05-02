@@ -6,7 +6,7 @@ export default function Home(): JSX.Element {
   return (
     <>
       <SearchBar />
-      <Container>
+      <Container className="mt-5">
         <h1>Home</h1>
       </Container>
     </>

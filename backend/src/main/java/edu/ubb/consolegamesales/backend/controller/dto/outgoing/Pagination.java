@@ -6,13 +6,20 @@ import lombok.Data;
 public class Pagination {
     private int page;
     private int limit;
-    private int totalCount;
+    private long totalCount;
     private int totalPages;
 
-    public Pagination(int page, int limit, int totalCount) {
+    public Pagination(int page, int limit, long totalCount) {
         this.page = page;
         this.limit = limit;
         this.totalCount = totalCount;
         this.totalPages = (int) Math.ceil((double) totalCount / (double) limit);
+    }
+
+    public Pagination(int page, int limit, long totalCount, int totalPages) {
+        this.page = page;
+        this.limit = limit;
+        this.totalCount = totalCount;
+        this.totalPages = totalPages;
     }
 }

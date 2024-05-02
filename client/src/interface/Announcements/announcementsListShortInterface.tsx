@@ -1,11 +1,11 @@
 import { Pagination } from '../paginationInterface';
 
 export interface AnnouncementsListShort {
-    announcements: AnnouncementsShort[];
+    announcements: AnnouncementShort[];
     pagination: Pagination
 }
 
-interface AnnouncementsShort {
+export interface AnnouncementShort {
     announcementId: number;
     soldGameDiscName: string;
     title: string;

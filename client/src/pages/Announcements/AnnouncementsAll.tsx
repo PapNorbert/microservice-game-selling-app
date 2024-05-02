@@ -13,12 +13,14 @@ import {
 } from '../../config/application.json';
 import configuredAxios from "../../axios/configuredAxios";
 import { AnnouncementsListShort } from "../../interface/Announcements/announcementsListShortInterface";
+import AnnouncementListShort from "../../components/Announcements/AnnouncementListShort";
+import { Container } from "react-bootstrap";
 
 
 export default function AnnouncementsAll() {
   const [announcementsUrl, setAnnouncementsUrl] = useState<string>(`/${apiPrefix}/announcements`);
   const { selectedConsole, productName, limit, page } = useContext(SearchContext);
-  const { data, isError, error, isLoading } = useQuery<AxiosResponse<AnnouncementsListShort>>({
+  const { data: announcementsData, isError, error, isLoading } = useQuery<AxiosResponse<AnnouncementsListShort>>({
     queryKey: ["announcementsListShort", announcementsUrl],
     queryFn: queryFunction,
     placeholderData: keepPreviousData, // keeps the last succesful fetch as well beside current 
@@ -47,13 +49,19 @@ export default function AnnouncementsAll() {
 
   if (isLoading) {
     return (
-      <h2 className="justify-content-center">Loading...</h2>
+      <>
+        <SearchBar />
+        <h2 className="center">Loading...</h2>
+      </>
     )
   }
 
   if (isError) {
     return (
-      <h2 className="error">{error.message || 'Sorry, there was an error!'}</h2>
+      <>
+        <SearchBar />
+        <h2 className="error">{error.message || 'Sorry, there was an error!'}</h2>
+      </>
     )
   }
 
@@ -61,6 +69,21 @@ export default function AnnouncementsAll() {
   return (
     <>
       <SearchBar />
+      <Container className="mx-5">
+        <h3>Found {announcementsData?.data.pagination.totalCount} results</h3>
+        {
+          announcementsData?.data.announcements &&
+            announcementsData.data.announcements.length > 0 ?
+            announcementsData?.data.announcements.map(currentElement => {
+              return (
+                <AnnouncementListShort announcement={currentElement} key={currentElement.announcementId} />
+              );
+            })
+            :
+            <h3>No Announcements found!</h3>
+        }
+      </Container>
+
     </>
   )
 }

@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { Form, Row, Col, Button, InputGroup } from 'react-bootstrap';
 import { Search } from 'react-bootstrap-icons';
 
@@ -13,16 +13,26 @@ import {
 
 export default function SearchBar() {
   const { selectedConsole, setSelectedConsole, productName, setProductName, limit, page } = useContext(SearchContext);
+  const [currentSelectedConsole, setCurrentSelectedConsole] = useState<string>(selectedConsole);
+  const [currentProductName, setCurrentProductName] = useState<string>(productName);
   const navigate = useNavigate();
 
 
   function handleSearch() {
     const queryParams = new URLSearchParams();
-    if (selectedConsole !== consoleTypeParamDefault) {
-      queryParams.set(consoleTypeParamName, selectedConsole);
+    // update search values
+    if (selectedConsole !== currentSelectedConsole) {
+      setSelectedConsole(currentSelectedConsole);
     }
-    if (productName !== productNameParamDefault) {
-      queryParams.set(productNameParamName, productName);
+    if (productName !== currentProductName) {
+      setProductName(currentProductName);
+    }
+    // update querry parameters
+    if (currentSelectedConsole !== consoleTypeParamDefault) {
+      queryParams.set(consoleTypeParamName, currentSelectedConsole);
+    }
+    if (currentProductName !== productNameParamDefault) {
+      queryParams.set(productNameParamName, currentProductName);
     }
     if (limit !== limitQuerryParamDefault) {
       queryParams.set(limitQuerryParamName, limit);
@@ -30,6 +40,7 @@ export default function SearchBar() {
     if (page !== pageQuerryParamDefault) {
       queryParams.set(pageQuerryParamName, limit);
     }
+
     navigate(`/announcements?${queryParams.toString()}`);
   }
 
@@ -40,13 +51,13 @@ export default function SearchBar() {
           <InputGroup.Text>
             <Search className='mr-5' />
           </InputGroup.Text>
-          <Form.Control type='text' value={productName} onChange={e => setProductName(e.target.value)}
+          <Form.Control type='text' value={currentProductName} onChange={e => setCurrentProductName(e.target.value)}
             placeholder='Name of searched product' />
         </InputGroup>
 
       </Col>
       <Col xs lg={{ span: 3, offset: 0 }} >
-        <Form.Select value={selectedConsole} onChange={e => setSelectedConsole(e.target.value)}>
+        <Form.Select value={currentSelectedConsole} onChange={e => setCurrentSelectedConsole(e.target.value)}>
           <option value="ALL">All Consoles</option>
           <option value='XBOX'>Xbox Series</option>
           <option value='PS'>PlayStation Series</option>

@@ -1,12 +1,13 @@
 package edu.ubb.consolegamesales.backend.repository;
 
 import edu.ubb.consolegamesales.backend.model.Announcement;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
-import java.util.List;
 
 public interface AnnouncementRepository extends Repository<Announcement, Long> {
-    List<Announcement> findAllBySoldOrderByCreationDateDesc(boolean sold, Pageable pageable);
+    Page<Announcement> findAll(Specification<Announcement> spec, Pageable pageable);
 
-    Integer countAllBySold(boolean sold);
+    long count(Specification<Announcement> spec);
 }

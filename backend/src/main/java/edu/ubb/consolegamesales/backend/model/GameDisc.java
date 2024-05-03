@@ -16,9 +16,6 @@ public class GameDisc extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private GameDiscType type;
-    @ManyToOne
-    @JoinColumn(name = "seller_id")
-    private User seller;
     @Column(name = "game_year", nullable = false)
     private Integer gameYear;
 }

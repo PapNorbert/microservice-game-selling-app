@@ -20,6 +20,5 @@ public interface GameDiscMapper {
     CreatedObjectDto modelToCreatedObjDto(GameDisc gameDisc);
 
     @Mapping(target = "entityId", ignore = true)
-    @Mapping(target = "seller.entityId", source = "sellerId")
     GameDisc creationDtoToModel(GameDiscCreationDto gameDiscCreationDto);
 }

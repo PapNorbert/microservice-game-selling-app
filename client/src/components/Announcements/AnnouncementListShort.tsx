@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 
 import { AnnouncementShort } from "../../interface/Announcements/announcementsListShortInterface"
 import { Star, Truck } from "react-bootstrap-icons";
+import { dateFormatOptions } from "../../util/dateOptions";
+import { convertConsoleTypeName } from "../../util/consoleTypeNameConversion";
 
 
 interface PropType {
@@ -11,18 +13,6 @@ interface PropType {
 
 export default function AnnouncementListShort({ announcement }: PropType) {
   const navigate = useNavigate();
-  const dateOptions: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
-  
-  function getConsoleTypeName() {
-    switch (announcement.soldGameDiscType) {
-      case "PS":
-        return "PlayStation Series";
-      case "XBOX":
-        return "Xbox Series";
-      case "SWITCH":
-        return "Nintendo Switch Series";
-    }
-  }
 
 
   return (
@@ -58,12 +48,12 @@ export default function AnnouncementListShort({ announcement }: PropType) {
               Product name:
             </Col>
             <Col xs >
-              {`${announcement.soldGameDiscName},   ${getConsoleTypeName()}`}
+              {`${announcement.soldGameDiscName},   ${convertConsoleTypeName(announcement.soldGameDiscType)}`}
             </Col>
           </Row>
 
           <Row key={`${announcement.announcementId}_creation_date`} className="mt-2">
-            Posted at: {new Date(announcement.creationDate).toLocaleDateString('ro-RO', dateOptions)}
+            Posted at: {new Date(announcement.creationDate).toLocaleDateString('ro-RO', dateFormatOptions)}
           </Row>
         </Card.Body>
       </Card>

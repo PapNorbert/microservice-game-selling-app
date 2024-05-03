@@ -1,5 +1,6 @@
 package edu.ubb.consolegamesales.backend.controller.dto.outgoing;
 
+import edu.ubb.consolegamesales.backend.model.Announcement;
 import edu.ubb.consolegamesales.backend.model.GameDiscType;
 import edu.ubb.consolegamesales.backend.model.User;
 import jakarta.validation.constraints.NotNull;
@@ -14,8 +15,6 @@ public class GameDiscResponseDto {
     private String name;
     @NotNull
     private GameDiscType type;
-    @NotNull
-    private User seller;
     @NotNull @Positive
     private Integer gameYear;
 

@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -55,7 +56,7 @@ public class AnnouncementController {
                         + "page: {}, limit: {}, productName: {}, consoleType: {}, "
                         + "transportPaid: {}, productType: {}, priceMin: {}, priceMax: {}",
                 page, limit, productName, consoleType, transportPaid, productType, priceMin, priceMax);
-        PageRequest pageRequest = PageRequest.of(page - 1, limit);
+        PageRequest pageRequest = PageRequest.of(page - 1, limit, Sort.by("creationDate").descending());
         // pageNumber is 0 indexed
         Specification<Announcement> specification = createSpecificationFindAllNotSold(
                 productName, consoleType, transportPaid, productType, priceMin, priceMax);

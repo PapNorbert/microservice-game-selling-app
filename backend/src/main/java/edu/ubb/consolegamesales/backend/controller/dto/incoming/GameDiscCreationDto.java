@@ -12,8 +12,6 @@ public class GameDiscCreationDto {
     private String name;
     @NotNull
     private GameDiscType type;
-    @NotNull
-    private Long sellerId;
     @NotNull @Positive
     private Integer gameYear;
 }

@@ -3,12 +3,10 @@ package edu.ubb.consolegamesales.backend.controller.mapper;
 
 import edu.ubb.consolegamesales.backend.controller.dto.incoming.AnnouncementCreationDto;
 import edu.ubb.consolegamesales.backend.controller.dto.incoming.AnnouncementUpdateDto;
-import edu.ubb.consolegamesales.backend.controller.dto.incoming.GameDiscCreationDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.AnnouncementDetailedDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.AnnouncementListShortDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
 import edu.ubb.consolegamesales.backend.model.Announcement;
-import edu.ubb.consolegamesales.backend.model.GameDisc;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
@@ -19,6 +17,7 @@ import java.util.List;
 public interface AnnouncementMapper {
     @Mapping(target = "announcementId", source = "entityId")
     @Mapping(target = "sellerId", source = "seller.entityId")
+    @Mapping(target = "sellerUsername", source = "seller.username")
     AnnouncementDetailedDto modelToDetailedDto(Announcement announcement);
 
     @Mapping(target = "announcementId", source = "entityId")

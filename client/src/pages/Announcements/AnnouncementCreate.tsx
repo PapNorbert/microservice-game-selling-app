@@ -28,7 +28,6 @@ interface GameDiscFormData {
   name: string;
   type: string;
   gameYear: number | undefined;
-  sellerId?: number
   [key: string]: string | number | undefined
 }
 
@@ -156,8 +155,7 @@ export default function AnnouncementCreate() {
     }
     setErrors(newErrors);
     if (noErrors) {
-      const gameDiscCreate = { ...gameDiscForm, sellerId: auth.userId }
-      const form = { ...announcementForm, sellerId: auth.userId, soldGameDisc: gameDiscCreate }
+      const form = { ...announcementForm, sellerId: auth.userId, soldGameDisc: gameDiscForm }
       mutate(form);
     }
   }

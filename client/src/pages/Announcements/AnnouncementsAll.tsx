@@ -94,7 +94,6 @@ export default function AnnouncementsAll() {
       <Container className="mx-5">
         <h3>Found {announcementsData?.data.pagination.totalCount} results</h3>
         <Limit />
-
         {
           announcementsData?.data.announcements &&
             announcementsData.data.announcements.length > 0 ? (
@@ -106,12 +105,10 @@ export default function AnnouncementsAll() {
               < PaginationElement totalPages={announcementsData?.data.pagination.totalPages} />
             </Container>
           )
-
             :
             <h3>No Announcements found!</h3>
         }
       </Container>
-
     </>
   )
 }

@@ -1,5 +1,5 @@
 {
-  "serverUrl" : "http://localhost:8080",
+  "serverUrl": "http://localhost:8080",
   "apiPrefix": "api",
   "limitQuerryParamName": "limit",
   "limitQuerryParamDefault": "5",
@@ -8,5 +8,11 @@
   "productNameParamDefault": "",
   "productNameParamName": "productName",
   "consoleTypeParamDefault": "ALL",
-  "consoleTypeParamName": "consoleType"
+  "consoleTypeParamName": "consoleType",
+  "transportPaidParamDefault": "ALL",
+  "transportPaidParamName": "transportPaid",
+  "productTypeParamDefault": "ALL",
+  "productTypeParamName": "productType",
+  "priceMinParamName": "priceMin",
+  "priceMaxParamName": "priceMax"
 }

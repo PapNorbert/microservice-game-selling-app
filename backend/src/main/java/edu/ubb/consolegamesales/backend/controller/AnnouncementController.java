@@ -39,19 +39,26 @@ public class AnnouncementController {
     private final AnnouncementMapper announcementMapper;
     private final GameDiscMapper gameDiscMapper;
 
-
     @GetMapping()
     public AnnouncementsListWithPaginationDto findPaginated(
             @RequestParam(defaultValue = "1", required = false) @Positive int page,
             @RequestParam(defaultValue = "5", required = false) @Positive int limit,
             @RequestParam(required = false) String productName,
-            @RequestParam(defaultValue = "ALL", required = false) String consoleType) {
+            @RequestParam(defaultValue = "ALL", required = false) String consoleType,
+            @RequestParam(required = false) String transportPaid,
+            @RequestParam(required = false) String productType,
+            @RequestParam(defaultValue = "0", required = false) double priceMin,
+            @RequestParam(defaultValue = "" + Double.MAX_VALUE, required = false) double priceMax
+    ) {
+
         LOGGER.info("GET paginated announcements at announcements api, "
-                        + "page: {}, limit: {}, productName: {}, consoleType: {}",
-                page, limit, productName, consoleType);
+                        + "page: {}, limit: {}, productName: {}, consoleType: {}, "
+                        + "transportPaid: {}, productType: {}, priceMin: {}, priceMax: {}",
+                page, limit, productName, consoleType, transportPaid, productType, priceMin, priceMax);
         PageRequest pageRequest = PageRequest.of(page - 1, limit);
         // pageNumber is 0 indexed
-        Specification<Announcement> specification = createSpecificationFindAllNotSold(productName, consoleType);
+        Specification<Announcement> specification = createSpecificationFindAllNotSold(
+                productName, consoleType, transportPaid, productType, priceMin, priceMax);
         Page<Announcement> announcementPage = announcementRepository.findAll(specification, pageRequest);
         List<AnnouncementListShortDto> announcementListShortDtos =
                 announcementMapper.modelsToListShortDto(announcementPage.getContent());
@@ -107,7 +114,8 @@ public class AnnouncementController {
     }
 
     private Specification<Announcement> createSpecificationFindAllNotSold(
-            String productName, String consoleType) {
+            String productName, String consoleType, String transportPaid, String productType,
+            double priceMin, double priceMax) {
 
         // create a specification based on the request parameters
         Specification<Announcement> specification = Specification.where(AnnouncementSpecifications.isSold(false));
@@ -120,6 +128,29 @@ public class AnnouncementController {
                 specification = specification.and(AnnouncementSpecifications.hasConsoleType(consoleType));
             }
         }
+        if (transportPaid != null && !transportPaid.isEmpty()) {
+            if (transportPaid.equals("SELLER")) {
+                specification = specification.and(AnnouncementSpecifications.isTransportPaidBySeller(true));
+            }
+            if (transportPaid.equals("BUYER")) {
+                specification = specification.and(AnnouncementSpecifications.isTransportPaidBySeller(false));
+            }
+        }
+        if (productType != null && !productType.isEmpty()) {
+            if (productType.equals("NEW")) {
+                specification = specification.and(AnnouncementSpecifications.isNewDisc(true));
+            }
+            if (productType.equals("USED")) {
+                specification = specification.and(AnnouncementSpecifications.isNewDisc(false));
+            }
+        }
+        if (priceMin > 0) {
+            specification = specification.and(AnnouncementSpecifications.priceGreaterOrEqualThen(priceMin));
+        }
+        if (priceMax >= 0 && priceMax != Double.MAX_VALUE) {
+            specification = specification.and(AnnouncementSpecifications.priceLessOrEqualThen(priceMax));
+        }
+
         return specification;
     }
 

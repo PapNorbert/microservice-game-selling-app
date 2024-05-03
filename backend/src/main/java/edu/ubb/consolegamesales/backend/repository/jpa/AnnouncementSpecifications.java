@@ -19,4 +19,24 @@ public class AnnouncementSpecifications {
         return (announcementRoot, criteriaQuery, criteriaBuilder) ->
                 criteriaBuilder.equal(announcementRoot.get("soldGameDisc").get("type"), consoleType);
     }
+
+    public static Specification<Announcement> isTransportPaidBySeller(Boolean paidBySeller) {
+        return (announcementRoot, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.equal(announcementRoot.get("transportPaidBySeller"), paidBySeller);
+    }
+
+    public static Specification<Announcement> isNewDisc(Boolean newDisc) {
+        return (announcementRoot, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.equal(announcementRoot.get("newDisc"), newDisc);
+    }
+
+    public static Specification<Announcement> priceGreaterOrEqualThen(double price) {
+        return (announcementRoot, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.greaterThanOrEqualTo(announcementRoot.get("price"), price);
+    }
+
+    public static Specification<Announcement> priceLessOrEqualThen(double price) {
+        return (announcementRoot, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.lessThanOrEqualTo(announcementRoot.get("price"), price);
+    }
 }

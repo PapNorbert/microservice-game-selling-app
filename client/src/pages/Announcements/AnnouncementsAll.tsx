@@ -1,31 +1,37 @@
 import { useContext, useEffect, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { AxiosResponse } from "axios";
+import { Container } from "react-bootstrap";
 
 import SearchBar from "../../layouts/SearchBar";
 import { SearchContext } from "../../context/SearchContextProvider";
 import { apiPrefix } from '../../config/application.json';
 import {
-  limitQuerryParamDefault, limitQuerryParamName,
-  pageQuerryParamDefault, pageQuerryParamName,
-  productNameParamDefault, productNameParamName,
-  consoleTypeParamDefault, consoleTypeParamName
+  limitQuerryParamDefault, limitQuerryParamName, pageQuerryParamDefault, pageQuerryParamName,
+  productNameParamDefault, productNameParamName, consoleTypeParamDefault, consoleTypeParamName,
+  transportPaidParamDefault, transportPaidParamName, productTypeParamDefault, productTypeParamName,
+  priceMaxParamName, priceMinParamName
 } from '../../config/application.json';
 import configuredAxios from "../../axios/configuredAxios";
 import { AnnouncementsListShort } from "../../interface/Announcements/announcementsListShortInterface";
 import AnnouncementListShort from "../../components/Announcements/AnnouncementListShort";
-import { Container } from "react-bootstrap";
 import PaginationElement from "../../components/PaginationElement";
+import Limit from "../../components/Limit";
 
 
 export default function AnnouncementsAll() {
   const [announcementsUrl, setAnnouncementsUrl] = useState<string>(`/${apiPrefix}/announcements`);
-  const { selectedConsole, productName, limit, page } = useContext(SearchContext);
+  const {
+    selectedConsole, productName, limit, page,
+    transportPaid, productType, priceMin, priceMax
+  } = useContext(SearchContext);
+
   const { data: announcementsData, isError, error, isLoading } = useQuery<AxiosResponse<AnnouncementsListShort>>({
     queryKey: ["announcementsListShort", announcementsUrl],
     queryFn: queryFunction,
     placeholderData: keepPreviousData, // keeps the last succesful fetch as well beside current 
   });
+
 
   useEffect(() => {
     const queryParams = new URLSearchParams();
@@ -41,8 +47,23 @@ export default function AnnouncementsAll() {
     if (page !== pageQuerryParamDefault) {
       queryParams.set(pageQuerryParamName, page);
     }
+    if (transportPaid !== transportPaidParamDefault) {
+      queryParams.set(transportPaidParamName, transportPaid);
+    }
+    if (productType !== productTypeParamDefault) {
+      queryParams.set(productTypeParamName, productType);
+    }
+    if (priceMin) {
+      queryParams.set(priceMinParamName, priceMin);
+    }
+    if (priceMax) {
+      queryParams.set(priceMaxParamName, priceMax);
+    }
+
     setAnnouncementsUrl(`/${apiPrefix}/announcements?${queryParams.toString()}`)
-  }, [selectedConsole, productName, limit, page]);
+  }, [selectedConsole, productName, limit, page, transportPaid, productType,
+    priceMin, priceMax
+  ]);
 
   function queryFunction() {
     return configuredAxios.get(announcementsUrl);
@@ -51,7 +72,7 @@ export default function AnnouncementsAll() {
   if (isLoading) {
     return (
       <>
-        <SearchBar />
+        <SearchBar showFilter={true} />
         <h2 className="text-center">Loading...</h2>
       </>
     )
@@ -60,7 +81,7 @@ export default function AnnouncementsAll() {
   if (isError) {
     return (
       <>
-        <SearchBar />
+        <SearchBar showFilter={true} />
         <h2 className="error">{error.message || 'Sorry, there was an error!'}</h2>
       </>
     )
@@ -69,9 +90,11 @@ export default function AnnouncementsAll() {
 
   return (
     <>
-      <SearchBar />
+      <SearchBar showFilter={true} />
       <Container className="mx-5">
         <h3>Found {announcementsData?.data.pagination.totalCount} results</h3>
+        <Limit />
+
         {
           announcementsData?.data.announcements &&
             announcementsData.data.announcements.length > 0 ? (

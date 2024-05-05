@@ -1,7 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { Container } from "react-bootstrap";
+import { Navigate, useLocation } from "react-router-dom";
 
 import SearchBar from "../../layouts/SearchBar";
 import { SearchContext } from "../../context/SearchContextProvider";
@@ -25,12 +26,15 @@ export default function AnnouncementsAll() {
     selectedConsole, productName, limit, page,
     transportPaid, productType, priceMin, priceMax
   } = useContext(SearchContext);
+  const location = useLocation();
 
-  const { data: announcementsData, isError, error, isLoading } = useQuery<AxiosResponse<AnnouncementsListShort>>({
-    queryKey: ["announcementsListShort", announcementsUrl],
-    queryFn: queryFunction,
-    placeholderData: keepPreviousData, // keeps the last succesful fetch as well beside current 
-  });
+  const { data: announcementsData, isError, error, isLoading } =
+    useQuery<AxiosResponse<AnnouncementsListShort>, AxiosError>({
+      queryKey: ["announcementsListShort", announcementsUrl],
+      queryFn: queryFunction,
+      retry: false,
+      placeholderData: keepPreviousData, // keeps the last succesful fetch as well beside current 
+    });
 
 
   useEffect(() => {
@@ -79,6 +83,11 @@ export default function AnnouncementsAll() {
   }
 
   if (isError) {
+    if(error.response?.status === 401) {
+      return (
+        <Navigate to='/login' state={{ from: location }} replace />
+      )
+    }
     return (
       <>
         <SearchBar showFilter={true} />

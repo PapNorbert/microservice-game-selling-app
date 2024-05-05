@@ -1,6 +1,11 @@
 package edu.ubb.consolegamesales.backend.repository.jpa;
 
 import edu.ubb.consolegamesales.backend.model.Announcement;
+import edu.ubb.consolegamesales.backend.model.AnnouncementsSaves;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 
 public class AnnouncementSpecifications {
@@ -38,5 +43,15 @@ public class AnnouncementSpecifications {
     public static Specification<Announcement> priceLessOrEqualThen(double price) {
         return (announcementRoot, criteriaQuery, criteriaBuilder) ->
                 criteriaBuilder.lessThanOrEqualTo(announcementRoot.get("price"), price);
+    }
+
+    public static Specification<Announcement> isSavedByUserWithId(Long savedByUserWithId) {
+        return (announcementRoot, criteriaQuery, criteriaBuilder) -> {
+            Subquery<Announcement> subquery = criteriaQuery.subquery(Announcement.class);
+            Root<AnnouncementsSaves> announcementsSavesRoot = subquery.from(AnnouncementsSaves.class);
+            subquery.select(announcementsSavesRoot.get("announcement"));
+            subquery.where(criteriaBuilder.equal(announcementsSavesRoot.get("user").get("id"), savedByUserWithId));
+            return criteriaQuery.where(announcementRoot.in(subquery)).getRestriction();
+        };
     }
 }

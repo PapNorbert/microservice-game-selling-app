@@ -23,6 +23,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -49,17 +51,28 @@ public class AnnouncementController {
             @RequestParam(required = false) String transportPaid,
             @RequestParam(required = false) String productType,
             @RequestParam(defaultValue = "0", required = false) double priceMin,
-            @RequestParam(defaultValue = "" + Double.MAX_VALUE, required = false) double priceMax
+            @RequestParam(defaultValue = "" + Double.MAX_VALUE, required = false) double priceMax,
+            @RequestParam(required = false) @Positive Long savedByUserWithId,
+            Authentication authentication
     ) {
 
         LOGGER.info("GET paginated announcements at announcements api, "
                         + "page: {}, limit: {}, productName: {}, consoleType: {}, "
-                        + "transportPaid: {}, productType: {}, priceMin: {}, priceMax: {}",
-                page, limit, productName, consoleType, transportPaid, productType, priceMin, priceMax);
+                        + "transportPaid: {}, productType: {}, priceMin: {}, priceMax: {}, "
+                        + "savedByUserWithId: {}",
+                page, limit, productName, consoleType, transportPaid, productType,
+                priceMin, priceMax, savedByUserWithId);
         PageRequest pageRequest = PageRequest.of(page - 1, limit, Sort.by("creationDate").descending());
         // pageNumber is 0 indexed
+        if ( savedByUserWithId != null ) {
+            // if it's a search for the saved sale announcements the user must be authenticated
+            if( authentication == null || !authentication.isAuthenticated()
+                    || authentication.getPrincipal() == null ){
+                throw new AccessDeniedException("You must Login first to access this resource");
+            }
+        }
         Specification<Announcement> specification = createSpecificationFindAllNotSold(
-                productName, consoleType, transportPaid, productType, priceMin, priceMax);
+                productName, consoleType, transportPaid, productType, priceMin, priceMax, savedByUserWithId);
         Page<Announcement> announcementPage = announcementRepository.findAll(specification, pageRequest);
         List<AnnouncementListShortDto> announcementListShortDtos =
                 announcementMapper.modelsToListShortDto(announcementPage.getContent());
@@ -116,10 +129,13 @@ public class AnnouncementController {
 
     private Specification<Announcement> createSpecificationFindAllNotSold(
             String productName, String consoleType, String transportPaid, String productType,
-            double priceMin, double priceMax) {
+            double priceMin, double priceMax, Long savedByUserWithId) {
 
         // create a specification based on the request parameters
         Specification<Announcement> specification = Specification.where(AnnouncementSpecifications.isSold(false));
+        if(savedByUserWithId != null) {
+            specification = specification.and(AnnouncementSpecifications.isSavedByUserWithId(savedByUserWithId));
+        }
         if (productName != null && !productName.isEmpty()) {
             specification = specification.and(AnnouncementSpecifications.discNameContains(productName));
         }

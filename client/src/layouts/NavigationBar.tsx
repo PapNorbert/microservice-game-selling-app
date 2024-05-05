@@ -5,19 +5,20 @@ import useAuth from '../hooks/useAuth'
 import configuredAxios from '../axios/configuredAxios';
 import { apiPrefix } from '../config/application.json';
 import { ChatFill, StarFill } from 'react-bootstrap-icons';
+import { useQueryClient } from '@tanstack/react-query';
 
 
 export default function Navigationbar() {
   const navigate = useNavigate();
   const { auth, setAuth } = useAuth();
-
+  const queryClient = useQueryClient();
 
   function logout() {
     configuredAxios.get(`/${apiPrefix}/logout`)
       .then(() => {
-        setAuth({ username: undefined, logged_in: false, role: undefined, userId: undefined});
+        setAuth({ username: undefined, logged_in: false, role: undefined, userId: undefined });
+        queryClient.invalidateQueries({ queryKey: ['savedAnnouncementsListShort'] });
         navigate('/');
-
       })
       .catch((err) => {
         console.log(err);
@@ -43,7 +44,8 @@ export default function Navigationbar() {
             <ChatFill className='me-1' />
             <NavbarText > Messages </NavbarText>
           </Nav.Link>
-          <Nav.Link className='me-4 mr-4 nav-text fw-bold' >
+          <Nav.Link className='me-4 mr-4 nav-text fw-bold'
+            onClick={() => { navigate('/announcements/saved') }}>
             <StarFill className='me-1' />
             <NavbarText> Saved </NavbarText>
           </Nav.Link>

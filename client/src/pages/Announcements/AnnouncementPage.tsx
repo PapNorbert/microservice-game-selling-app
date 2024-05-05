@@ -4,6 +4,7 @@ import AnnouncementCreate from "./AnnouncementCreate";
 import RequireAuth from "../../components/RequireAuth";
 import AnnouncementsAll from "./AnnouncementsAll";
 import AnnouncementDetailed from "./AnnouncementDetailed";
+import AnnouncementsSaved from "./AnnouncementsSaved";
 
 export default function AnnouncementPage() {
 
@@ -14,6 +15,7 @@ export default function AnnouncementPage() {
         <Route path='/:announcementId' element={<AnnouncementDetailed />} />
         <Route element={<RequireAuth />}>
           <Route path='/create' element={<AnnouncementCreate />} />
+          <Route path='/saved' element={<AnnouncementsSaved />} />
         </Route>
         <Route path='*' element={<Navigate to="/" />} />
       </Routes>

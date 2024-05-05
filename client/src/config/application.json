@@ -14,5 +14,6 @@
   "productTypeParamDefault": "ALL",
   "productTypeParamName": "productType",
   "priceMinParamName": "priceMin",
-  "priceMaxParamName": "priceMax"
+  "priceMaxParamName": "priceMax",
+  "savedByUserParamName": "savedByUserWithId"
 }

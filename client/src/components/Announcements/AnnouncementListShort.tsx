@@ -14,7 +14,6 @@ interface PropType {
 export default function AnnouncementListShort({ announcement }: PropType) {
   const navigate = useNavigate();
 
-
   return (
     <>
       <Card key={`container_${announcement.announcementId}`} className='mt-4 mb-3'>

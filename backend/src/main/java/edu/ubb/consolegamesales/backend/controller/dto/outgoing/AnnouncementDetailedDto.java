@@ -11,19 +11,24 @@ import java.util.Date;
 
 @Data
 public class AnnouncementDetailedDto {
-    @NotNull @Positive
+    @NotNull
+    @Positive
     private Long announcementId;
-    @NotNull @Positive
+    @NotNull
+    @Positive
     private Long sellerId;
     @NotNull
     private String sellerUsername;
-    @NotNull @Positive
+    @NotNull
+    @Positive
     private GameDisc soldGameDisc;
-    @NotNull @NotEmpty
+    @NotNull
+    @NotEmpty
     private String description;
     @NotNull
     private String title;
-    @NotNull @PositiveOrZero
+    @NotNull
+    @PositiveOrZero
     private Double price;
     @NotNull
     private Boolean transportPaidBySeller;
@@ -33,4 +38,6 @@ public class AnnouncementDetailedDto {
     private Boolean newDisc;
     @NotNull
     private Date creationDate;
+    @NotNull
+    private Boolean savedByUser;
 }

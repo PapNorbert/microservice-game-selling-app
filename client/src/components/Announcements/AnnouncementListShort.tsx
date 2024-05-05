@@ -19,8 +19,6 @@ export default function AnnouncementListShort({ announcement }: PropType) {
       <Card key={`container_${announcement.announcementId}`} className='mt-4 mb-3'>
         <Card.Header as='h5' key={`header_${announcement.announcementId}`} >
           {announcement.title}
-          <Star className="float-end clickable" />
-
         </Card.Header>
         <Card.Body className="clickable"
           onClick={() => navigate(`/announcements/${announcement.announcementId}`)} >

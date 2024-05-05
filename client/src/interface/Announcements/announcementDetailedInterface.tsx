@@ -11,5 +11,6 @@ export interface AnnouncementDetailedResponse {
   transportPaidBySeller: boolean;
   sold: boolean;
   newDisc: boolean;
-  creationDate: string
+  creationDate: string;
+  savedByUser: boolean;
 }

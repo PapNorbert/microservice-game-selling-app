@@ -10,7 +10,9 @@ import edu.ubb.consolegamesales.backend.controller.mapper.GameDiscMapper;
 import edu.ubb.consolegamesales.backend.model.Announcement;
 import edu.ubb.consolegamesales.backend.model.GameDisc;
 import edu.ubb.consolegamesales.backend.model.GameDiscType;
+import edu.ubb.consolegamesales.backend.model.User;
 import edu.ubb.consolegamesales.backend.repository.AnnouncementRepository;
+import edu.ubb.consolegamesales.backend.repository.AnnouncementsSavesRepository;
 import edu.ubb.consolegamesales.backend.repository.GameDiscRepository;
 import edu.ubb.consolegamesales.backend.repository.jpa.AnnouncementSpecifications;
 import jakarta.persistence.EntityNotFoundException;
@@ -41,6 +43,8 @@ public class AnnouncementController {
     private final GameDiscRepository gameDiscRepository;
     private final AnnouncementMapper announcementMapper;
     private final GameDiscMapper gameDiscMapper;
+    private final AnnouncementsSavesRepository announcementsSavesRepository;
+
 
     @GetMapping()
     public AnnouncementsListWithPaginationDto findPaginated(
@@ -64,10 +68,10 @@ public class AnnouncementController {
                 priceMin, priceMax, savedByUserWithId);
         PageRequest pageRequest = PageRequest.of(page - 1, limit, Sort.by("creationDate").descending());
         // pageNumber is 0 indexed
-        if ( savedByUserWithId != null ) {
+        if (savedByUserWithId != null) {
             // if it's a search for the saved sale announcements the user must be authenticated
-            if( authentication == null || !authentication.isAuthenticated()
-                    || authentication.getPrincipal() == null ){
+            if (authentication == null || !authentication.isAuthenticated()
+                    || authentication.getPrincipal() == null) {
                 throw new AccessDeniedException("You must Login first to access this resource");
             }
         }
@@ -83,7 +87,8 @@ public class AnnouncementController {
 
 
     @GetMapping("/{id}")
-    public AnnouncementDetailedDto findById(@PathVariable("id") Long id) throws NotFoundException {
+    public AnnouncementDetailedDto findById(@PathVariable("id") Long id,
+                                            Authentication authentication) throws NotFoundException {
         LOGGER.info("GET announcements at announcements/{} api", id);
         try {
             AnnouncementDetailedDto announcementDetailedDto = announcementMapper.modelToDetailedDto(
@@ -91,6 +96,15 @@ public class AnnouncementController {
             if (announcementDetailedDto == null) {
                 throw new NotFoundException("Announcement with ID " + id + " not found");
             } else {
+                boolean savedByUser = false;
+                if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() != null) {
+                    User user = (User) authentication.getPrincipal();
+                    savedByUser = announcementsSavesRepository
+                            .existsByAnnouncementEntityIdAndUserEntityId(
+                                    id, user.getEntityId()
+                            );
+                }
+                announcementDetailedDto.setSavedByUser(savedByUser);
                 return announcementDetailedDto;
             }
         } catch (EntityNotFoundException e) {
@@ -108,8 +122,8 @@ public class AnnouncementController {
         announcement.setSoldGameDisc(savedGameDisc);
         announcement.setSold(false);
         announcement.setCreationDate(new Date());
-        announcementRepository.saveAndFlush(announcement);
-        return announcementMapper.modelToCreatedObjDto(announcement);
+        Announcement savedAnnouncement = announcementRepository.saveAndFlush(announcement);
+        return announcementMapper.modelToCreatedObjDto(savedAnnouncement);
     }
 
     @PutMapping("/{id}")
@@ -133,7 +147,7 @@ public class AnnouncementController {
 
         // create a specification based on the request parameters
         Specification<Announcement> specification = Specification.where(AnnouncementSpecifications.isSold(false));
-        if(savedByUserWithId != null) {
+        if (savedByUserWithId != null) {
             specification = specification.and(AnnouncementSpecifications.isSavedByUserWithId(savedByUserWithId));
         }
         if (productName != null && !productName.isEmpty()) {

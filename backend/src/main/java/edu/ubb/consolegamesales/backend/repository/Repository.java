@@ -12,5 +12,7 @@ public interface Repository<T extends BaseEntity, I> {
 
     void delete(T entity);
 
+    void deleteById(Long id);
+
     void deleteById(I id);
 }

@@ -12,4 +12,6 @@ public interface AnnouncementsSavesRepository {
 
     void deleteById(Long id);
 
+    void deleteByAnnouncementEntityIdAndUserEntityId(Long announcementEntityId, Long userEntityId);
+
 }

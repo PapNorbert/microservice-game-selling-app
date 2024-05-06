@@ -37,8 +37,7 @@ export default function AnnouncementsSaved() {
     useQuery<AxiosResponse<AnnouncementsListShort>, AxiosError>({
       queryKey: ["savedAnnouncementsListShort", announcementsUrl],
       queryFn: queryFunction,
-      retry: false,
-      placeholderData: keepPreviousData, // keeps the last succesful fetch as well beside current 
+      retry: false
     });
 
 

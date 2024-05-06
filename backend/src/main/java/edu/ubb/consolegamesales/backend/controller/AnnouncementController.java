@@ -97,7 +97,8 @@ public class AnnouncementController {
                 throw new NotFoundException("Announcement with ID " + id + " not found");
             } else {
                 boolean savedByUser = false;
-                if (authentication != null && authentication.isAuthenticated() && authentication.getPrincipal() != null) {
+                if (authentication != null && authentication.isAuthenticated()
+                        && authentication.getPrincipal() != null) {
                     User user = (User) authentication.getPrincipal();
                     savedByUser = announcementsSavesRepository
                             .existsByAnnouncementEntityIdAndUserEntityId(

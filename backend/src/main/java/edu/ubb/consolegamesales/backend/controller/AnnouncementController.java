@@ -82,6 +82,18 @@ public class AnnouncementController {
                 announcementMapper.modelsToListShortDto(announcementPage.getContent());
         Pagination pagination = new Pagination(page, limit,
                 announcementPage.getTotalElements(), announcementPage.getTotalPages());
+        if (authentication != null && authentication.isAuthenticated()
+                && authentication.getPrincipal() != null) {
+            // if user is logged in set savedByUser
+            User user = (User) authentication.getPrincipal();
+            for(AnnouncementListShortDto announcementListShortDto: announcementListShortDtos) {
+                announcementListShortDto.setSavedByUser(
+                        announcementsSavesRepository.existsByAnnouncementEntityIdAndUserEntityId(
+                                announcementListShortDto.getAnnouncementId(), user.getEntityId()
+                        )
+                );
+            }
+        }
         return new AnnouncementsListWithPaginationDto(announcementListShortDtos, pagination);
     }
 

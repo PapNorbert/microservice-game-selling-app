@@ -65,7 +65,7 @@ export default function AnnouncementDetailedLong({ announcement }: PropType) {
       setError('');
     }
     setSavedByUser(!savedByUser);
-    queryClient.invalidateQueries({ queryKey: ['savedAnnouncementsListShort'] });
+    queryClient.invalidateQueries({ queryKey: ['announcementsListShort'] });
   }
 
   function handleSubmitError(error: AxiosError<ErrorResponseData>) {

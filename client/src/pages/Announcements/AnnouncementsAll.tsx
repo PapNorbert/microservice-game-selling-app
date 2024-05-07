@@ -21,7 +21,7 @@ import Limit from "../../components/Limit";
 
 
 export default function AnnouncementsAll() {
-  const [announcementsUrl, setAnnouncementsUrl] = useState<string>(`/${apiPrefix}/announcements`);
+  const [announcementsUrl, setAnnouncementsUrl] = useState<string>(`/${apiPrefix}/announcements?`);
   const {
     selectedConsole, productName, limit, page,
     transportPaid, productType, priceMin, priceMax
@@ -100,7 +100,7 @@ export default function AnnouncementsAll() {
   return (
     <>
       <SearchBar showFilter={true} />
-      <Container className="mx-5">
+      <Container>
         <h3>Found {announcementsData?.data.pagination.totalCount} results</h3>
         <Limit />
         {

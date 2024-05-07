@@ -29,4 +29,6 @@ public class AnnouncementListShortDto {
     private Boolean newDisc;
     @NotNull
     private Date creationDate;
+    @NotNull
+    private boolean savedByUser;
 }

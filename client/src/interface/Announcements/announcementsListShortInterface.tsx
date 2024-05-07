@@ -14,4 +14,5 @@ export interface AnnouncementShort {
     transportPaidBySeller: boolean;
     newDisc: boolean;
     creationDate: string;
+    savedByUser: boolean;
 }

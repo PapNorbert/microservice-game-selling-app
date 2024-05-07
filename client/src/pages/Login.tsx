@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Form, FloatingLabel, Button, Alert, Nav, Container } from 'react-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 
 import FormContainer from "../components/FromContainer";
@@ -34,6 +34,7 @@ export default function Login() {
   const { setAuth } = useAuth();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
+  const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
     mutationFn: mutationFunction,
@@ -70,6 +71,7 @@ export default function Login() {
     setAuth(decodeJwtAccesToken(response.data.token));
     setField('password', '');
     setErrors({ ...errors, password: '' });
+    queryClient.invalidateQueries({ queryKey: ['savedAnnouncementsListShort', 'savedAnnouncementsListShort'] });
     navigate(from, { replace: true });
   }
 

@@ -110,7 +110,7 @@ export default function AnnouncementsSaved() {
   return (
     <>
       <SearchBar showFilter={true} />
-      <Container className="mx-5">
+      <Container>
         <h3>Found {announcementsData?.data.pagination.totalCount} results</h3>
         <Limit />
         {

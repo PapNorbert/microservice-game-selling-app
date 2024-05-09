@@ -1,6 +1,7 @@
 import { Button, Card, Col, Row, Stack } from 'react-bootstrap'
 import { dateFormatShortOptions } from '../../util/dateOptions';
 import { ChevronRight } from 'react-bootstrap-icons';
+import { useNavigate } from 'react-router-dom';
 
 interface PropType {
   sellerId: number;
@@ -9,6 +10,7 @@ interface PropType {
 }
 
 export default function SellerCard({ sellerId, sellerUsername, sellerRegistrationDate }: PropType) {
+  const navigate = useNavigate();
 
   return (
     <Card key={`container_order`} className='mt-4 mb-3'>
@@ -19,7 +21,7 @@ export default function SellerCard({ sellerId, sellerUsername, sellerRegistratio
         <Col lg='3'>
           {sellerUsername}
         </Col>
-        <Col lg={{offset: 6}}>
+        <Col lg={{ offset: 6 }}>
           <Button className='btn-orange-dark' onClick={() => { }}>
             Send a message
           </Button>
@@ -28,7 +30,8 @@ export default function SellerCard({ sellerId, sellerUsername, sellerRegistratio
       <Row className='fst-italic mt-1'>
         Registered since: {new Date(sellerRegistrationDate).toLocaleDateString('ro-RO', dateFormatShortOptions)}
       </Row>
-      <Stack direction='horizontal' className='mt-3 clickable fw-semibold'>
+      <Stack direction='horizontal' className='mt-3 clickable fw-semibold'
+        onClick={() => navigate(`/announcements?seller=${sellerId}`)}>
         Other sale announcements from this seller
         <ChevronRight className='mt-1' />
       </Stack>

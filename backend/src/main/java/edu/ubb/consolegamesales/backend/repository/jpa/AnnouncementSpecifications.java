@@ -61,4 +61,9 @@ public class AnnouncementSpecifications {
         return (announcementRoot, criteriaQuery, criteriaBuilder) ->
                 criteriaBuilder.greaterThanOrEqualTo(announcementRoot.get("creationDate"), date);
     }
+
+    public static Specification<Announcement> isCreatedByUserWithId(Long userId) {
+        return (announcementRoot, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.equal(announcementRoot.get("seller").get("id"), userId);
+    }
 }

@@ -11,13 +11,14 @@ import {
   limitQuerryParamDefault, limitQuerryParamName, pageQuerryParamDefault, pageQuerryParamName,
   productNameParamDefault, productNameParamName, consoleTypeParamDefault, consoleTypeParamName,
   transportPaidParamDefault, transportPaidParamName, productTypeParamDefault, productTypeParamName,
-  priceMaxParamName, priceMinParamName, datePostedParamDefault, datePostedParamName
+  priceMaxParamName, priceMinParamName, datePostedParamDefault, datePostedParamName, sellerParamName
 } from '../../config/application.json';
 import configuredAxios from "../../axios/configuredAxios";
 import { AnnouncementsListShort } from "../../interface/Announcements/announcementsListShortInterface";
 import AnnouncementListShort from "../../components/Announcements/AnnouncementListShort";
 import PaginationElement from "../../components/PaginationElement";
 import Limit from "../../components/Limit";
+import { useSearchParamsState } from "../../hooks/useSearchParamsState";
 
 
 export default function AnnouncementsAll() {
@@ -27,7 +28,7 @@ export default function AnnouncementsAll() {
     transportPaid, productType, priceMin, priceMax, datePosted
   } = useContext(SearchContext);
   const location = useLocation();
-
+  const [seller, setSeller] = useSearchParamsState('seller', '');
   const { data: announcementsData, isError, error, isLoading } =
     useQuery<AxiosResponse<AnnouncementsListShort>, AxiosError>({
       queryKey: ["announcementsListShort", announcementsUrl],
@@ -66,10 +67,15 @@ export default function AnnouncementsAll() {
     if (datePosted !== datePostedParamDefault) {
       queryParams.set(datePostedParamName, datePosted);
     }
+    if (seller && Number(seller)) {
+      queryParams.set(sellerParamName, seller);
+    } else {
+      setSeller('');
+    }
 
     setAnnouncementsUrl(`/${apiPrefix}/announcements?${queryParams.toString()}`)
   }, [selectedConsole, productName, limit, page, transportPaid, productType,
-    priceMin, priceMax, datePosted
+    priceMin, priceMax, datePosted, seller
   ]);
 
   function queryFunction() {
@@ -86,7 +92,7 @@ export default function AnnouncementsAll() {
   }
 
   if (isError) {
-    if(error.response?.status === 401) {
+    if (error.response?.status === 401) {
       return (
         <Navigate to='/login' state={{ from: location }} replace />
       )

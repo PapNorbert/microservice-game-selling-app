@@ -17,5 +17,6 @@
   "priceMaxParamName": "priceMax",
   "savedByUserParamName": "savedByUserWithId",
   "datePostedParamName": "datePosted",
-  "datePostedParamDefault": "ALL"
+  "datePostedParamDefault": "ALL",
+  "sellerParamName": "sellerId"
 }

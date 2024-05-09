@@ -59,16 +59,16 @@ public class AnnouncementController {
             @RequestParam(defaultValue = "" + Double.MAX_VALUE, required = false) double priceMax,
             @RequestParam(required = false) @Positive Long savedByUserWithId,
             @RequestParam(required = false) String datePosted,
-
+            @RequestParam(required = false) @Positive Long sellerId,
             Authentication authentication
     ) {
 
         LOGGER.info("GET paginated announcements at announcements api, "
                         + "page: {}, limit: {}, productName: {}, consoleType: {}, "
                         + "transportPaid: {}, productType: {}, priceMin: {}, priceMax: {}, "
-                        + "savedByUserWithId: {}, datePosted: {}",
+                        + "savedByUserWithId: {}, datePosted: {}, sellerId: {}",
                 page, limit, productName, consoleType, transportPaid, productType,
-                priceMin, priceMax, savedByUserWithId, datePosted);
+                priceMin, priceMax, savedByUserWithId, datePosted, sellerId);
         PageRequest pageRequest = PageRequest.of(page - 1, limit, Sort.by("creationDate").descending());
         // pageNumber is 0 indexed
         if (savedByUserWithId != null) {
@@ -80,7 +80,7 @@ public class AnnouncementController {
         }
         Specification<Announcement> specification = createSpecificationFindAllNotSold(
                 productName, consoleType, transportPaid, productType, priceMin,
-                priceMax, savedByUserWithId, datePosted);
+                priceMax, savedByUserWithId, datePosted, sellerId);
         Page<Announcement> announcementPage = announcementRepository.findAll(specification, pageRequest);
         List<AnnouncementListShortDto> announcementListShortDtos =
                 announcementMapper.modelsToListShortDto(announcementPage.getContent());
@@ -160,7 +160,8 @@ public class AnnouncementController {
 
     private Specification<Announcement> createSpecificationFindAllNotSold(
             String productName, String consoleType, String transportPaid, String productType,
-            double priceMin, double priceMax, Long savedByUserWithId, String datePosted) {
+            double priceMin, double priceMax, Long savedByUserWithId, String datePosted,
+            Long sellerId) {
 
         // create a specification based on the request parameters
         Specification<Announcement> specification = Specification.where(AnnouncementSpecifications.isSold(false));
@@ -200,6 +201,9 @@ public class AnnouncementController {
         }
         if (datePosted != null && !datePosted.isEmpty()) {
             return addDatePostedSpecification(specification, datePosted);
+        }
+        if( sellerId != null) {
+            specification = specification.and(AnnouncementSpecifications.isCreatedByUserWithId(sellerId));
         }
 
         return specification;

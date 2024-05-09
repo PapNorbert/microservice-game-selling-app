@@ -5,7 +5,7 @@ import {
   limitQuerryParamDefault, pageQuerryParamDefault, productNameParamDefault, consoleTypeParamDefault,
   productNameParamName, consoleTypeParamName, pageQuerryParamName, limitQuerryParamName,
   productTypeParamDefault, productTypeParamName, transportPaidParamDefault, transportPaidParamName,
-  priceMaxParamName, priceMinParamName
+  priceMaxParamName, priceMinParamName, datePostedParamDefault, datePostedParamName
 } from '../config/application.json'
 import { useSearchParamsState } from '../hooks/useSearchParamsState';
 
@@ -26,6 +26,8 @@ interface ContextData {
   setPriceMin: (newState: string) => void;
   priceMax: string;
   setPriceMax: (newState: string) => void;
+  datePosted: string;
+  setDatePosted: (newState: string) => void;
   priceMinRef?: React.RefObject<HTMLInputElement>;
   priceMaxRef?: React.RefObject<HTMLInputElement>
 }
@@ -47,6 +49,8 @@ const initialContextData: ContextData = {
   setPriceMin: () => { },
   priceMax: '',
   setPriceMax: () => { },
+  datePosted: '',
+  setDatePosted: () => { },
 }
 
 
@@ -69,6 +73,8 @@ export default function SearchContextProvider({ children }: ChildrenProps) {
     useSearchParamsState(priceMinParamName, '');
   const [priceMax, setPriceMax] =
     useSearchParamsState(priceMaxParamName, '');
+  const [datePosted, setDatePosted] =
+    useSearchParamsState(datePostedParamName, datePostedParamDefault);
   const priceMinRef = useRef<HTMLInputElement>(null);
   const priceMaxRef = useRef<HTMLInputElement>(null);
 
@@ -82,7 +88,8 @@ export default function SearchContextProvider({ children }: ChildrenProps) {
     productType, setProductType,
     priceMinRef, priceMaxRef,
     priceMin, setPriceMin,
-    priceMax, setPriceMax
+    priceMax, setPriceMax,
+    datePosted, setDatePosted
   }
 
   return (

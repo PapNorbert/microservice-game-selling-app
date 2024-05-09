@@ -8,6 +8,8 @@ import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 
+import java.time.LocalDateTime;
+
 public class AnnouncementSpecifications {
 
     public static Specification<Announcement> isSold(Boolean sold) {
@@ -53,5 +55,10 @@ public class AnnouncementSpecifications {
             subquery.where(criteriaBuilder.equal(announcementsSavesRoot.get("user").get("id"), savedByUserWithId));
             return criteriaQuery.where(announcementRoot.in(subquery)).getRestriction();
         };
+    }
+
+    public static Specification<Announcement> createdAfter(LocalDateTime date) {
+        return (announcementRoot, criteriaQuery, criteriaBuilder) ->
+                criteriaBuilder.greaterThanOrEqualTo(announcementRoot.get("creationDate"), date);
     }
 }

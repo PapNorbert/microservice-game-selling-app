@@ -11,7 +11,7 @@ import {
   limitQuerryParamDefault, limitQuerryParamName, pageQuerryParamDefault, pageQuerryParamName,
   productNameParamDefault, productNameParamName, consoleTypeParamDefault, consoleTypeParamName,
   transportPaidParamDefault, transportPaidParamName, productTypeParamDefault, productTypeParamName,
-  priceMaxParamName, priceMinParamName, savedByUserParamName
+  priceMaxParamName, priceMinParamName, savedByUserParamName, datePostedParamDefault, datePostedParamName
 } from '../../config/application.json';
 import configuredAxios from "../../axios/configuredAxios";
 import { AnnouncementsListShort } from "../../interface/Announcements/announcementsListShortInterface";
@@ -28,7 +28,7 @@ export default function AnnouncementsSaved() {
     useState<string>(`/${apiPrefix}/announcements?${savedByUserParamName}=${auth.userId}`);
   const {
     selectedConsole, productName, limit, page,
-    transportPaid, productType, priceMin, priceMax
+    transportPaid, productType, priceMin, priceMax, datePosted
   } = useContext(SearchContext);
   const location = useLocation();
   const navigate = useNavigate();
@@ -72,10 +72,13 @@ export default function AnnouncementsSaved() {
     if (priceMax) {
       queryParams.set(priceMaxParamName, priceMax);
     }
-
+    if (datePosted !== datePostedParamDefault) {
+      queryParams.set(datePostedParamName, datePosted);
+    }
+    
     setAnnouncementsUrl(`/${apiPrefix}/announcements?${queryParams.toString()}`)
   }, [selectedConsole, productName, limit, page, transportPaid, productType,
-    priceMin, priceMax, auth
+    priceMin, priceMax, auth, datePosted
   ]);
 
   function queryFunction() {

@@ -15,5 +15,7 @@
   "productTypeParamName": "productType",
   "priceMinParamName": "priceMin",
   "priceMaxParamName": "priceMax",
-  "savedByUserParamName": "savedByUserWithId"
+  "savedByUserParamName": "savedByUserWithId",
+  "datePostedParamName": "datePosted",
+  "datePostedParamDefault": "ALL"
 }

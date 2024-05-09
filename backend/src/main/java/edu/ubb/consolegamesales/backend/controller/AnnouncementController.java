@@ -29,6 +29,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -57,15 +58,17 @@ public class AnnouncementController {
             @RequestParam(defaultValue = "0", required = false) double priceMin,
             @RequestParam(defaultValue = "" + Double.MAX_VALUE, required = false) double priceMax,
             @RequestParam(required = false) @Positive Long savedByUserWithId,
+            @RequestParam(required = false) String datePosted,
+
             Authentication authentication
     ) {
 
         LOGGER.info("GET paginated announcements at announcements api, "
                         + "page: {}, limit: {}, productName: {}, consoleType: {}, "
                         + "transportPaid: {}, productType: {}, priceMin: {}, priceMax: {}, "
-                        + "savedByUserWithId: {}",
+                        + "savedByUserWithId: {}, datePosted: {}",
                 page, limit, productName, consoleType, transportPaid, productType,
-                priceMin, priceMax, savedByUserWithId);
+                priceMin, priceMax, savedByUserWithId, datePosted);
         PageRequest pageRequest = PageRequest.of(page - 1, limit, Sort.by("creationDate").descending());
         // pageNumber is 0 indexed
         if (savedByUserWithId != null) {
@@ -76,7 +79,8 @@ public class AnnouncementController {
             }
         }
         Specification<Announcement> specification = createSpecificationFindAllNotSold(
-                productName, consoleType, transportPaid, productType, priceMin, priceMax, savedByUserWithId);
+                productName, consoleType, transportPaid, productType, priceMin,
+                priceMax, savedByUserWithId, datePosted);
         Page<Announcement> announcementPage = announcementRepository.findAll(specification, pageRequest);
         List<AnnouncementListShortDto> announcementListShortDtos =
                 announcementMapper.modelsToListShortDto(announcementPage.getContent());
@@ -86,7 +90,7 @@ public class AnnouncementController {
                 && authentication.getPrincipal() != null) {
             // if user is logged in set savedByUser
             User user = (User) authentication.getPrincipal();
-            for(AnnouncementListShortDto announcementListShortDto: announcementListShortDtos) {
+            for (AnnouncementListShortDto announcementListShortDto : announcementListShortDtos) {
                 announcementListShortDto.setSavedByUser(
                         announcementsSavesRepository.existsByAnnouncementEntityIdAndUserEntityId(
                                 announcementListShortDto.getAnnouncementId(), user.getEntityId()
@@ -156,7 +160,7 @@ public class AnnouncementController {
 
     private Specification<Announcement> createSpecificationFindAllNotSold(
             String productName, String consoleType, String transportPaid, String productType,
-            double priceMin, double priceMax, Long savedByUserWithId) {
+            double priceMin, double priceMax, Long savedByUserWithId, String datePosted) {
 
         // create a specification based on the request parameters
         Specification<Announcement> specification = Specification.where(AnnouncementSpecifications.isSold(false));
@@ -194,8 +198,32 @@ public class AnnouncementController {
         if (priceMax >= 0 && priceMax != Double.MAX_VALUE) {
             specification = specification.and(AnnouncementSpecifications.priceLessOrEqualThen(priceMax));
         }
+        if (datePosted != null && !datePosted.isEmpty()) {
+            return addDatePostedSpecification(specification, datePosted);
+        }
 
         return specification;
+    }
+
+    private Specification<Announcement> addDatePostedSpecification(
+            Specification<Announcement> specification, String datePosted) {
+
+        return switch (datePosted) {
+            case "24H" -> {
+                LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
+                yield specification.and(AnnouncementSpecifications.createdAfter(twentyFourHoursAgo));
+            }
+            case "WEEK" -> {
+                LocalDateTime oneWeekAgo = LocalDateTime.now().minusWeeks(1);
+                yield specification.and(AnnouncementSpecifications.createdAfter(oneWeekAgo));
+            }
+            case "MONTH" -> {
+                LocalDateTime oneMonthAgo = LocalDateTime.now().minusMonths(1);
+                yield specification.and(AnnouncementSpecifications.createdAfter(oneMonthAgo));
+            }
+            default -> specification;
+        };
+
     }
 
 }

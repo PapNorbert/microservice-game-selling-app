@@ -12,10 +12,13 @@ interface PropType {
   setCurrentTransportPaid: React.Dispatch<React.SetStateAction<string>>;
   currentProductType: string;
   setCurrentProductType: React.Dispatch<React.SetStateAction<string>>;
+  currentDatePosted: string;
+  setCurrentDatePosted: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export default function FilterBar(
-  { currentTransportPaid, setCurrentTransportPaid, currentProductType, setCurrentProductType }: PropType) {
+  { currentTransportPaid, setCurrentTransportPaid, currentProductType, 
+    setCurrentProductType, currentDatePosted, setCurrentDatePosted }: PropType) {
   const { priceMinRef, priceMaxRef } = useContext(SearchContext);
 
   function handleFilterClear() {
@@ -71,7 +74,15 @@ export default function FilterBar(
           <Form.Control type='number' min={0} ref={priceMaxRef}
             placeholder='Price max' />
         </Col>
-
+        <Col lg={{ span: 2 }}>
+          <Form.Text>Date posted</Form.Text>
+          <Form.Select value={currentDatePosted} onChange={e => setCurrentDatePosted(e.target.value)}>
+            <option value="ALL">All</option>
+            <option value='24H'>Past 24 hours</option>
+            <option value='WEEK'>Past week</option>
+            <option value='MONTH'>Past month</option>
+          </Form.Select>
+        </Col>
 
       </Row>
     </Container>

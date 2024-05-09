@@ -6,9 +6,9 @@ import { SearchContext } from '../context/SearchContextProvider';
 import { useNavigate } from 'react-router-dom';
 import {
   limitQuerryParamDefault, pageQuerryParamDefault, productNameParamDefault, consoleTypeParamDefault,
-  productNameParamName, consoleTypeParamName, pageQuerryParamName, limitQuerryParamName,
+  productNameParamName, consoleTypeParamName, limitQuerryParamName,
   productTypeParamDefault, productTypeParamName, transportPaidParamDefault, transportPaidParamName,
-  priceMaxParamName, priceMinParamName
+  priceMaxParamName, priceMinParamName, datePostedParamDefault, datePostedParamName
 } from '../config/application.json'
 import FilterBar from './FilterBar';
 
@@ -19,13 +19,15 @@ interface PropType {
 export default function SearchBar({ showFilter = false }: PropType) {
   const {
     selectedConsole, setSelectedConsole, productName, setProductName,
-    limit, page, transportPaid, setTransportPaid, productType, setProductType,
-    setPriceMax, setPriceMin, priceMaxRef, priceMinRef, setPage
+    limit, transportPaid, setTransportPaid, productType, setProductType,
+    setPriceMax, setPriceMin, priceMaxRef, priceMinRef, setPage,
+    datePosted, setDatePosted
   } = useContext(SearchContext);
   const [currentSelectedConsole, setCurrentSelectedConsole] = useState<string>(selectedConsole);
   const [currentProductName, setCurrentProductName] = useState<string>(productName);
   const [currentTransportPaid, setCurrentTransportPaid] = useState<string>('ALL');
   const [currentProductType, setCurrentProductType] = useState<string>('ALL');
+  const [currentDatePosted, setCurrentDatePosted] = useState<string>('ALL');
   const navigate = useNavigate();
 
 
@@ -50,6 +52,9 @@ export default function SearchBar({ showFilter = false }: PropType) {
     if (priceMaxRef?.current) {
       setPriceMax(priceMaxRef.current.value);
     }
+    if (datePosted !== currentDatePosted) {
+      setDatePosted(currentDatePosted);
+    }
     // update querry parameters
     if (currentSelectedConsole !== consoleTypeParamDefault) {
       queryParams.set(consoleTypeParamName, currentSelectedConsole);
@@ -73,7 +78,9 @@ export default function SearchBar({ showFilter = false }: PropType) {
     if (priceMaxRef?.current && priceMaxRef.current.value) {
       queryParams.set(priceMaxParamName, priceMaxRef.current.value);
     }
-
+    if (currentDatePosted !== datePostedParamDefault) {
+      queryParams.set(datePostedParamName, currentDatePosted);
+    }
     navigate(`/announcements?${queryParams.toString()}`);
   }
 
@@ -105,7 +112,8 @@ export default function SearchBar({ showFilter = false }: PropType) {
       {
         showFilter &&
         <FilterBar currentProductType={currentProductType} currentTransportPaid={currentTransportPaid}
-          setCurrentProductType={setCurrentProductType} setCurrentTransportPaid={setCurrentTransportPaid} />
+          setCurrentProductType={setCurrentProductType} setCurrentTransportPaid={setCurrentTransportPaid} 
+          currentDatePosted={currentDatePosted} setCurrentDatePosted={setCurrentDatePosted} />
       }
     </>
   )

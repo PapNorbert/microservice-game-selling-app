@@ -21,11 +21,11 @@ interface PropType {
 export default function AnnouncementListShort({ announcement }: PropType) {
   const navigate = useNavigate();
   const [savedByUser, setSavedByUser] = useState<boolean>(announcement.savedByUser);
-  const {auth} = useAuth();
+  const { auth } = useAuth();
   const announcementsSavesUrl = `/${apiPrefix}/announcementsSaves`;
   const [error, setError] = useState<string>('');
   const queryClient = useQueryClient();
-  
+
   const { mutate: mutateDelete } = useMutation({
     mutationFn: deleteMutationFunction,
     onSuccess: handleSubmitSucces,
@@ -90,7 +90,7 @@ export default function AnnouncementListShort({ announcement }: PropType) {
                     overlay={
                       <Tooltip key="remove-saved-tooltip">Remove from saved</Tooltip>
                     }>
-                    <StarFill className="float-end  mt-1" />
+                    <StarFill className="float-end mt-1" />
                   </OverlayTrigger>
                 </span>
                 :

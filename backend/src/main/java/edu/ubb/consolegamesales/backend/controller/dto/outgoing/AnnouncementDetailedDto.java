@@ -20,6 +20,8 @@ public class AnnouncementDetailedDto {
     @NotNull
     private String sellerUsername;
     @NotNull
+    private Date sellerRegistrationDate;
+    @NotNull
     @Positive
     private GameDisc soldGameDisc;
     @NotNull

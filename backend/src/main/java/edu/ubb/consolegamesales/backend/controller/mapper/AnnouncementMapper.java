@@ -18,6 +18,7 @@ public interface AnnouncementMapper {
     @Mapping(target = "announcementId", source = "entityId")
     @Mapping(target = "sellerId", source = "seller.entityId")
     @Mapping(target = "sellerUsername", source = "seller.username")
+    @Mapping(target = "sellerRegistrationDate", source = "seller.registrationDate")
     @Mapping(target = "savedByUser", expression = "java(false)")
     AnnouncementDetailedDto modelToDetailedDto(Announcement announcement);
 

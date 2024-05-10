@@ -1,17 +1,17 @@
 import { Star, StarFill, Truck } from "react-bootstrap-icons"
 import { useState } from "react"
-import { Badge, Card, Col, OverlayTrigger, Row, Stack, Tooltip } from "react-bootstrap"
+import { Alert, Card, OverlayTrigger, Row, Stack, Tooltip } from "react-bootstrap"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { AxiosError } from "axios"
 
-import { AnnouncementDetailedResponse } from "../../interface/Announcements/announcementDetailedInterface"
-import useAuth from "../../hooks/useAuth"
-import configuredAxios from "../../axios/configuredAxios"
-import { AnnouncementsSavesCreation } from "../../interface/announcementsSavesCreationInterface"
-import { apiPrefix } from '../../config/application.json'
-import { ErrorResponseData } from "../../interface/errorResponseInterface"
-import { dateFormatOptions } from "../../util/dateOptions"
-import { convertConsoleTypeName } from "../../util/consoleTypeNameConversion"
+import { AnnouncementDetailedResponse } from "../../../interface/Announcements/announcementDetailedInterface"
+import useAuth from "../../../hooks/useAuth"
+import configuredAxios from "../../../axios/configuredAxios"
+import { AnnouncementsSavesCreation } from "../../../interface/announcementsSavesCreationInterface"
+import { apiPrefix } from '../../../config/application.json'
+import { ErrorResponseData } from "../../../interface/errorResponseInterface"
+import { dateFormatOptions } from "../../../util/dateOptions"
+import { convertConsoleTypeName } from "../../../util/consoleTypeNameConversion"
 
 interface PropType {
   announcement: AnnouncementDetailedResponse
@@ -73,10 +73,9 @@ export default function AnnouncementDetailedCard({ announcement }: PropType) {
     if (error.message === 'Network Error') {
       setError('Error connecting to the server')
     } else {
-      setError(error.response?.data.errorMessage || 'Error creating Announcement');
+      setError(error.response?.data.errorMessage || 'Error updating saved status');
     }
   }
-
 
 
   return (
@@ -106,6 +105,11 @@ export default function AnnouncementDetailedCard({ announcement }: PropType) {
           )
         }
       </Card.Header>
+      <Alert key='danger' variant='danger' show={error !== ''}
+        onClose={() => setError('')} dismissible  className="mt-2">
+        {error}
+      </Alert>
+
       <Card.Body>
         <Row key={`${announcement.announcementId}_creation_date`}>
           Posted at: {new Date(announcement.creationDate).toLocaleDateString('ro-RO', dateFormatOptions)}

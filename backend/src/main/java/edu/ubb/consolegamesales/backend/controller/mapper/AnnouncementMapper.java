@@ -43,10 +43,12 @@ public interface AnnouncementMapper {
     @Mapping(target = "soldGameDiscType", source = "soldGameDisc.type")
     @Mapping(target = "announcementId", source = "entityId")
     @Mapping(target = "savedByUser", expression = "java(false)")
+    @Mapping(target = "sellerId", source = "seller.entityId")
     AnnouncementListShortDto modelToListShortDto(Announcement announcement);
 
     @Mapping(target = "soldGameDiscName", source = "soldGameDisc.name")
     @Mapping(target = "announcementId", source = "entityId")
     @Mapping(target = "savedByUser", expression = "java(false)")
+    @Mapping(target = "sellerId", source = "seller.entityId")
     List<AnnouncementListShortDto> modelsToListShortDto(List<Announcement> announcements);
 }

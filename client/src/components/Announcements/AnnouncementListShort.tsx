@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, Row, OverlayTrigger, Tooltip, Col, Badge } from "react-bootstrap"
+import { Card, Row, OverlayTrigger, Tooltip, Col, Badge, Alert } from "react-bootstrap"
 import { useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -87,7 +87,7 @@ export default function AnnouncementListShort({ announcement }: PropType) {
         <Card.Header as='h5' key={`header_${announcement.announcementId}`} >
           {announcement.title}
           {
-            auth.logged_in && (
+            auth.logged_in && auth.userId !== announcement.sellerId && (
               savedByUser ?
                 <span className="clickable" onClick={onRemoveSavedClick}>
                   <OverlayTrigger placement="bottom"
@@ -109,6 +109,10 @@ export default function AnnouncementListShort({ announcement }: PropType) {
             )
           }
         </Card.Header>
+        <Alert key='danger' variant='danger' show={error !== ''}
+          onClose={() => setError('')} dismissible className="mt-2">
+          {error}
+        </Alert>
         <Card.Body className="clickable"
           onClick={() => navigate(`/announcements/${announcement.announcementId}`)} >
           <Row key={`${announcement.announcementId}_price`} className="fw-bold fs-5 mb-1" >

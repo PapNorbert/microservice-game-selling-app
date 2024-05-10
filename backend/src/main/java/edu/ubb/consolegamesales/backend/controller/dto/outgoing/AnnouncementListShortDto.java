@@ -1,7 +1,5 @@
 package edu.ubb.consolegamesales.backend.controller.dto.outgoing;
 
-import edu.ubb.consolegamesales.backend.model.GameDisc;
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -18,6 +16,9 @@ public class AnnouncementListShortDto {
     private String soldGameDiscName;
     @NotNull
     private String soldGameDiscType;
+    @NotNull
+    @Positive
+    private Long sellerId;
     @NotNull
     private String title;
     @NotNull

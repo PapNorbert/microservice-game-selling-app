@@ -15,4 +15,5 @@ export interface AnnouncementShort {
     newDisc: boolean;
     creationDate: string;
     savedByUser: boolean;
+    sellerId: number;
 }

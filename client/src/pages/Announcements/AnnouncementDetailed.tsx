@@ -8,12 +8,12 @@ import SearchBar from "../../layouts/SearchBar";
 import { apiPrefix } from '../../config/application.json'
 import { AnnouncementDetailedResponse } from "../../interface/Announcements/announcementDetailedInterface";
 import configuredAxios from "../../axios/configuredAxios";
-import AnnouncementDetailedLong from "../../components/Announcements/AnnouncementDetailedLong";
+import AnnouncementDetailedLong from "../../components/Announcements/AnnouncementDetailed/AnnouncementDetailedLong";
 
 
 export default function AnnouncementDetailed() {
   const { announcementId } = useParams();
-  const [announcementUrl, setAnnouncemensUrl] = useState<string>(`/${apiPrefix}/announcements/${announcementId}`);
+  const [announcementUrl] = useState<string>(`/${apiPrefix}/announcements/${announcementId}`);
 
   const { data: announcementData, isError, error, isLoading } = useQuery<AxiosResponse<AnnouncementDetailedResponse>>({
     queryKey: ["announcementDetailed", announcementUrl],

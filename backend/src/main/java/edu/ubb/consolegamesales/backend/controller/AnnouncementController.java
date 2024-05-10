@@ -160,6 +160,22 @@ public class AnnouncementController {
         }
     }
 
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("id") Long id) {
+        LOGGER.info("DELETE announcements request at announcements/{} api", id);
+        try {
+            Announcement announcement = announcementRepository.getById(id);
+            if (announcement != null) {
+                announcementsSavesRepository.deleteByAnnouncementEntityId(announcement.getEntityId());
+                announcementRepository.delete(announcement);
+                gameDiscRepository.delete(announcement.getSoldGameDisc());
+            }
+        } catch (EntityNotFoundException e) {
+            throw new NotFoundException("Announcement with ID " + id + " not found", e);
+        }
+    }
+
     private Specification<Announcement> createSpecificationFindAll(
             String productName, String consoleType, String transportPaid, String productType,
             double priceMin, double priceMax, Long savedByUserWithId, String datePosted,

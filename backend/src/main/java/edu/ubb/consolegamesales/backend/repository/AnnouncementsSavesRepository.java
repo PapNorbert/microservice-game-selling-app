@@ -3,7 +3,8 @@ package edu.ubb.consolegamesales.backend.repository;
 
 import edu.ubb.consolegamesales.backend.model.AnnouncementsSaves;
 
-public interface AnnouncementsSavesRepository {
+public interface AnnouncementsSavesRepository extends Repository<AnnouncementsSaves, Long> {
+
     boolean existsByAnnouncementEntityIdAndUserEntityId(Long announcementEntityId, Long userEntityId);
 
     AnnouncementsSaves saveAndFlush(AnnouncementsSaves entity);
@@ -13,5 +14,7 @@ public interface AnnouncementsSavesRepository {
     void deleteById(Long id);
 
     void deleteByAnnouncementEntityIdAndUserEntityId(Long announcementEntityId, Long userEntityId);
+
+    void deleteByAnnouncementEntityId(Long announcementEntityId);
 
 }

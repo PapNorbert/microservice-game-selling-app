@@ -95,7 +95,11 @@ export default function Register() {
 
   function handleSubmitError(error: AxiosError<ErrorResponseData>) {
     setSuccesfullReg(false);
-    setSubmitError(error.response?.data.errorMessage || 'Error during registration');
+    if (error.message === 'Network Error') {
+      setSubmitError('Error connecting to the server')
+    } else {
+      setSubmitError(error.response?.data.errorMessage || 'Error during registration');
+    }
   }
 
   function setField(field: string, value: string) {
@@ -117,8 +121,8 @@ export default function Register() {
   if (auth.logged_in) {
     return (
       <FormContainer>
-          <h2 className='text-center'>Registration</h2>
-          <h4 className='text-center mt-5'>You are logged in! Logout first.</h4>
+        <h2 className='text-center'>Registration</h2>
+        <h4 className='text-center mt-5'>You are logged in! Logout first.</h4>
       </FormContainer>
     )
   }

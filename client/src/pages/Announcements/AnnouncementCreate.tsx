@@ -174,7 +174,11 @@ export default function AnnouncementCreate() {
   }
 
   function handleSubmitError(error: AxiosError<ErrorResponseData>) {
-    setSubmitError(error.response?.data.errorMessage || 'Error creating Announcement');
+    if (error.message === 'Network Error') {
+      setSubmitError('Error connecting to the server')
+    } else {
+      setSubmitError(error.response?.data.errorMessage || 'Error creating Announcement');
+    }
     setSuccesfullCreated(false);
   }
 
@@ -280,7 +284,7 @@ export default function AnnouncementCreate() {
                 Sale Announcement Succesfully Created!
               </Row>
               <Row className='mx-3'>
-                <Nav.Link onClick={() => { navigate(`/annoncements/${createdId}`) }}>
+                <Nav.Link onClick={() => { navigate(`/announcements/${createdId}`) }}>
                   Go to page
                 </Nav.Link>
               </Row>

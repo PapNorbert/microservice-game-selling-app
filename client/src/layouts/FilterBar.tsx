@@ -35,7 +35,7 @@ export default function FilterBar(
   return (
     <Container className='mx-5 mb-5'>
       <Row >
-        <Col xs lg={{ span: 1, offset: 1 }} className="fs-5 fw-semibold" >
+        <Col xs lg={{ span: 1 }} className="fs-5 fw-semibold ms-5" >
           Filters
           <OverlayTrigger placement="bottom"
             overlay={
@@ -43,12 +43,11 @@ export default function FilterBar(
             }>
             <X className="clickable " onClick={handleFilterClear} />
           </OverlayTrigger>
-
         </Col>
 
       </Row>
-      <Row className="mt-1">
-        <Col lg={{ span: 2, offset: 1 }}>
+      <Row className="mt-1 ms-5">
+        <Col lg={{ span: 2 }}>
           <Form.Text>Transport paid by</Form.Text>
           <Form.Select value={currentTransportPaid} onChange={e => setCurrentTransportPaid(e.target.value)}>
             <option value="ALL">Show all</option>

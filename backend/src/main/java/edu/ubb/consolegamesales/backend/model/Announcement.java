@@ -19,7 +19,7 @@ public class Announcement extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "game_disc_id")
     private GameDisc soldGameDisc;
-    @Column(nullable = false)
+    @Column(nullable = false, length = 855)
     private String description;
     @Column(nullable = false)
     private String title;

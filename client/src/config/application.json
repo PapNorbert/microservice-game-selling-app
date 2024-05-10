@@ -18,5 +18,6 @@
   "savedByUserParamName": "savedByUserWithId",
   "datePostedParamName": "datePosted",
   "datePostedParamDefault": "ALL",
-  "sellerParamName": "sellerId"
+  "sellerParamName": "sellerId",
+  "soldParamName": "sold"
 }

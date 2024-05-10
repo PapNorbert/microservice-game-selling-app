@@ -73,7 +73,11 @@ export default function AnnouncementListShort({ announcement }: PropType) {
   }
 
   function handleSubmitError(error: AxiosError<ErrorResponseData>) {
-    setError(error.response?.data.errorMessage || 'Error creating Announcement');
+    if (error.message === 'Network Error') {
+      setError('Error connecting to the server')
+    } else {
+      setError(error.response?.data.errorMessage || 'Error creating Announcement');
+    }
   }
 
 

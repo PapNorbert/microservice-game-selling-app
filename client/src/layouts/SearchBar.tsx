@@ -13,10 +13,11 @@ import {
 import FilterBar from './FilterBar';
 
 interface PropType {
+  pageURL?: string;
   showFilter?: boolean
 }
 
-export default function SearchBar({ showFilter = false }: PropType) {
+export default function SearchBar({ pageURL = '/announcements', showFilter = false }: PropType) {
   const {
     selectedConsole, setSelectedConsole, productName, setProductName,
     limit, transportPaid, setTransportPaid, productType, setProductType,
@@ -46,7 +47,7 @@ export default function SearchBar({ showFilter = false }: PropType) {
     if (productType !== currentProductType) {
       setProductType(currentProductType);
     }
-    if (priceMinRef?.current ) {
+    if (priceMinRef?.current) {
       setPriceMin(priceMinRef.current.value);
     }
     if (priceMaxRef?.current) {
@@ -81,7 +82,7 @@ export default function SearchBar({ showFilter = false }: PropType) {
     if (currentDatePosted !== datePostedParamDefault) {
       queryParams.set(datePostedParamName, currentDatePosted);
     }
-    navigate(`/announcements?${queryParams.toString()}`);
+    navigate(`${pageURL}?${queryParams.toString()}`);
   }
 
   return (
@@ -112,7 +113,7 @@ export default function SearchBar({ showFilter = false }: PropType) {
       {
         showFilter &&
         <FilterBar currentProductType={currentProductType} currentTransportPaid={currentTransportPaid}
-          setCurrentProductType={setCurrentProductType} setCurrentTransportPaid={setCurrentTransportPaid} 
+          setCurrentProductType={setCurrentProductType} setCurrentTransportPaid={setCurrentTransportPaid}
           currentDatePosted={currentDatePosted} setCurrentDatePosted={setCurrentDatePosted} />
       }
     </>

@@ -11,7 +11,8 @@ import {
   limitQuerryParamDefault, limitQuerryParamName, pageQuerryParamDefault, pageQuerryParamName,
   productNameParamDefault, productNameParamName, consoleTypeParamDefault, consoleTypeParamName,
   transportPaidParamDefault, transportPaidParamName, productTypeParamDefault, productTypeParamName,
-  priceMaxParamName, priceMinParamName, savedByUserParamName, datePostedParamDefault, datePostedParamName
+  priceMaxParamName, priceMinParamName, datePostedParamDefault, datePostedParamName,
+  sellerParamName, soldParamName
 } from '../../config/application.json';
 import configuredAxios from "../../axios/configuredAxios";
 import { AnnouncementsListShort } from "../../interface/Announcements/announcementsListShortInterface";
@@ -19,23 +20,25 @@ import AnnouncementListShort from "../../components/Announcements/AnnouncementLi
 import PaginationElement from "../../components/PaginationElement";
 import Limit from "../../components/Limit";
 import useAuth from "../../hooks/useAuth";
+import AnnouncementMeNav from "../../components/Announcements/AnnouncementMeNav";
 
 
 
-export default function AnnouncementsSaved() {
+export default function AnnouncementsMe() {
   const { auth } = useAuth();
   const [announcementsUrl, setAnnouncementsUrl] =
-    useState<string>(`/${apiPrefix}/announcements?${savedByUserParamName}=${auth.userId}`);
+    useState<string>(`/${apiPrefix}/announcements?${sellerParamName}=${auth.userId}`);
   const {
     selectedConsole, productName, limit, page,
     transportPaid, productType, priceMin, priceMax, datePosted
   } = useContext(SearchContext);
+  const [sold, setSold] = useState<boolean>(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   const { data: announcementsData, isError, error, isLoading } =
     useQuery<AxiosResponse<AnnouncementsListShort>, AxiosError>({
-      queryKey: ["savedAnnouncementsListShort", announcementsUrl],
+      queryKey: ["MyAnnouncementsListShort", announcementsUrl],
       queryFn: queryFunction,
       retry: false,
       placeholderData: keepPreviousData, // keeps the last succesful fetch as well beside current 
@@ -45,7 +48,7 @@ export default function AnnouncementsSaved() {
   useEffect(() => {
     const queryParams = new URLSearchParams();
     if (auth.logged_in && auth.userId) {
-      queryParams.set(savedByUserParamName, auth.userId.toString());
+      queryParams.set(sellerParamName, auth.userId.toString());
     } else {
       navigate('/login');
     }
@@ -76,10 +79,13 @@ export default function AnnouncementsSaved() {
     if (datePosted !== datePostedParamDefault) {
       queryParams.set(datePostedParamName, datePosted);
     }
-    
+    if (sold) {
+      queryParams.set(soldParamName, sold.toString());
+    }
+
     setAnnouncementsUrl(`/${apiPrefix}/announcements?${queryParams.toString()}`)
   }, [selectedConsole, productName, limit, page, transportPaid, productType,
-    priceMin, priceMax, auth, datePosted
+    priceMin, priceMax, auth, datePosted, sold
   ]);
 
   function queryFunction() {
@@ -90,21 +96,23 @@ export default function AnnouncementsSaved() {
   if (isLoading) {
     return (
       <>
-        <SearchBar pageURL='/announcements/saved' showFilter={true} />
+        <SearchBar pageURL='/announcements/me' showFilter={true} />
+        <AnnouncementMeNav sold={sold} setSold={setSold} />
         <h2 className="text-center">Loading...</h2>
       </>
     )
   }
 
   if (isError) {
-    if(error.response?.status === 401) {
+    if (error.response?.status === 401) {
       return (
         <Navigate to='/login' state={{ from: location }} replace />
       )
     }
     return (
       <>
-        <SearchBar pageURL='/announcements/saved' showFilter={true} />
+        <SearchBar pageURL='/announcements/me' showFilter={true} />
+        <AnnouncementMeNav sold={sold} setSold={setSold} />
         <h2 className="error">{error.message || 'Sorry, there was an error!'}</h2>
       </>
     )
@@ -113,7 +121,8 @@ export default function AnnouncementsSaved() {
 
   return (
     <>
-      <SearchBar pageURL='/announcements/saved' showFilter={true} />
+      <SearchBar pageURL='/announcements/me' showFilter={true} />
+      <AnnouncementMeNav sold={sold} setSold={setSold} />
       <Container>
         <h3>Found {announcementsData?.data.pagination.totalCount} results</h3>
         <Limit />
@@ -128,7 +137,7 @@ export default function AnnouncementsSaved() {
             </Container>
           )
             :
-            <h3>No saved Announcements found!</h3>
+            <h3>No announcements {sold ? 'sold' : 'created'} by you have been found!</h3>
         }
       </Container>
     </>

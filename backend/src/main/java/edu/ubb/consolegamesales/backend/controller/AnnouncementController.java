@@ -60,15 +60,17 @@ public class AnnouncementController {
             @RequestParam(required = false) @Positive Long savedByUserWithId,
             @RequestParam(required = false) String datePosted,
             @RequestParam(required = false) @Positive Long sellerId,
+            @RequestParam(defaultValue = "false", required = false) boolean sold,
             Authentication authentication
     ) {
 
         LOGGER.info("GET paginated announcements at announcements api, "
                         + "page: {}, limit: {}, productName: {}, consoleType: {}, "
                         + "transportPaid: {}, productType: {}, priceMin: {}, priceMax: {}, "
-                        + "savedByUserWithId: {}, datePosted: {}, sellerId: {}",
+                        + "savedByUserWithId: {}, datePosted: {}, sellerId: {} "
+                        + "sold: {}",
                 page, limit, productName, consoleType, transportPaid, productType,
-                priceMin, priceMax, savedByUserWithId, datePosted, sellerId);
+                priceMin, priceMax, savedByUserWithId, datePosted, sellerId, sold);
         PageRequest pageRequest = PageRequest.of(page - 1, limit, Sort.by("creationDate").descending());
         // pageNumber is 0 indexed
         if (savedByUserWithId != null) {
@@ -78,9 +80,9 @@ public class AnnouncementController {
                 throw new AccessDeniedException("You must Login first to access this resource");
             }
         }
-        Specification<Announcement> specification = createSpecificationFindAllNotSold(
+        Specification<Announcement> specification = createSpecificationFindAll(
                 productName, consoleType, transportPaid, productType, priceMin,
-                priceMax, savedByUserWithId, datePosted, sellerId);
+                priceMax, savedByUserWithId, datePosted, sellerId, sold);
         Page<Announcement> announcementPage = announcementRepository.findAll(specification, pageRequest);
         List<AnnouncementListShortDto> announcementListShortDtos =
                 announcementMapper.modelsToListShortDto(announcementPage.getContent());
@@ -158,13 +160,13 @@ public class AnnouncementController {
         }
     }
 
-    private Specification<Announcement> createSpecificationFindAllNotSold(
+    private Specification<Announcement> createSpecificationFindAll(
             String productName, String consoleType, String transportPaid, String productType,
             double priceMin, double priceMax, Long savedByUserWithId, String datePosted,
-            Long sellerId) {
+            Long sellerId, boolean sold) {
 
         // create a specification based on the request parameters
-        Specification<Announcement> specification = Specification.where(AnnouncementSpecifications.isSold(false));
+        Specification<Announcement> specification = Specification.where(AnnouncementSpecifications.isSold(sold));
         if (savedByUserWithId != null) {
             specification = specification.and(AnnouncementSpecifications.isSavedByUserWithId(savedByUserWithId));
         }
@@ -199,11 +201,11 @@ public class AnnouncementController {
         if (priceMax >= 0 && priceMax != Double.MAX_VALUE) {
             specification = specification.and(AnnouncementSpecifications.priceLessOrEqualThen(priceMax));
         }
+        if (sellerId != null) {
+            specification = specification.and(AnnouncementSpecifications.isCreatedByUserWithId(sellerId));
+        }
         if (datePosted != null && !datePosted.isEmpty()) {
             return addDatePostedSpecification(specification, datePosted);
-        }
-        if( sellerId != null) {
-            specification = specification.and(AnnouncementSpecifications.isCreatedByUserWithId(sellerId));
         }
 
         return specification;

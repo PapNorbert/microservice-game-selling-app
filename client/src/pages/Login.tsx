@@ -76,7 +76,11 @@ export default function Login() {
   }
 
   function handleSubmitError(error: AxiosError<ErrorResponseData>) {
-    setSubmitError(error.response?.data.errorMessage || 'Incorrect username or password');
+    if (error.message === 'Network Error') {
+      setSubmitError('Error connecting to the server')
+    } else {
+      setSubmitError(error.response?.data.errorMessage || 'Incorrect username or password');
+    }
     setField('password', '');
     setErrors({ ...errors, password: '' });
   }

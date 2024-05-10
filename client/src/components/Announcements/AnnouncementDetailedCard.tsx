@@ -70,7 +70,11 @@ export default function AnnouncementDetailedCard({ announcement }: PropType) {
   }
 
   function handleSubmitError(error: AxiosError<ErrorResponseData>) {
-    setError(error.response?.data.errorMessage || 'Error creating Announcement');
+    if (error.message === 'Network Error') {
+      setError('Error connecting to the server')
+    } else {
+      setError(error.response?.data.errorMessage || 'Error creating Announcement');
+    }
   }
 
 
@@ -133,7 +137,7 @@ export default function AnnouncementDetailedCard({ announcement }: PropType) {
           Description
         </Row>
         <Row key={`${announcement.announcementId}_description`} className="" >
-          {announcement.description} 
+          {announcement.description}
         </Row>
       </Card.Body>
     </Card >

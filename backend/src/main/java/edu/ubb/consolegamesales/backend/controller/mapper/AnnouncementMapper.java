@@ -35,7 +35,7 @@ public interface AnnouncementMapper {
     @Mapping(target = "entityId", ignore = true)
     @Mapping(target = "seller", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
-    @Mapping(target = "soldGameDisc.entityId", source = "soldGameDiscId")
+    @Mapping(target = "soldGameDisc", ignore = true)
     Announcement updateDtoToModel(AnnouncementUpdateDto announcementUpdateDto);
 
 

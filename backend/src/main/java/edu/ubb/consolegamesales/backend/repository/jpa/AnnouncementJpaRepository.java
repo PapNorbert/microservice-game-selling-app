@@ -20,7 +20,7 @@ public interface AnnouncementJpaRepository extends
     @Modifying
     @Transactional
     @Query("UPDATE Announcement "
-            + "SET soldGameDisc= :#{#entity.soldGameDisc}, price= :#{#entity.price}, "
+            + "SET price= :#{#entity.price}, title= :#{#entity.title}, "
             + "description= :#{#entity.description}, transportPaidBySeller= :#{#entity.transportPaidBySeller}, "
             + "sold= :#{#entity.sold}, newDisc= :#{#entity.newDisc} "
             + " WHERE entityId = :id ")

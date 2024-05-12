@@ -201,7 +201,7 @@ export default function AnnouncementCreate() {
           <Form.Label className='mt-3'>
             Description
           </Form.Label>
-          <Form.Control as='textarea' rows={3}
+          <Form.Control as='textarea' rows={6}
             placeholder='Description'
             value={announcementForm.description} isInvalid={!!errors.description} autoComplete='off'
             onChange={e => { setFieldAnnouncement('description', e.target.value) }} />

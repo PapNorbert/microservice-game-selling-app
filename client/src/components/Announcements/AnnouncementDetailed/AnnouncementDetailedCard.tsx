@@ -106,7 +106,7 @@ export default function AnnouncementDetailedCard({ announcement }: PropType) {
         }
       </Card.Header>
       <Alert key='danger' variant='danger' show={error !== ''}
-        onClose={() => setError('')} dismissible  className="mt-2">
+        onClose={() => setError('')} dismissible className="mt-2">
         {error}
       </Alert>
 
@@ -125,10 +125,10 @@ export default function AnnouncementDetailedCard({ announcement }: PropType) {
             Year:  {announcement.soldGameDisc.gameYear}
           </span>
           <span className="border rounded border-black p-1">
-            Condition: {announcement.newDisc ? 'New' : 'Used'}
+            Console:  {convertConsoleTypeName(announcement.soldGameDisc.type)}
           </span>
           <span className="border rounded border-black p-1">
-            Console:  {convertConsoleTypeName(announcement.soldGameDisc.type)}
+            Condition: {announcement.newDisc ? 'New' : 'Used'}
           </span>
           {announcement.transportPaidBySeller &&
             <span className="border rounded border-black p-1">

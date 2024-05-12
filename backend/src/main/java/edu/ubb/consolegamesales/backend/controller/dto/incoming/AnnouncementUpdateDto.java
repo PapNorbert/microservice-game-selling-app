@@ -7,8 +7,6 @@ import lombok.Data;
 
 @Data
 public class AnnouncementUpdateDto {
-    @NotNull @Positive
-    private Long soldGameDiscId;
     @NotNull
     private String description;
     @NotNull

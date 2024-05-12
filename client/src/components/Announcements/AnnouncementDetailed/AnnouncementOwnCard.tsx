@@ -1,6 +1,6 @@
 import { Truck } from "react-bootstrap-icons"
 import { useState } from "react"
-import { Alert, Button, Card, Container, OverlayTrigger, Popover, Row, Stack } from "react-bootstrap"
+import { Alert, Button, Card, Col, Container, FloatingLabel, Form, OverlayTrigger, Popover, Row, Stack } from "react-bootstrap"
 import { useMutation } from "@tanstack/react-query"
 import { AxiosError } from "axios"
 
@@ -11,9 +11,33 @@ import { convertConsoleTypeName } from "../../../util/consoleTypeNameConversion"
 import configuredAxios from "../../../axios/configuredAxios"
 import { ErrorResponseData } from "../../../interface/errorResponseInterface"
 import { apiPrefix } from '../../../config/application.json'
+import { formatKeyToMessage } from "../../../util/stringFormatting"
 
 interface PropType {
   announcement: AnnouncementDetailedResponse
+}
+
+interface AnnouncementUpdateForm {
+  price: number;
+  sold: boolean;
+  newDisc: boolean;
+  transportPaidBySeller: boolean;
+  description: string;
+  title: string;
+  [key: string]: string | boolean | number | undefined
+}
+
+interface UpdateFormErrors {
+  price: string;
+  description: string;
+  title: string;
+  [key: string]: string;
+}
+
+const emptyErrors: UpdateFormErrors = {
+  price: '',
+  description: '',
+  title: ''
 }
 
 export default function AnnouncementOwnCard({ announcement }: PropType) {
@@ -21,28 +45,55 @@ export default function AnnouncementOwnCard({ announcement }: PropType) {
   const [error, setError] = useState<string>('');
   const [deleted, setDeleted] = useState<boolean>(false);
   const announcmentURL = `/${apiPrefix}/announcements/${announcement.announcementId}`;
-
+  const [editing, setEditing] = useState<boolean>(false);
   const { mutate: mutateDelete } = useMutation({
     mutationFn: deleteMutationFunction,
     onSuccess: handleDeleteSubmitSucces,
     onError: handleSubmitError,
   });
 
+  const originalEditableValues: AnnouncementUpdateForm = {
+    price: announcement.price,
+    sold: announcement.sold,
+    transportPaidBySeller: announcement.transportPaidBySeller,
+    newDisc: announcement.newDisc,
+    description: announcement.description,
+    title: announcement.title
+  }
+  const [savedEditableValues, setSavedEditableValues] = useState<AnnouncementUpdateForm>(originalEditableValues);
+  // savedEditableValues stores the last value of the announcement, updated after succestful put request
+  const [updateForm, setUpdateForm] = useState<AnnouncementUpdateForm>(savedEditableValues);
+  // stores the values during editing
+  const [formErrors, setFormErrors] = useState<UpdateFormErrors>(emptyErrors);
+  const { mutate: mutatePut } = useMutation({
+    mutationFn: putMutationFunction,
+    onSuccess: handlePutSubmitSucces,
+    onError: handleSubmitError,
+  });
 
   function handleDeleteButtonClicked() {
     if (auth.logged_in && auth.userId === announcement.sellerId) {
-      mutateDelete(announcmentURL);
+      mutateDelete();
     } else {
       setError('Error: Cannot delete announcement of another user!')
     }
   }
 
-  function deleteMutationFunction(url: string) {
-    return configuredAxios.delete(url);
+  function deleteMutationFunction() {
+    return configuredAxios.delete(announcmentURL);
+  }
+
+  function putMutationFunction(data: AnnouncementUpdateForm) {
+    return configuredAxios.put(announcmentURL, data);
   }
 
   function handleDeleteSubmitSucces() {
     setDeleted(true);
+  }
+
+  function handlePutSubmitSucces() {
+    setEditing(false);
+    setSavedEditableValues(updateForm);
   }
 
   function handleSubmitError(error: AxiosError<ErrorResponseData>) {
@@ -53,6 +104,36 @@ export default function AnnouncementOwnCard({ announcement }: PropType) {
     }
   }
 
+  function setFieldUpdateForm(field: string, value: string | boolean) {
+    const newForm = { ...updateForm, [field]: value }
+    setUpdateForm(newForm);
+    if (field !== 'transportPaidBySeller' && field !== 'newDisc') {
+      let newErrors = { ...formErrors }
+      if (!value || value === '') {
+        newErrors = { ...formErrors, [field]: `Please enter a ${formatKeyToMessage(field)}` }
+      } else if (formErrors[field] !== '') {
+        newErrors = { ...formErrors, [field]: '' }
+      }
+      if (field === 'price' && typeof value === 'string' && parseInt(value) < 0) {
+        newErrors = { ...formErrors, [field]: 'Price cannot be a negative number' }
+      }
+      setFormErrors(newErrors);
+    }
+  }
+
+  
+  function handleEditSave() {
+    if (auth.logged_in && auth.userId === announcement.sellerId) {
+      mutatePut(updateForm);
+    } else {
+      setError('Error: Cannot edit announcement of another user!')
+    }
+  }
+
+  function handleEditCancel() {
+    setEditing(false);
+    setUpdateForm(savedEditableValues);
+  }
 
   const popover = (
     <Popover>
@@ -90,7 +171,21 @@ export default function AnnouncementOwnCard({ announcement }: PropType) {
     <>
       <Card key={`container_${announcement.announcementId}_details`} className='mt-5 mb-3'>
         <Card.Header as='h4' key={`header_${announcement.announcementId}`} >
-          {announcement.title}
+          {editing ?
+            <>
+              <FloatingLabel
+                label='Title' className='mb-2 mt-2' >
+                <Form.Control type='text' placeholder='Announcement title' className="pt-5 pb-4"
+                  value={updateForm.title} isInvalid={!!formErrors.title} autoComplete='off'
+                  onChange={e => { setFieldUpdateForm('title', e.target.value) }} />
+                <Form.Control.Feedback type='invalid'>
+                  {formErrors['title']}
+                </Form.Control.Feedback>
+              </FloatingLabel>
+            </>
+            :
+            savedEditableValues.title
+          }
 
           <OverlayTrigger trigger='click' placement='bottom' rootClose={true}
             overlay={popover}
@@ -101,16 +196,33 @@ export default function AnnouncementOwnCard({ announcement }: PropType) {
               </Button>
             </span>
           </OverlayTrigger>
-
+          <span className='float-end'>
+            <Button className='btn btn-orange mx-2' onClick={() => setEditing(true)} disabled={editing}>
+              Edit
+            </Button>
+          </span>
 
         </Card.Header>
         <Card.Body>
           <Row key={`${announcement.announcementId}_creation_date`}>
             Posted at: {new Date(announcement.creationDate).toLocaleDateString('ro-RO', dateFormatOptions)}
           </Row>
-          <Row key={`${announcement.announcementId}_price`} className="fw-bold fs-5 mb-2 mt-2" >
-            {announcement.price} Lei
-          </Row>
+          {editing ?
+            <Row key={`${announcement.announcementId}_price_edit`} className="fw-bold fs-5 mb-2 mt-2" >
+              <Col md={6}>
+                <FloatingLabel
+                  label='Price in lei' className='mb-3 mt-2' >
+                  <Form.Control type='number' min={0} placeholder='Price'
+                    value={updateForm.price} autoComplete='off' isInvalid={!!formErrors.price}
+                    onChange={e => { setFieldUpdateForm('price', e.target.value) }} />
+                </FloatingLabel>
+              </Col>
+            </Row>
+            :
+            <Row key={`${announcement.announcementId}_price`} className="fw-bold fs-5 mb-2 mt-2" >
+              {savedEditableValues.price} Lei
+            </Row>
+          }
           <Row key={`${announcement.announcementId}_productName`} className="fs-5">
             Game Disc Name: {announcement.soldGameDisc.name}
           </Row>
@@ -119,12 +231,24 @@ export default function AnnouncementOwnCard({ announcement }: PropType) {
               Year:  {announcement.soldGameDisc.gameYear}
             </span>
             <span className="border rounded border-black p-1">
-              Condition: {announcement.newDisc ? 'New' : 'Used'}
-            </span>
-            <span className="border rounded border-black p-1">
               Console:  {convertConsoleTypeName(announcement.soldGameDisc.type)}
             </span>
-            {announcement.transportPaidBySeller &&
+            {editing ?
+              <Form.Check type='switch' label="It's a new game disc"
+                name='newDisc' inline className='mx-3'
+                checked={updateForm.newDisc} onChange={e => { setFieldUpdateForm('newDisc', e.target.checked) }} />
+              :
+              <span className="border rounded border-black p-1">
+                Condition: {savedEditableValues.newDisc ? 'New' : 'Used'}
+              </span>
+            }
+            {editing ?
+              <Form.Check type='switch' label='Transport is paid by the seller'
+                name='transportPaidBySeller' inline className='mx-3'
+                checked={updateForm.transportPaidBySeller}
+                onChange={e => { setFieldUpdateForm('transportPaidBySeller', e.target.checked) }} />
+              :
+              savedEditableValues.transportPaidBySeller &&
               <span className="border rounded border-black p-1">
                 <Truck className="me-2 mb-1" />
                 Transport paid by the seller
@@ -134,9 +258,36 @@ export default function AnnouncementOwnCard({ announcement }: PropType) {
           <Row className="fw-bold fs-5 mt-3 mb-1" >
             Description
           </Row>
-          <Row key={`${announcement.announcementId}_description`} className="" >
-            {announcement.description}
-          </Row>
+          {editing ?
+            <>
+              <Form.Control as='textarea' rows={6}
+                placeholder='Description'
+                value={updateForm.description} isInvalid={!!formErrors.description} autoComplete='off'
+                onChange={e => { setFieldUpdateForm('description', e.target.value) }} />
+              <Form.Control.Feedback type='invalid' >
+                {formErrors['description']}
+              </Form.Control.Feedback>
+            </>
+            :
+            <Row key={`${announcement.announcementId}_description`} >
+              {savedEditableValues.description}
+            </Row>
+          }
+
+          {editing &&
+            <>
+              <span className='float-end mt-3'>
+                <Button className='btn btn-orange mx-2' onClick={handleEditSave} >
+                  Save changes
+                </Button>
+              </span>
+              <span className='float-end mt-3'>
+                <Button className='btn btn-orange mx-2' onClick={handleEditCancel} >
+                  Cancel
+                </Button>
+              </span>
+            </>
+          }
         </Card.Body>
       </Card >
       <Alert key='danger' variant='danger' show={error !== ''}

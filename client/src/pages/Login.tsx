@@ -1,7 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Form, FloatingLabel, Button, Alert, Nav, Container } from 'react-bootstrap';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { AxiosError, AxiosResponse } from 'axios';
 
 import FormContainer from "../components/FromContainer";
@@ -9,7 +9,7 @@ import configuredAxios from '../axios/configuredAxios';
 import { apiPrefix } from '../config/application.json';
 import { formatKeyToMessage } from '../util/stringFormatting';
 import decodeJwtAccesToken from '../util/decodeJwt';
-import { errorResponseData } from '../interface/errorResponseInterface';
+import { ErrorResponseData } from '../interface/errorResponseInterface';
 import useAuth from '../hooks/useAuth'
 
 interface FormData {
@@ -34,6 +34,7 @@ export default function Login() {
   const { setAuth } = useAuth();
   const location = useLocation();
   const from = location.state?.from?.pathname || '/';
+  const queryClient = useQueryClient();
 
   const { mutate } = useMutation({
     mutationFn: mutationFunction,
@@ -70,11 +71,16 @@ export default function Login() {
     setAuth(decodeJwtAccesToken(response.data.token));
     setField('password', '');
     setErrors({ ...errors, password: '' });
+    queryClient.invalidateQueries({ queryKey: ['savedAnnouncementsListShort', 'savedAnnouncementsListShort'] });
     navigate(from, { replace: true });
   }
 
-  function handleSubmitError(error: AxiosError<errorResponseData>) {
-    setSubmitError(error.response?.data.errorMessage || 'Username or password not correct');
+  function handleSubmitError(error: AxiosError<ErrorResponseData>) {
+    if (error.message === 'Network Error') {
+      setSubmitError('Error connecting to the server')
+    } else {
+      setSubmitError(error.response?.data.errorMessage || 'Incorrect username or password');
+    }
     setField('password', '');
     setErrors({ ...errors, password: '' });
   }

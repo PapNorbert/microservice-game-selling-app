@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
 
+import java.util.Date;
+
 @Data
 public class AnnouncementDetailedDto {
     @NotNull
@@ -16,14 +18,28 @@ public class AnnouncementDetailedDto {
     @Positive
     private Long sellerId;
     @NotNull
+    private String sellerUsername;
+    @NotNull
+    private Date sellerRegistrationDate;
+    @NotNull
     @Positive
     private GameDisc soldGameDisc;
     @NotNull
     @NotEmpty
     private String description;
     @NotNull
+    private String title;
+    @NotNull
     @PositiveOrZero
     private Double price;
     @NotNull
     private Boolean transportPaidBySeller;
+    @NotNull
+    private Boolean sold;
+    @NotNull
+    private Boolean newDisc;
+    @NotNull
+    private Date creationDate;
+    @NotNull
+    private Boolean savedByUser;
 }

@@ -1,4 +1,23 @@
 {
-  "serverUrl" : "http://localhost:8080",
-  "apiPrefix": "api"
+  "serverUrl": "http://localhost:8080",
+  "apiPrefix": "api",
+  "limitQuerryParamName": "limit",
+  "limitQuerryParamDefault": "5",
+  "pageQuerryParamName": "page",
+  "pageQuerryParamDefault": "1",
+  "productNameParamDefault": "",
+  "productNameParamName": "productName",
+  "consoleTypeParamDefault": "ALL",
+  "consoleTypeParamName": "consoleType",
+  "transportPaidParamDefault": "ALL",
+  "transportPaidParamName": "transportPaid",
+  "productTypeParamDefault": "ALL",
+  "productTypeParamName": "productType",
+  "priceMinParamName": "priceMin",
+  "priceMaxParamName": "priceMax",
+  "savedByUserParamName": "savedByUserWithId",
+  "datePostedParamName": "datePosted",
+  "datePostedParamDefault": "ALL",
+  "sellerParamName": "sellerId",
+  "soldParamName": "sold"
 }

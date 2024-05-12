@@ -1,4 +1,8 @@
+import { UserRoleTypes } from '../enums/UserRoleTypes'
+
 export interface AuthData {
   logged_in: boolean;
-  username: string | undefined
+  username: string | undefined;
+  role: UserRoleTypes | undefined;
+  userId: number | undefined
 }

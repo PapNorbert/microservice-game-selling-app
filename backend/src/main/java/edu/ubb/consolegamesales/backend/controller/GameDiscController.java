@@ -47,7 +47,6 @@ public class GameDiscController {
     public CreatedObjectDto create(@RequestBody @Valid GameDiscCreationDto gameDiscCreationDto) {
         LOGGER.info("POST request at games api");
         GameDisc gameDisc = gameDiscMapper.creationDtoToModel(gameDiscCreationDto);
-        gameDisc.setSold(false);
         gameDiscRepository.saveAndFlush(gameDisc);
         return gameDiscMapper.modelToCreatedObjDto(gameDisc);
     }

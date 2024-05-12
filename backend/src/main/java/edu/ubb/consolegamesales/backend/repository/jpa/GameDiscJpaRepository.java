@@ -15,7 +15,7 @@ public interface GameDiscJpaRepository extends GameDiscRepository, JpaRepository
     @Modifying
     @Transactional
     @Query("UPDATE GameDisc "
-            + "SET name= :#{#entity.name}, type= :#{#entity.type}, sold = :#{#entity.sold}, "
+            + "SET name= :#{#entity.name}, type= :#{#entity.type}, "
             + "gameYear = :#{#entity.gameYear} WHERE entityId = :id ")
     @Override
     Integer update(Long id, GameDisc entity);

@@ -1,18 +1,19 @@
 package edu.ubb.consolegamesales.backend.controller.dto.incoming;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
 public class UserCreationDto {
-    @NotNull
+    @NotNull @NotBlank
     private String username;
-    @NotNull
+    @NotNull @NotBlank
     private String firstName;
-    @NotNull
+    @NotNull @NotBlank
     private String lastName;
-    @NotNull
+    @NotNull @NotBlank
     private String password;
-    @NotNull
+    @NotNull @NotBlank
     private String address;
 }

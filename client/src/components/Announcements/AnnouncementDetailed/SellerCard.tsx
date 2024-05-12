@@ -2,6 +2,7 @@ import { Button, Card, Col, Row, Stack } from 'react-bootstrap'
 import { dateFormatShortOptions } from '../../../util/dateOptions';
 import { ChevronRight } from 'react-bootstrap-icons';
 import { useNavigate } from 'react-router-dom';
+import useAuth from '../../../hooks/useAuth';
 
 interface PropType {
   sellerId: number;
@@ -11,6 +12,7 @@ interface PropType {
 
 export default function SellerCard({ sellerId, sellerUsername, sellerRegistrationDate }: PropType) {
   const navigate = useNavigate();
+  const {auth} = useAuth();
 
   return (
     <Card key={`container_order`} className='mt-4 mb-3'>
@@ -22,7 +24,7 @@ export default function SellerCard({ sellerId, sellerUsername, sellerRegistratio
           {sellerUsername}
         </Col>
         <Col lg={{ offset: 6 }}>
-          <Button className='btn-orange-dark' onClick={() => { }}>
+          <Button className='btn-orange-dark' disabled={!auth.logged_in} onClick={() => { }}>
             Send a message
           </Button>
         </Col>

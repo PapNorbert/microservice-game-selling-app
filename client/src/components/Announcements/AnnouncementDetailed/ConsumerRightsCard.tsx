@@ -29,7 +29,7 @@ export default function ConsumerRightsCard() {
       <Collapse in={expanded} >
         <Container>
           <Row className='mt-2'>
-            There are several entities involved when you buy a product or service on CGS.
+            There are several entities involved when you buy a product or service on Console Game Sales.
             Each of these have the following responsibilities:
           </Row>
           <ListGroup as="ol" numbered className='mt-2 list-group-flush'>

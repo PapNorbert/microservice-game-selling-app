@@ -121,18 +121,37 @@ export default function AnnouncementOwnCard({ announcement }: PropType) {
     }
   }
 
-  
+
   function handleEditSave() {
-    if (auth.logged_in && auth.userId === announcement.sellerId) {
-      mutatePut(updateForm);
+    let noErrors = true;
+    let newErrors = { ...formErrors }
+    if (!updateForm.description && updateForm.description === '') {
+      newErrors = { ...formErrors, ['description']: `Please enter a Description for the announcement` }
+      noErrors = false;
+    }
+    if (!updateForm.title && updateForm.title === '') {
+      newErrors = { ...formErrors, ['title']: `Please enter a Title` }
+      noErrors = false;
+    }
+    if (updateForm.price < 0) {
+      newErrors = { ...formErrors, ['price']: 'Price cannot be a negative number' }
+      noErrors = false;
+    }
+    if (noErrors) {
+      if (auth.logged_in && auth.userId === announcement.sellerId) {
+        mutatePut(updateForm);
+      } else {
+        setError('Error: Cannot edit announcement of another user!')
+      }
     } else {
-      setError('Error: Cannot edit announcement of another user!')
+      setFormErrors(newErrors);
     }
   }
 
   function handleEditCancel() {
     setEditing(false);
     setUpdateForm(savedEditableValues);
+    setFormErrors(emptyErrors);
   }
 
   const popover = (
@@ -269,11 +288,18 @@ export default function AnnouncementOwnCard({ announcement }: PropType) {
               </Form.Control.Feedback>
             </>
             :
-            <Row key={`${announcement.announcementId}_description`} >
-              {savedEditableValues.description}
-            </Row>
+            <>
+              {
+                savedEditableValues.description.split('\n').map((textRow, i) => {
+                  return (
+                    <Row key={`desc_row_${i}`}>
+                      {textRow}
+                    </Row>
+                  )
+                })
+              }
+            </>
           }
-
           {editing &&
             <>
               <span className='float-end mt-3'>

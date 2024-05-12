@@ -140,9 +140,15 @@ export default function AnnouncementDetailedCard({ announcement }: PropType) {
         <Row className="fw-bold fs-5 mt-3 mb-1" >
           Description
         </Row>
-        <Row key={`${announcement.announcementId}_description`} className="" >
-          {announcement.description}
-        </Row>
+        {
+          announcement.description.split('\n').map((textRow, i) => {
+            return (
+              <Row key={`desc_row_${i}`}>
+                {textRow}
+              </Row>
+            )
+          })
+        }
       </Card.Body>
     </Card >
   )

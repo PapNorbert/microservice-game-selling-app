@@ -1,4 +1,4 @@
-package edu.ubb.consolegamesales.backend.controller;
+package edu.ubb.consolegamesales.backend.controller.rest;
 
 import edu.ubb.consolegamesales.backend.controller.dto.incoming.AnnouncementCreationDto;
 import edu.ubb.consolegamesales.backend.controller.dto.incoming.AnnouncementUpdateDto;

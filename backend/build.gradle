@@ -52,6 +52,8 @@ dependencies {
 //    jwt serialization and deserialization
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 
+    implementation 'org.springframework.boot:spring-boot-starter-websocket:3.2.4'
+
 }
 
 checkstyle {
@@ -63,7 +65,7 @@ checkstyle {
     ]
 }
 
-task violations(type: ViolationsTask) {
+tasks.register('violations', ViolationsTask) {
     maxRuleColumnWidth = 25
     maxMessageColumnWidth = 80
 

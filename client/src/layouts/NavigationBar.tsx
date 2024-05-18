@@ -42,7 +42,8 @@ export default function Navigationbar() {
         <Navbar.Toggle aria-controls='navbar-nav' />
         <Navbar.Collapse id='navbar-nav'>
           <Nav className='me-5 ms-auto'>
-            <Nav.Link className='me-4 mr-4 nav-text fw-bold' >
+            <Nav.Link className='me-4 mr-4 nav-text fw-bold'
+              onClick={() => { navigate('/messages') }}>
               <ChatFill className='me-1' />
               <NavbarText > Messages </NavbarText>
             </Nav.Link>

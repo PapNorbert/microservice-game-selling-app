@@ -32,8 +32,8 @@ public class MessageController {
         Message savedMessage = messageRepository.saveAndFlush(message);
         // direct to the corresponding user,
         // format: /queue/messages/{receiverId}-{senderId}
-        String destination = "/queue/messages/" + chatMessage.getReceiverId() +
-                "-" + chatMessage.getSenderId();
+        String destination = "/queue/messages/" + chatMessage.getReceiverId()
+                + "-" + chatMessage.getSenderId();
         // send message to receiver
         messagingTemplate.convertAndSend(destination, messageMapper.modelToMessageOutgoingDto(savedMessage));
     }

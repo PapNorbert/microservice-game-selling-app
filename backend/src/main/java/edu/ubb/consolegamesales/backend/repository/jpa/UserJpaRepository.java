@@ -4,6 +4,8 @@ import edu.ubb.consolegamesales.backend.model.User;
 import edu.ubb.consolegamesales.backend.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +28,11 @@ public interface UserJpaRepository extends UserRepository, JpaRepository<User, L
 
     User findByRefreshToken(String refreshToken);
 
+
+    @Query("SELECT DISTINCT u "
+            + "FROM User u "
+            + "JOIN Message m ON u = m.sender OR u = m.receiver "
+            + "WHERE (m.sender.entityId = :userId OR m.receiver.entityId = :userId) "
+            + "AND u.entityId <> :userId")
+    Page<User> findUsersChattedWith(Long userId, Pageable pageable);
 }

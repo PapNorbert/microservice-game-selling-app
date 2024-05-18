@@ -4,7 +4,6 @@ import edu.ubb.consolegamesales.backend.model.Message;
 import edu.ubb.consolegamesales.backend.repository.MessageRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Profile;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,9 +22,9 @@ public interface MessageJpaRepository extends MessageRepository, JpaRepository<M
     @Override
     Integer update(Long id, Message entity);
 
-    @Query("FROM Message m WHERE " +
-            "(m.sender.entityId = :userId1 AND m.receiver.entityId = :userId2) OR " +
-            "(m.sender.entityId = :userId2 AND m.receiver.entityId = :userId1) " +
-            "ORDER BY m.sentTime")
-    List<Message> findMessagesBetweenUsersOrderedBySentTime(Long userId1,Long userId2);
+    @Query("FROM Message m WHERE "
+            + "(m.sender.entityId = :userId1 AND m.receiver.entityId = :userId2) OR "
+            + "(m.sender.entityId = :userId2 AND m.receiver.entityId = :userId1) "
+            + "ORDER BY m.sentTime")
+    List<Message> findMessagesBetweenUsersOrderedBySentTime(Long userId1, Long userId2);
 }

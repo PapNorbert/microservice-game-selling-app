@@ -12,6 +12,7 @@ import AnnouncementPage from './pages/Announcements/AnnouncementPage';
 import UnauthorizedPage from './pages/UnauthorizedPage';
 import SearchContextProvider from './context/SearchContextProvider';
 import { wsServerUrl } from './config/application.json'
+import MessagesPage from './pages/messages/MessagesPage';
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
                 <Route path='/register' element={<Register />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/announcements/*' element={<AnnouncementPage />} />
+                <Route path='/messages/*' element={<MessagesPage />} />
                 <Route path='/unauthorized' element={<UnauthorizedPage />} />
                 <Route path='*' element={<Navigate to="/" />} />
               </Routes>

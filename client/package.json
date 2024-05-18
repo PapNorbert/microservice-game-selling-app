@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@stomp/stompjs": "^7.0.0",
     "@tanstack/react-query": "^5.29.2",
     "axios": "^1.6.8",
     "bootstrap": "^5.2.3",
@@ -19,7 +20,10 @@
     "react-bootstrap": "^2.10.2",
     "react-bootstrap-icons": "^1.11.4",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.22.3"
+    "react-group-chatup": "https://github.com/PapNorbert/react-group-chatup-edited/tarball/import-change",
+    "react-router-dom": "^6.22.3",
+    "react-stomp-hooks": "^2.2.1",
+    "sockjs-client": "^1.6.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.66",
@@ -32,6 +36,8 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.6",
     "typescript": "^5.2.2",
-    "vite": "^5.2.0"
+    "vite": "^5.2.0",
+    "vite-plugin-commonjs": "^0.10.1",
+    "vite-plugin-require": "^1.1.14"
   }
 }

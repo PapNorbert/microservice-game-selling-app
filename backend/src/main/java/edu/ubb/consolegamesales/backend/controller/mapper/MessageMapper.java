@@ -7,6 +7,8 @@ import edu.ubb.consolegamesales.backend.model.Message;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface MessageMapper {
 
@@ -23,4 +25,9 @@ public interface MessageMapper {
     @Mapping(target = "senderUsername", source = "sender.username")
     @Mapping(target = "receiverId", source = "receiver.entityId")
     MessageOutgoingDto modelToMessageOutgoingDto(Message message);
+
+    @Mapping(target = "senderId", source = "sender.entityId")
+    @Mapping(target = "senderUsername", source = "sender.username")
+    @Mapping(target = "receiverId", source = "receiver.entityId")
+    List<MessageOutgoingDto> modelsToMessageOutgoingDtos(List<Message> messages);
 }

@@ -16,7 +16,7 @@ public class Message extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private User sender;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "receiver_id")
     private User receiver;
     @Column(nullable = false, length = 855)

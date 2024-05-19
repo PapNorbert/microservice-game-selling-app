@@ -6,16 +6,17 @@ import useAuth from '../../../hooks/useAuth';
 
 interface PropType {
   productPrice: number;
+  announcementId: number
   productName: string;
 }
 
-export default function OrderCard({ productPrice, productName }: PropType) {
+export default function OrderCard({ productPrice, productName, announcementId }: PropType) {
   const [showModal, setShowModal] = useState<boolean>(false);
   const { auth } = useAuth();
 
   return (
     <>
-      <OrderModal showModal={showModal} setShowModal={setShowModal}
+      <OrderModal showModal={showModal} setShowModal={setShowModal} announcementId={announcementId}
         productPrice={productPrice} productName={productName} />
       <Card key={`container_order`} className='mt-5 mb-3'>
         <Row className='fs-5 fw-semibold'>

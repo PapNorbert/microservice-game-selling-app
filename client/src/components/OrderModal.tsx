@@ -1,9 +1,14 @@
-import { Button, Col, Form, Modal, Row } from "react-bootstrap";
+import { Alert, Button, Col, Form, Modal, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
+import { useMutation } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
 import configuredAxios from "../axios/configuredAxios";
 import { apiPrefix } from '../config/application.json'
+import { OrderCreation } from "../interface/OrderCreation";
+import { AxiosError, AxiosResponse } from "axios";
+import { ErrorResponseData } from "../interface/errorResponseInterface";
 
 
 interface PropType {
@@ -11,12 +16,23 @@ interface PropType {
   setShowModal: React.Dispatch<React.SetStateAction<boolean>>
   productPrice: number;
   productName: string;
+  announcementId: number
 }
 
-export default function OrderModal({ showModal, setShowModal, productPrice, productName }: PropType) {
+export default function OrderModal({ showModal, setShowModal, productPrice, productName, announcementId }: PropType) {
   const { auth, setAuth } = useAuth();
   const [orderAddress, setOrderAddress] = useState<string>(auth.address || '');
   const [orderAddressError, setOrderAddressError] = useState<string>('');
+  const orderPrice = productPrice < 200 ? productPrice + 13 : productPrice;
+  const orderUrl = `/${apiPrefix}/orders`;
+  const [error, setError] = useState<string>('');
+  const navigate = useNavigate();
+  const { mutate: mutatePost } = useMutation({
+    mutationFn: postMutationFunction,
+    onSuccess: handleSubmitSucces,
+    onError: handleSubmitError,
+  });
+
 
   useEffect(() => {
     // get user address if it wasn't set
@@ -35,17 +51,46 @@ export default function OrderModal({ showModal, setShowModal, productPrice, prod
   }, [auth.logged_in, auth.userId, auth.address]);
 
 
+  function postMutationFunction(data: OrderCreation) {
+    return configuredAxios.post(orderUrl, data);
+  }
+
+  function handleSubmitSucces(response: AxiosResponse) {
+    if (error) {
+      setError('');
+    }
+    navigate(`/orders/${response.data.entityId}`);
+  }
+
+  function handleSubmitError(error: AxiosError<ErrorResponseData>) {
+    if (error.message === 'Network Error') {
+      setError('Error connecting to the server')
+    } else {
+      setError(error.response?.data.errorMessage || 'Error updating saved status');
+    }
+  }
+
   function handleClose() {
     setShowModal(false);
   }
 
+  function handleOrder() {
+    if (auth.logged_in && auth.userId) {
+      mutatePost({
+        announcementId: announcementId,
+        buyerId: auth.userId,
+        price: orderPrice,
+        orderAddress: orderAddress
+      });
+    }
+  }
+
   function changeOrderAddress(newValue: string) {
     setOrderAddress(newValue);
-    if( newValue === '' || newValue === null) {
+    if (newValue === '' || newValue === null) {
       setOrderAddressError('Please enter an address to be delivered to!');
     } else {
       setOrderAddressError('');
-
     }
   }
 
@@ -87,7 +132,7 @@ export default function OrderModal({ showModal, setShowModal, productPrice, prod
             Total price:
           </Col>
           <Col>
-            {productPrice < 200 ? productPrice+13 : productPrice} lei
+            {orderPrice} lei
           </Col>
         </Row>
         <Row className="mt-2 fw-bold">
@@ -103,27 +148,33 @@ export default function OrderModal({ showModal, setShowModal, productPrice, prod
         </Row>
         <Row>
           <Col>
-              <Form.Control as='textarea' rows={1}
-                placeholder='Address' className="mt-2"
-                value={orderAddress} isInvalid={!!orderAddressError} autoComplete='off'
-                onChange={e => { changeOrderAddress(e.target.value) }} />
-              <Form.Text className='text-muted'>
-                Your address used for the order
-              </Form.Text>
-              <Form.Control.Feedback type='invalid' >
-                {orderAddressError}
-              </Form.Control.Feedback>
+            <Form.Control as='textarea' rows={1}
+              placeholder='Address' className="mt-2"
+              value={orderAddress} isInvalid={!!orderAddressError} autoComplete='off'
+              onChange={e => { changeOrderAddress(e.target.value) }} />
+            <Form.Text className='text-muted'>
+              Your address used for the order
+            </Form.Text>
+            <Form.Control.Feedback type='invalid' >
+              {orderAddressError}
+            </Form.Control.Feedback>
           </Col>
         </Row>
       </Modal.Body>
-      <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
-          Close
-        </Button>
-        <Button className="btn btn-orange-dark" onClick={handleClose}>
-          Order product
-        </Button>
-      </Modal.Footer>
+      {
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Close
+          </Button>
+          <Button className="btn btn-orange-dark" onClick={handleOrder}>
+            Order product
+          </Button>
+        </Modal.Footer>
+      }
+      <Alert key='danger' variant='danger' show={error !== ''}
+        onClose={() => setError('')} dismissible className="mt-2">
+        {error}
+      </Alert>
     </Modal>
   )
 }

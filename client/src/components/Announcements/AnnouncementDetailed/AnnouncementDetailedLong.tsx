@@ -36,7 +36,8 @@ export default function AnnouncementDetailedLong({ announcement }: PropType) {
 
               </Col>
               <Col lg={{ span: 4 }}>
-                <OrderCard productPrice={announcement.price} productName={announcement.soldGameDisc.name}/>
+                <OrderCard productPrice={announcement.price} productName={announcement.soldGameDisc.name} 
+                announcementId={announcement.announcementId}/>
                 <ConsumerRightsCard />
               </Col>
             </>

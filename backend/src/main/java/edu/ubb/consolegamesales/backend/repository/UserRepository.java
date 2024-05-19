@@ -12,4 +12,6 @@ public interface UserRepository extends Repository<User, Long> {
     User findByRefreshToken(String refreshToken);
 
     Page<User> findUsersChattedWith(Long userId, Pageable pageable);
+
+    String findAddressByUserId(Long userId);
 }

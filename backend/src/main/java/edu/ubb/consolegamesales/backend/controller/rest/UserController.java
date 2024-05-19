@@ -1,6 +1,7 @@
 package edu.ubb.consolegamesales.backend.controller.rest;
 
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.Pagination;
+import edu.ubb.consolegamesales.backend.controller.dto.outgoing.UserAddressDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.UserResponseDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.UsersResponseWithPaginationDto;
 import edu.ubb.consolegamesales.backend.controller.exception.NotFoundException;
@@ -59,4 +60,19 @@ public class UserController {
         }
     }
 
+
+    @GetMapping("/{id}/address")
+    public UserAddressDto findAddressByUserId(@PathVariable("id") Long id) throws NotFoundException {
+        LOGGER.info("GET user address at users/{}/address api", id);
+        try {
+            String address = userRepository.findAddressByUserId(id);
+            if (address == null) {
+                throw new NotFoundException("User with ID " + id + " not found");
+            } else {
+                return new UserAddressDto(address);
+            }
+        } catch (EntityNotFoundException e) {
+            throw new NotFoundException("User with ID " + id + " not found", e);
+        }
+    }
 }

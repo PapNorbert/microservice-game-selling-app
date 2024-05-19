@@ -47,7 +47,7 @@ export default function SellerCard({ sellerId, sellerUsername, sellerRegistratio
         </Stack>
       </Card>
       {chatOpen &&
-        <ChatBoxComponent sellerId={sellerId} sellerUsername={sellerUsername} />
+        <ChatBoxComponent receiverId={sellerId} receiverUsername={sellerUsername} />
       }
     </>
   )

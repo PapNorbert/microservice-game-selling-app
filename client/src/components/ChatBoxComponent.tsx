@@ -7,11 +7,11 @@ import { dateFormatOptions } from '../util/dateOptions';
 import { ReceivedMessage } from '../interface/receivedMessageInterface';
 
 interface PropType {
-  sellerId: number;
-  sellerUsername: string
+  receiverId: number;
+  receiverUsername: string
 }
 
-export default function ChatBoxComponent({ sellerId, sellerUsername }: PropType) {
+export default function ChatBoxComponent({ receiverId, receiverUsername }: PropType) {
   const [messageList, setMessageList] = useState<ReceivedMessage[]>([]);
   const { auth } = useAuth();
   const stompClient = useStompClient();
@@ -32,10 +32,10 @@ export default function ChatBoxComponent({ sellerId, sellerUsername }: PropType)
     setMessageList(messages);
   });
 
-  useSubscription(`/queue/messages/${auth.userId}-${sellerId}`, (message) => {
+  useSubscription(`/queue/messages/${auth.userId}-${receiverId}`, (message) => {
     // queue format:  /queue/messages/{selfId}-{senderId}
     const messageReceived: ReceivedMessage = JSON.parse(message.body);
-    if (messageReceived.senderId === sellerId && messageReceived.receiverId === auth.userId) {
+    if (messageReceived.senderId === receiverId && messageReceived.receiverId === auth.userId) {
       // setting for chatBox message format
       messageReceived.auther = 'other';
       messageReceived.auther_name = messageReceived.senderUsername;
@@ -46,16 +46,16 @@ export default function ChatBoxComponent({ sellerId, sellerUsername }: PropType)
 
   useEffect(() => {
     if (stompClient) {
-      stompClient.publish({ destination: `/ws/history/${auth.userId}-${sellerId}` });
+      stompClient.publish({ destination: `/ws/history/${auth.userId}-${receiverId}` });
     }
-  }, []);
+  }, [receiverId]);
 
   function handleMessageSend(data: string) {
     if (stompClient && auth.logged_in && auth.username && auth.userId) {
       const sentData = {
         senderId: auth.userId,
         senderUsername: auth.username,
-        receiverId: sellerId,
+        receiverId: receiverId,
         data: data
       }
       stompClient.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(sentData) });
@@ -76,7 +76,7 @@ export default function ChatBoxComponent({ sellerId, sellerUsername }: PropType)
     < Chatbox _onSendMessage={handleMessageSend}
       messages={messageList} avatar={false} theme='#e99000fa' sound={false}
       noMessagesText='No messages'
-      brandName={sellerUsername}
+      brandName={receiverUsername}
     />
   );
 

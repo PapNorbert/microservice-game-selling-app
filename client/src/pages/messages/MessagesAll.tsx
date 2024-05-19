@@ -14,8 +14,9 @@ import configuredAxios from "../../axios/configuredAxios";
 import PaginationElement from "../../components/PaginationElement";
 import Limit from "../../components/Limit";
 import useAuth from "../../hooks/useAuth";
-import { UsersChattedWith } from "../../interface/UsersChattedWith";
+import { User, UsersChattedWith } from "../../interface/UsersChattedWith";
 import UserChattedWith from "../../components/UserChattedWith";
+import ChatBoxComponent from "../../components/ChatBoxComponent";
 
 
 export default function MessagesAll() {
@@ -23,6 +24,7 @@ export default function MessagesAll() {
   const [usersChattedWithUrl, setUsersChattedWithUrl] = useState<string>(`/${apiPrefix}/users?${chattedWithParamName}=${auth.userId}`);
   const { limit, page } = useContext(SearchContext);
   const location = useLocation();
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const { data: chattedWithData, isError, error, isLoading } =
     useQuery<AxiosResponse<UsersChattedWith>, AxiosError>({
@@ -88,13 +90,19 @@ export default function MessagesAll() {
             chattedWithData.data.users.length > 0 ? (
             <Container>
               {chattedWithData?.data.users.map(currentElement => (
-                <UserChattedWith user={currentElement} key={currentElement.userId} />
+                <Container className="clickable" onClick={() => setSelectedUser(currentElement)}>
+                  <UserChattedWith user={currentElement} key={currentElement.userId} />
+                </Container>
               ))}
               < PaginationElement totalPages={chattedWithData?.data.pagination.totalPages} />
+              {
+                selectedUser !== null &&
+                <ChatBoxComponent receiverId={selectedUser.userId} receiverUsername={selectedUser.username} />
+              }
             </Container>
           )
             :
-            <h3>No Announcements found!</h3>
+            <h3>No Messages found!</h3>
         }
       </Container>
     </>

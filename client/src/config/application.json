@@ -19,5 +19,7 @@
   "datePostedParamName": "datePosted",
   "datePostedParamDefault": "ALL",
   "sellerParamName": "sellerId",
-  "soldParamName": "sold"
+  "soldParamName": "sold",
+  "wsServerUrl": "http://localhost:8080/websocket",
+  "chattedWithParamName": "chattedWithUser"
 }

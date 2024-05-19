@@ -63,6 +63,7 @@ public class SecurityConfig {
                                         .permitAll()
                                 .requestMatchers(HttpMethod.GET, "/" + apiPrefix + "/announcements/**")
                                         .permitAll()
+                                .requestMatchers("/ws/**", "websocket/**").permitAll()
                                 .anyRequest().authenticated())
                 .userDetailsService(userDetailsServiceImp)
                 // unauthorized response code for accesDenied

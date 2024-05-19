@@ -9,6 +9,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.Collection;
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
@@ -16,7 +17,7 @@ public interface UserMapper {
     UserResponseDto modelToResponseDto(User user);
 
     @Mapping(target = "userId", source = "entityId")
-    Collection<UserResponseDto> modelsToResponseDtos(Collection<User> users);
+    List<UserResponseDto> modelsToResponseDtos(List<User> users);
 
     CreatedObjectDto modelToCreatedObjDto(User user);
 

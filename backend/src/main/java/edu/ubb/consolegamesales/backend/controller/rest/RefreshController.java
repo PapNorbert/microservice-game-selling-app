@@ -1,4 +1,4 @@
-package edu.ubb.consolegamesales.backend.controller;
+package edu.ubb.consolegamesales.backend.controller.rest;
 
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.TokenDto;
 import edu.ubb.consolegamesales.backend.service.AuthenticationService;

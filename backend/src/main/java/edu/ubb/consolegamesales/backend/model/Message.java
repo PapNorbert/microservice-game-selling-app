@@ -19,8 +19,8 @@ public class Message extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "receiver_id")
     private User receiver;
-    @Column(nullable = false)
-    private String text;
+    @Column(nullable = false, length = 855)
+    private String data;
     @Column(nullable = false, name = "sent_time")
     private Date sentTime;
 }

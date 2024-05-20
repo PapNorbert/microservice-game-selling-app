@@ -4,5 +4,6 @@ export interface AuthData {
   logged_in: boolean;
   username: string | undefined;
   role: UserRoleTypes | undefined;
-  userId: number | undefined
+  userId: number | undefined;
+  address?: string | undefined;
 }

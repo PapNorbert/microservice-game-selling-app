@@ -57,6 +57,11 @@ export default function Navigationbar() {
                 onClick={() => { navigate('/announcements/me') }}>
                 My Announcements
               </Nav.Link>}
+              {auth.logged_in &&
+              <Nav.Link className='me-4 mr-4 nav-text fw-bold'
+                onClick={() => { navigate('/orders') }}>
+                Orders
+              </Nav.Link>}
             {auth.logged_in &&
               <Nav.Link className='me-4 mr-4 nav-text fw-bold'
                 onClick={() => { navigate('/announcements/create') }}>

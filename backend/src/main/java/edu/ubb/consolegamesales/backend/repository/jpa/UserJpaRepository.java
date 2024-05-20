@@ -35,4 +35,8 @@ public interface UserJpaRepository extends UserRepository, JpaRepository<User, L
             + "WHERE (m.sender.entityId = :userId OR m.receiver.entityId = :userId) "
             + "AND u.entityId <> :userId")
     Page<User> findUsersChattedWith(Long userId, Pageable pageable);
+
+    @Query("SELECT u.address FROM User u WHERE u.entityId = :userId")
+    String findAddressByUserId(Long userId);
+
 }

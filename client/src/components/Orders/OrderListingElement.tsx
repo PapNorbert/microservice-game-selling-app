@@ -1,15 +1,17 @@
 import { Card, Col, Row, Stack } from "react-bootstrap";
 import { Order } from "../../interface/OrdersInterface"
 import { dateFormatOptions } from "../../util/dateOptions";
+import { useNavigate } from "react-router-dom";
 
 interface PropType {
   order: Order;
 }
 
 export default function OrderListingElement({ order }: PropType) {
+  const navigate = useNavigate();
 
   return (
-    <Card>
+    <Card className="clickable" onClick={() => navigate(`/orders/${order.orderId}`)}>
       <Card.Header>
         <Stack direction="horizontal" gap={3}>
           <span>Order nr. </span>

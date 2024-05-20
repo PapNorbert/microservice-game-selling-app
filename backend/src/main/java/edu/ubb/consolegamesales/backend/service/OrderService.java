@@ -13,6 +13,7 @@ import edu.ubb.consolegamesales.backend.model.User;
 import edu.ubb.consolegamesales.backend.repository.AnnouncementRepository;
 import edu.ubb.consolegamesales.backend.repository.OrderRepository;
 import edu.ubb.consolegamesales.backend.service.exception.AnnouncementAlreadySoldException;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -41,6 +42,20 @@ public class OrderService {
         Pagination pagination = new Pagination(page, limit,
                 orderPage.getTotalElements(), orderPage.getTotalPages());
         return new OrderListWithPaginationDto(bookingListingDtos, pagination);
+    }
+
+    public OrderListDto findOrderById(Long orderId) {
+        try {
+            OrderListDto orderListDto = orderMapper.modelToOrderListDto(
+                    orderRepository.getById(orderId));
+            if (orderListDto == null) {
+                throw new NotFoundException("Order with ID " + orderId + " not found");
+            } else {
+                return orderListDto;
+            }
+        } catch (EntityNotFoundException e) {
+            throw new NotFoundException("Order with ID " + orderId + " not found", e);
+        }
     }
 
     public CreatedObjectDto createOrder(OrderCreationDto orderCreationDto,

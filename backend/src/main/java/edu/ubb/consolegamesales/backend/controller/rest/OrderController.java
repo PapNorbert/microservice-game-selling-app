@@ -2,7 +2,9 @@ package edu.ubb.consolegamesales.backend.controller.rest;
 
 import edu.ubb.consolegamesales.backend.controller.dto.incoming.OrderCreationDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
+import edu.ubb.consolegamesales.backend.controller.dto.outgoing.OrderListDto;
 import edu.ubb.consolegamesales.backend.controller.dto.outgoing.OrderListWithPaginationDto;
+import edu.ubb.consolegamesales.backend.controller.exception.NotFoundException;
 import edu.ubb.consolegamesales.backend.service.OrderService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
@@ -19,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @AllArgsConstructor
 public class OrderController {
     private final OrderService orderService;
-    
+
     @GetMapping
     public OrderListWithPaginationDto findPaginated(
             @RequestParam @Positive Long buyerId,
@@ -28,6 +30,12 @@ public class OrderController {
         LOGGER.info("GET paginated orders of user with id {} at orders api, "
                 + "page: {}, limit: {}", buyerId, page, limit);
         return orderService.findAllOrdersOfUser(buyerId, page, limit);
+    }
+
+    @GetMapping("/{id}")
+    public OrderListDto findById(@PathVariable("id") Long id) throws NotFoundException {
+        LOGGER.info("GET order at orders/{} api", id);
+        return orderService.findOrderById(id);
     }
 
     @PostMapping

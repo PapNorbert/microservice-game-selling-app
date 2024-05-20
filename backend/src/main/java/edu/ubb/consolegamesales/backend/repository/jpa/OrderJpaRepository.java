@@ -5,6 +5,8 @@ import edu.ubb.consolegamesales.backend.model.Order;
 import edu.ubb.consolegamesales.backend.repository.OrderRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.context.annotation.Profile;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,4 +22,6 @@ public interface OrderJpaRepository extends OrderRepository, JpaRepository<Order
             + " WHERE entityId = :id ")
     @Override
     Integer update(Long id, Order entity);
+
+    Page<Order> findAllByBuyerEntityId(Long buyerId, Pageable pageable);
 }

@@ -21,5 +21,6 @@
   "sellerParamName": "sellerId",
   "soldParamName": "sold",
   "wsServerUrl": "http://localhost:8080/websocket",
-  "chattedWithParamName": "chattedWithUser"
+  "chattedWithParamName": "chattedWithUser",
+  "buyerParamName": "buyerId"
 }

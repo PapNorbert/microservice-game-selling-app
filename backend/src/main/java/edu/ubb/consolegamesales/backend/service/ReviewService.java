@@ -29,7 +29,7 @@ public class ReviewService {
 
     public ReviewResponseWithPaginationDto findAllReviewsOfUser(Long userId, int page, int limit) {
         PageRequest pageRequest = PageRequest.of(page - 1, limit,
-                Sort.by("creationDate"));
+                Sort.by("creationDate").descending());
         Page<Review> reviewsPage = reviewRepository.findAllBySellerEntityId(userId, pageRequest);
         List<ReviewResponseDto> reviewResponseDtos = reviewMapper.modelsToResponseDtos(
                 reviewsPage.getContent());

@@ -7,7 +7,7 @@ interface PropType {
   user: User;
 }
 
-export default function UserChattedWith({ user }: PropType) {
+export default function UserElement({ user }: PropType) {
   return (
     <Card className='mt-4 mb-3'>
       <Row>

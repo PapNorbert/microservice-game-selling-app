@@ -41,11 +41,16 @@ export default function SellerCard({ sellerId, sellerUsername, sellerRegistratio
           Registered since: {new Date(sellerRegistrationDate).toLocaleDateString('ro-RO', dateFormatShortOptions)}
         </Row>
         <Stack direction='horizontal' className='mt-3 clickable fw-semibold'
+          onClick={() => navigate(`/reviews/${sellerId}`)}>
+          User reviews
+          <ChevronRight className='mt-1' />
+        </Stack>
+        <Stack direction='horizontal' className='mt-3 clickable fw-semibold'
           onClick={() => navigate(`/announcements?seller=${sellerId}`)}>
           Other sale announcements from this seller
           <ChevronRight className='mt-1' />
         </Stack>
-      </Card>
+      </Card >
       {chatOpen &&
         <ChatBoxComponent receiverId={sellerId} receiverUsername={sellerUsername} />
       }

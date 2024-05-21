@@ -63,6 +63,8 @@ public class SecurityConfig {
                                         .permitAll()
                                 .requestMatchers(HttpMethod.GET, "/" + apiPrefix + "/announcements/**")
                                         .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/" + apiPrefix + "/reviews/**")
+                                .permitAll()
                                 .requestMatchers("/ws/**", "websocket/**").permitAll()
                                 .anyRequest().authenticated())
                 .userDetailsService(userDetailsServiceImp)

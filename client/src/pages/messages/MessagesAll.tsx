@@ -15,7 +15,7 @@ import PaginationElement from "../../components/PaginationElement";
 import Limit from "../../components/Limit";
 import useAuth from "../../hooks/useAuth";
 import { User, UsersChattedWith } from "../../interface/UsersChattedWith";
-import UserChattedWith from "../../components/UserChattedWith";
+import UserElement from "../../components/UserElement";
 import ChatBoxComponent from "../../components/ChatBoxComponent";
 
 
@@ -91,7 +91,7 @@ export default function MessagesAll() {
             <Container>
               {chattedWithData?.data.users.map(currentElement => (
                 <Container className="clickable" onClick={() => setSelectedUser(currentElement)}>
-                  <UserChattedWith user={currentElement} key={currentElement.userId} />
+                  <UserElement user={currentElement} key={currentElement.userId} />
                 </Container>
               ))}
               < PaginationElement totalPages={chattedWithData?.data.pagination.totalPages} />

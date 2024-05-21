@@ -14,6 +14,7 @@ import SearchContextProvider from './context/SearchContextProvider';
 import { wsServerUrl } from './config/application.json'
 import MessagesPage from './pages/messages/MessagesPage';
 import OrdersPage from './pages/orders/OrdersPage';
+import ReviewsPage from './pages/reviews/ReviewsPage';
 
 function App() {
 
@@ -30,6 +31,7 @@ function App() {
                 <Route path='/register' element={<Register />} />
                 <Route path='/login' element={<Login />} />
                 <Route path='/announcements/*' element={<AnnouncementPage />} />
+                <Route path='/reviews/*' element={<ReviewsPage />} />
                 <Route path='/orders/*' element={<OrdersPage />} />
                 <Route path='/messages/*' element={<MessagesPage />} />
                 <Route path='/unauthorized' element={<UnauthorizedPage />} />

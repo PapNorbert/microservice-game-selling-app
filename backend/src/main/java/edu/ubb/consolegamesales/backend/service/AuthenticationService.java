@@ -25,6 +25,7 @@ public class AuthenticationService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private static final int ONE_HOUR = 60 * 60 * 1000;
     private static final int ONE_DAY = ONE_HOUR * 24;
@@ -37,7 +38,6 @@ public class AuthenticationService {
         requestUser.setRegistrationDate(new Date());
         requestUser.setPassword(passwordEncoder.encode(requestUser.getPassword()));
         requestUser.setRole(Role.USER);
-        requestUser.setRefreshToken(null);
         return userRepository.saveAndFlush(requestUser);
     }
 
@@ -50,9 +50,6 @@ public class AuthenticationService {
                         "User with username " + requestUser.getUsername() + " not found"));
         String accesToken = jwtService.generateToken(user, ONE_HOUR);
         String refreshToken = jwtService.generateToken(user, ONE_DAY);
-        // refreshToken is saved in db, deleted on logout
-        user.setRefreshToken(refreshToken);
-        userRepository.update(user.getEntityId(), user);
         // refreshToken is used in cookie, accesToken used by client application
         return Pair.of(accesToken, refreshToken);
 
@@ -63,7 +60,8 @@ public class AuthenticationService {
             throw new RefreshUserNotFoundException();
         }
         try {
-            User user = userRepository.findByRefreshToken(token);
+            Long userId = jwtService.decodeUserId(token);
+            User user = userService.loadUserByUserId(userId);
             if (user == null) {
                 throw new RefreshUserNotFoundException();
             }

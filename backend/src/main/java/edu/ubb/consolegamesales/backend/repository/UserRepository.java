@@ -9,9 +9,9 @@ import java.util.Optional;
 public interface UserRepository extends Repository<User, Long> {
     Optional<User> findByUsername(String username);
 
-    User findByRefreshToken(String refreshToken);
+    Optional<User> findByEntityId(Long id);
 
     Page<User> findUsersChattedWith(Long userId, Pageable pageable);
 
-    String findAddressByUserId(Long userId);
+    Optional<String> findAddressByUserId(Long userId);
 }

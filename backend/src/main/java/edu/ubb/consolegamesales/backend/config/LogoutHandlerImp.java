@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Component
 public class LogoutHandlerImp implements LogoutHandler {
-    private final UserRepository userRepository;
 
     @Override
     public void logout(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
@@ -24,10 +23,6 @@ public class LogoutHandlerImp implements LogoutHandler {
         if (token == null) {
             return;
         }
-        // delete refresh token
-        User user = userRepository.findByRefreshToken(token);
-        user.setRefreshToken(null);
-        userRepository.update(user.getEntityId(), user);
         // remove cookie by setting maxAge to 0 overwriting the existing cookie
         Cookie authCookie = new Cookie("Auth", "");
         authCookie.setHttpOnly(true);
@@ -35,6 +30,7 @@ public class LogoutHandlerImp implements LogoutHandler {
         authCookie.setMaxAge(0);
         authCookie.setAttribute("SameSite", "None");
         response.addCookie(authCookie);
-        LOGGER.info("User with username '" + user.getUsername() + "' logged out");
+        User user = (User) authentication.getPrincipal();
+        LOGGER.info("User with username '{}' logged out", user.getUsername());
     }
 }

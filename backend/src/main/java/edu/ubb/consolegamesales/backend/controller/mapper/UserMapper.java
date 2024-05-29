@@ -8,7 +8,6 @@ import edu.ubb.consolegamesales.backend.model.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.util.Collection;
 import java.util.List;
 
 @Mapper(componentModel = "spring")
@@ -25,7 +24,6 @@ public interface UserMapper {
     @Mapping(target = "registrationDate", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "authorities", ignore = true)
-    @Mapping(target = "refreshToken", ignore = true)
     User creationDtoToModel(UserCreationDto userCreationDto);
 
     @Mapping(target = "entityId", ignore = true)
@@ -35,7 +33,6 @@ public interface UserMapper {
     @Mapping(target = "address", ignore = true)
     @Mapping(target = "role", ignore = true)
     @Mapping(target = "authorities", ignore = true)
-    @Mapping(target = "refreshToken", ignore = true)
     User loginDtoToModel(LoginInformationDto loginInformationDto);
 
 }

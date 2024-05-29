@@ -8,6 +8,7 @@ import edu.ubb.consolegamesales.backend.controller.exception.NotFoundException;
 import edu.ubb.consolegamesales.backend.controller.mapper.UserMapper;
 import edu.ubb.consolegamesales.backend.model.User;
 import edu.ubb.consolegamesales.backend.repository.UserRepository;
+import edu.ubb.consolegamesales.backend.service.UserService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
@@ -27,6 +28,7 @@ import java.util.List;
 public class UserController {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final UserService userService;
 
     @GetMapping
     public UsersResponseWithPaginationDto getUsersChatedWith(
@@ -49,7 +51,9 @@ public class UserController {
     public UserResponseDto findById(@PathVariable("id") Long id) throws NotFoundException {
         LOGGER.info("GET user at users/{} api", id);
         try {
-            UserResponseDto userResponse = userMapper.modelToResponseDto(userRepository.getById(id));
+            UserResponseDto userResponse = userMapper.modelToResponseDto(
+                    userService.loadUserByUserId(id)
+            );
             if (userResponse == null) {
                 throw new NotFoundException("User with ID " + id + " not found");
             } else {
@@ -65,7 +69,7 @@ public class UserController {
     public UserAddressDto findAddressByUserId(@PathVariable("id") Long id) throws NotFoundException {
         LOGGER.info("GET user address at users/{}/address api", id);
         try {
-            String address = userRepository.findAddressByUserId(id);
+            String address = userService.loadUserAddressByUserId(id);
             if (address == null) {
                 throw new NotFoundException("User with ID " + id + " not found");
             } else {

@@ -46,6 +46,12 @@ public class JwtService {
         return decodeTokenPayload(token).getSubject();
     }
 
+    public Long decodeUserId(String token) {
+        // returns the userId from the jwt token payload
+        Claims claims = decodeTokenPayload(token);
+        return claims.get("userId", Long.class);
+    }
+
     private SecretKey getSigninKey() {
         // process the jwt secret key
         byte[] keyBytes = Decoders.BASE64URL.decode(jwtSecret);

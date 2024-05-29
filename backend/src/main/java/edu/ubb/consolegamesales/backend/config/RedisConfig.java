@@ -1,5 +1,6 @@
 package edu.ubb.consolegamesales.backend.config;
 
+import edu.ubb.consolegamesales.backend.model.Order;
 import edu.ubb.consolegamesales.backend.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -40,6 +41,14 @@ public class RedisConfig {
     @ConditionalOnProperty(name = "spring.data.redis.port")
     public RedisTemplate<String, String> redisTemplateString() {
         RedisTemplate<String, String> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(jedisConnectionFactory());
+        return redisTemplate;
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "spring.data.redis.port")
+    public RedisTemplate<String, Order> redisTemplateReview() {
+        RedisTemplate<String, Order> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(jedisConnectionFactory());
         return redisTemplate;
     }

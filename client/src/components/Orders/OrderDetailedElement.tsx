@@ -10,7 +10,6 @@ interface PropType {
 }
 
 export default function OrderDetailedElement({ order }: PropType) {
-
   return (
     <>
       <h1>Details of order nr. {order.orderId}</h1>

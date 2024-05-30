@@ -1,5 +1,6 @@
 package edu.ubb.consolegamesales.backend.service;
 
+import edu.ubb.consolegamesales.backend.model.GameDisc;
 import edu.ubb.consolegamesales.backend.model.Order;
 import edu.ubb.consolegamesales.backend.model.User;
 import lombok.AllArgsConstructor;
@@ -17,9 +18,11 @@ public class RedisService {
     private final RedisTemplate<String, User> redisTemplateUser;
     private final RedisTemplate<String, String> redisTemplateString;
     private final RedisTemplate<String, Order> redisTemplateOrder;
+    private final RedisTemplate<String, GameDisc> redisTemplateGameDisc;
     private static final String KEY_PREFIX_USER = "users:";
     private static final String KEY_POSTFIX_USER_ADDRESS = ":address";
     private static final String KEY_PREFIX_ORDER = "orders:";
+    private static final String KEY_PREFIX_GAMEDISC = "gameDiscs:";
 
 
     public void storeUserInCache(Long userId, User user) {
@@ -86,5 +89,27 @@ public class RedisService {
             LOGGER.error("Error accessing order in Redis cache: {}", e.getMessage());
         }
         return order;
+    }
+
+    public void storeGameDiscInCache(Long gameDiscId, GameDisc gameDisc) {
+        try {
+            String key = KEY_PREFIX_GAMEDISC + gameDiscId;
+            redisTemplateGameDisc.opsForValue().set(key, gameDisc);
+            // set expiration date of 2 hours
+            redisTemplateGameDisc.expire(key, 2, TimeUnit.HOURS);
+            LOGGER.info("GameDisc stored in Redis cache with key: {}", key);
+        } catch (Exception e) {
+            LOGGER.error("Error storing data in Redis cache: ", e);
+        }
+    }
+
+    public GameDisc getCachedGameDisc(Long gameDiscId) {
+        GameDisc gameDisc = null;
+        try {
+            gameDisc = redisTemplateGameDisc.opsForValue().get(KEY_PREFIX_GAMEDISC + gameDiscId);
+        } catch (Exception e) {
+            LOGGER.error("Error accessing gameDisc in Redis cache: {}", e.getMessage());
+        }
+        return gameDisc;
     }
 }

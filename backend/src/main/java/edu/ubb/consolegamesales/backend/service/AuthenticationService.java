@@ -26,6 +26,7 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final UserService userService;
+    private final RedisService redisService;
     private final AuthenticationManager authenticationManager;
     private static final int ONE_HOUR = 60 * 60 * 1000;
     private static final int ONE_DAY = ONE_HOUR * 24;
@@ -48,6 +49,7 @@ public class AuthenticationService {
         User user = userRepository.findByUsername(requestUser.getUsername())
                 .orElseThrow(() -> new NotFoundException(
                         "User with username " + requestUser.getUsername() + " not found"));
+        redisService.storeUserInCache(user.getEntityId(), user);
         String accesToken = jwtService.generateToken(user, ONE_HOUR);
         String refreshToken = jwtService.generateToken(user, ONE_DAY);
         // refreshToken is used in cookie, accesToken used by client application

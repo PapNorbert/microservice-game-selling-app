@@ -9,6 +9,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @Profile("jpa")
 public interface GameDiscJpaRepository extends GameDiscRepository, JpaRepository<GameDisc, Long> {
@@ -19,4 +21,7 @@ public interface GameDiscJpaRepository extends GameDiscRepository, JpaRepository
             + "gameYear = :#{#entity.gameYear} WHERE entityId = :id ")
     @Override
     Integer update(Long id, GameDisc entity);
+
+    @Override
+    Optional<GameDisc> findByEntityId(Long id);
 }

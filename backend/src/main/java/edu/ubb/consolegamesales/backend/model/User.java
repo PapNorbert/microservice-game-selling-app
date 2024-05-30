@@ -1,5 +1,8 @@
 package edu.ubb.consolegamesales.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import edu.ubb.consolegamesales.backend.config.GrantedAuthorityDeserializer;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,6 +18,7 @@ import java.util.List;
 @ToString(callSuper = true)
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 @Entity
 @Table(name = "users")
 public class User extends BaseEntity implements UserDetails {
@@ -33,6 +37,10 @@ public class User extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
+
+    @Transient
+    @JsonDeserialize(contentUsing = GrantedAuthorityDeserializer.class)
+    private List<GrantedAuthority> authorities;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

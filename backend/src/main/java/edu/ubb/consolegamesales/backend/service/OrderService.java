@@ -37,7 +37,7 @@ public class OrderService {
     private final AnnouncementRepository announcementRepository;
     private final RedisService redisService;
     private final AnnouncementEventRepository announcementEventRepository;
-
+    private final static int TIME_ALLOWED_FOR_ORDER_CANCEL_IN_MILI_SEC = 8640000;
 
     public OrderListWithPaginationDto findAllOrdersOfUser(Long userId, int page, int limit) {
         PageRequest pageRequest = PageRequest.of(page - 1, limit,
@@ -52,16 +52,8 @@ public class OrderService {
 
     public OrderListDto findOrderById(Long orderId, Authentication authentication) {
         try {
-            Order order = redisService.getCachedOrder(orderId);
-            if (order == null) {
-                order = orderRepository.findByEntityId(orderId).orElseThrow(
-                        () -> new NotFoundException("Order with ID " + orderId + " not found"));
-            }
             User user = AuthenticationInformation.extractUser(authentication);
-            if (!Objects.equals(user.getEntityId(), order.getBuyer().getEntityId())) {
-                throw new AccessDeniedException("You cannot access this resource!");
-            }
-
+            Order order = loadOrderById(orderId, user);
             redisService.storeOrderInCache(orderId, order);
             return orderMapper.modelToOrderListDto(order);
         } catch (EntityNotFoundException e) {
@@ -69,13 +61,10 @@ public class OrderService {
         }
     }
 
+
     public CreatedObjectDto createOrder(OrderCreationDto orderCreationDto,
                                         Authentication authentication) {
-        if (authentication == null || !authentication.isAuthenticated()
-                || authentication.getPrincipal() == null) {
-            throw new AccessDeniedException("You must Login first to access this resource!");
-        }
-        User user = (User) authentication.getPrincipal();
+        User user = AuthenticationInformation.extractUser(authentication);
         if (!Objects.equals(user.getEntityId(), orderCreationDto.getBuyerId())) {
             throw new AccessDeniedException("You cannot order in the name of another user!");
         }
@@ -89,6 +78,7 @@ public class OrderService {
         }
         announcement.setSold(true);
         announcementRepository.update(announcement.getEntityId(), announcement);
+        redisService.deleteCachedAnnouncement(announcement.getEntityId());
         Order order = orderRepository.saveAndFlush(
                 orderMapper.creationDtoToModel(orderCreationDto));
         AnnouncementEvent announcementEvent = new AnnouncementEvent(
@@ -96,5 +86,41 @@ public class OrderService {
         announcementEventRepository.saveAndFlush(announcementEvent);
 
         return orderMapper.modelToCreatedObjDto(order);
+    }
+
+    public void deleteOrderById(Long id, Authentication authentication) {
+        User user = AuthenticationInformation.extractUser(authentication);
+        Order order = loadOrderById(id, user);
+        // order exists and logged-in user owns it
+
+        if (new Date().getTime() - order.getOrderDate().getTime() > TIME_ALLOWED_FOR_ORDER_CANCEL_IN_MILI_SEC) {
+            throw new AccessDeniedException("You cannot cancel the order, too much time passed");
+        }
+        orderRepository.delete(order);
+        // update announcement
+        Announcement announcement = announcementRepository.getById(order.getAnnouncement().getEntityId());
+        announcement.setSold(false);
+        announcementRepository.update(announcement.getEntityId(), announcement);
+        AnnouncementEvent announcementEvent = new AnnouncementEvent(
+                announcement, "Announcement order canceled, announcement not sold", new Date(), user);
+        announcementEventRepository.saveAndFlush(announcementEvent);
+        // update cache
+        redisService.deleteCachedAnnouncement(announcement.getEntityId());
+        redisService.deleteCachedOrder(id);
+    }
+
+
+    private Order loadOrderById(Long orderId, User user)
+            throws EntityNotFoundException, AccessDeniedException {
+        Order order = redisService.getCachedOrder(orderId);
+        if (order == null) {
+            order = orderRepository.findByEntityId(orderId).orElseThrow(
+                    () -> new NotFoundException("Order with ID " + orderId + " not found"));
+        }
+        // check order of the user
+        if (!Objects.equals(user.getEntityId(), order.getBuyer().getEntityId())) {
+            throw new AccessDeniedException("You cannot access this resource!");
+        }
+        return order;
     }
 }

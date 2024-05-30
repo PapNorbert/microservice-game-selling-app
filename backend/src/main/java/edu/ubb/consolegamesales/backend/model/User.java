@@ -1,8 +1,7 @@
 package edu.ubb.consolegamesales.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import edu.ubb.consolegamesales.backend.config.GrantedAuthorityDeserializer;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -38,31 +37,33 @@ public class User extends BaseEntity implements UserDetails {
     @Column(nullable = false)
     private Role role;
 
-    @Transient
-    @JsonDeserialize(contentUsing = GrantedAuthorityDeserializer.class)
-    private List<GrantedAuthority> authorities;
 
     @Override
+    @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    @JsonIgnore
     public boolean isEnabled() {
         return true;
     }

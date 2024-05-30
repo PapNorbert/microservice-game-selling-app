@@ -1,5 +1,6 @@
 package edu.ubb.consolegamesales.backend.service;
 
+import edu.ubb.consolegamesales.backend.model.Announcement;
 import edu.ubb.consolegamesales.backend.model.GameDisc;
 import edu.ubb.consolegamesales.backend.model.Order;
 import edu.ubb.consolegamesales.backend.model.User;
@@ -19,10 +20,12 @@ public class RedisService {
     private final RedisTemplate<String, String> redisTemplateString;
     private final RedisTemplate<String, Order> redisTemplateOrder;
     private final RedisTemplate<String, GameDisc> redisTemplateGameDisc;
+    private final RedisTemplate<String, Announcement> redisTemplateAnnouncement;
     private static final String KEY_PREFIX_USER = "users:";
     private static final String KEY_POSTFIX_USER_ADDRESS = ":address";
     private static final String KEY_PREFIX_ORDER = "orders:";
     private static final String KEY_PREFIX_GAMEDISC = "gameDiscs:";
+    private static final String KEY_PREFIX_ANNOUNCEMENT = "announcements:";
 
 
     public void storeUserInCache(Long userId, User user) {
@@ -111,5 +114,43 @@ public class RedisService {
             LOGGER.error("Error accessing gameDisc in Redis cache: {}", e.getMessage());
         }
         return gameDisc;
+    }
+
+    public void deleteCachedGameDisc(Long gameDiscId) {
+        try {
+            redisTemplateGameDisc.delete(KEY_PREFIX_GAMEDISC + gameDiscId);
+        } catch (Exception e) {
+            LOGGER.error("Error deleting gameDisc in Redis cache: {}", e.getMessage());
+        }
+    }
+
+    public void storeAnnouncementInCache(Long announcementId, Announcement announcement) {
+        try {
+            String key = KEY_PREFIX_ANNOUNCEMENT + announcementId;
+            redisTemplateAnnouncement.opsForValue().set(key, announcement);
+            // set expiration date of 2 hours
+            redisTemplateAnnouncement.expire(key, 2, TimeUnit.HOURS);
+            LOGGER.info("Announcement stored in Redis cache with key: {}", key);
+        } catch (Exception e) {
+            LOGGER.error("Error storing data in Redis cache: ", e);
+        }
+    }
+
+    public Announcement getCachedAnnouncement(Long announcementId) {
+        Announcement announcement = null;
+        try {
+            announcement = redisTemplateAnnouncement.opsForValue().get(KEY_PREFIX_ANNOUNCEMENT + announcementId);
+        } catch (Exception e) {
+            LOGGER.error("Error accessing announcement in Redis cache: {}", e.getMessage());
+        }
+        return announcement;
+    }
+
+    public void deleteCachedAnnouncement(Long announcementId) {
+        try {
+            redisTemplateAnnouncement.delete(KEY_PREFIX_ANNOUNCEMENT + announcementId);
+        } catch (Exception e) {
+            LOGGER.error("Error deleting announcement in Redis cache: {}", e.getMessage());
+        }
     }
 }

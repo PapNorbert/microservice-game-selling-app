@@ -1,5 +1,6 @@
 package edu.ubb.consolegamesales.backend.config;
 
+import edu.ubb.consolegamesales.backend.model.Announcement;
 import edu.ubb.consolegamesales.backend.model.GameDisc;
 import edu.ubb.consolegamesales.backend.model.Order;
 import edu.ubb.consolegamesales.backend.model.User;
@@ -75,6 +76,19 @@ public class RedisConfig {
     @ConditionalOnProperty(name = "spring.data.redis.port")
     public RedisTemplate<String, GameDisc> redisTemplateGameDisc() {
         RedisTemplate<String, GameDisc> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(jedisConnectionFactory());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.afterPropertiesSet();
+        return redisTemplate;
+    }
+
+    @Bean
+    @ConditionalOnProperty(name = "spring.data.redis.port")
+    public RedisTemplate<String, Announcement> redisTemplateAnnouncement() {
+        RedisTemplate<String, Announcement> redisTemplate = new RedisTemplate<>();
         redisTemplate.setConnectionFactory(jedisConnectionFactory());
         redisTemplate.setKeySerializer(new StringRedisSerializer());
         redisTemplate.setHashKeySerializer(new StringRedisSerializer());

@@ -10,6 +10,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 
 @Repository
 @Profile("jpa")
@@ -26,4 +28,6 @@ public interface AnnouncementJpaRepository extends
             + " WHERE entityId = :id ")
     @Override
     Integer update(Long id, Announcement entity);
+
+    Optional<Announcement> findByEntityId(Long id);
 }

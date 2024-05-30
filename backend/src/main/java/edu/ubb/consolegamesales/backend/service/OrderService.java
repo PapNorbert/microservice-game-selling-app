@@ -31,6 +31,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final AnnouncementRepository announcementRepository;
+    private final RedisService redisService;
 
 
     public OrderListWithPaginationDto findAllOrdersOfUser(Long userId, int page, int limit) {
@@ -46,13 +47,14 @@ public class OrderService {
 
     public OrderListDto findOrderById(Long orderId) {
         try {
-            OrderListDto orderListDto = orderMapper.modelToOrderListDto(
-                    orderRepository.getById(orderId));
-            if (orderListDto == null) {
-                throw new NotFoundException("Order with ID " + orderId + " not found");
-            } else {
-                return orderListDto;
+            Order order = redisService.getCachedOrder(orderId);
+            if (order != null) {
+                return orderMapper.modelToOrderListDto(order);
             }
+            order = orderRepository.findByEntityId(orderId).orElseThrow(
+                    () -> new NotFoundException("Order with ID " + orderId + " not found"));
+            redisService.storeOrderInCache(orderId, order);
+            return orderMapper.modelToOrderListDto(order);
         } catch (EntityNotFoundException e) {
             throw new NotFoundException("Order with ID " + orderId + " not found", e);
         }

@@ -12,6 +12,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
+
 @Repository
 @Profile("jpa")
 public interface OrderJpaRepository extends OrderRepository, JpaRepository<Order, Long> {
@@ -24,4 +26,8 @@ public interface OrderJpaRepository extends OrderRepository, JpaRepository<Order
     Integer update(Long id, Order entity);
 
     Page<Order> findAllByBuyerEntityId(Long buyerId, Pageable pageable);
+
+    @Override
+    Optional<Order> findByEntityId(Long orderId);
+
 }

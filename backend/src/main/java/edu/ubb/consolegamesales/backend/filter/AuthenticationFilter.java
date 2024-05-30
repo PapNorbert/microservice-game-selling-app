@@ -1,7 +1,7 @@
 package edu.ubb.consolegamesales.backend.filter;
 
 import edu.ubb.consolegamesales.backend.service.JwtService;
-import edu.ubb.consolegamesales.backend.service.security.UserDetailsServiceImp;
+import edu.ubb.consolegamesales.backend.service.UserService;
 import edu.ubb.consolegamesales.backend.util.TokenExtraction;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,8 +23,7 @@ import java.io.IOException;
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final UserDetailsServiceImp userDetailsService;
-
+    private final UserService userService;
 
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
@@ -39,15 +38,15 @@ public class AuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        String username = jwtService.decodeUsername(token);
+        Long userId = jwtService.decodeUserId(token);
         SecurityContext securityContext = SecurityContextHolder.getContext();
 
-        if (username != null && securityContext.getAuthentication() == null) {
+        if (userId != null && securityContext.getAuthentication() == null) {
             // user not already authenticated
-            // get user data from database
-            UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+            // get user data
+            UserDetails userDetails = userService.loadUserByUserId(userId);
 
-            if (jwtService.verifyToken(token, userDetails)) {
+            if (userDetails != null && jwtService.verifyToken(token, userDetails)) {
                 // valid token, authenticate user
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails,
                         null, userDetails.getAuthorities());

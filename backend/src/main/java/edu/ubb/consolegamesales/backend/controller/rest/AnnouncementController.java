@@ -70,16 +70,17 @@ public class AnnouncementController {
 
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@PathVariable("id") Long id, @RequestBody @Valid AnnouncementUpdateDto announcementUpdateDto) {
+    public void update(@PathVariable("id") Long id, @RequestBody @Valid AnnouncementUpdateDto announcementUpdateDto,
+                       Authentication authentication) {
         LOGGER.info("PUT request at announcements/{} api", id);
-        announcementService.update(id, announcementUpdateDto);
+        announcementService.update(id, announcementUpdateDto, authentication);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") Long id) {
+    public void delete(@PathVariable("id") Long id, Authentication authentication) {
         LOGGER.info("DELETE announcements request at announcements/{} api", id);
-        announcementService.delete(id);
+        announcementService.delete(id, authentication);
     }
 
 }

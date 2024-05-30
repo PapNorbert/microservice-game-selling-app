@@ -33,9 +33,9 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public OrderListDto findById(@PathVariable("id") Long id) throws NotFoundException {
+    public OrderListDto findById(@PathVariable("id") Long id, Authentication authentication) throws NotFoundException {
         LOGGER.info("GET order at orders/{} api", id);
-        return orderService.findOrderById(id);
+        return orderService.findOrderById(id, authentication);
     }
 
     @PostMapping

@@ -37,7 +37,7 @@ The application serves a diverse range of individuals within the gaming communit
 - **Edit and Delete Announcements**: Users can edit and delete their own sale announcements.
 - **View the user's other listings**: Users can view other listings posted by a specific seller.
 - **Check user reviews**: Users can view reviews left by other users to assess the credibility and reputation of sellers before making a purchase.
-- **Real-time chat with sellers (WebSocket)**: Buyers can communicate directly with sellers in real time using the built-in chat feature powered by WebSocket technology, enabling seamless communication and negotiation.
+- **Real-time chat with sellers**: Buyers can communicate directly with sellers in real time using the built-in chat feature, enabling seamless communication and negotiation.
 - **Order a sold game disk**: Buyers can place orders for sold game discs to be shipped to their address.
 - **Order Cancellation**: Allows users to cancel an order for a sold game disc within 1 day of placing the order, provided it has not yet been shipped.
 
@@ -54,6 +54,9 @@ The platform utilizes the following technologies:
 - **React**: The platform's frontend is built with React, creating a dynamic user interface.
   
 - **Redis**: Redis is employed for caching data, enhancing performance by storing frequently accessed information in memory.
+  
+- **WebSocket**: WebSocket technology enables real-time communication between users.
+  
 
 ### Similar Products
 

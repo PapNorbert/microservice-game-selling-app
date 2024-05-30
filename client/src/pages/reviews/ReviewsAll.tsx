@@ -22,7 +22,7 @@ import UserElement from "../../components/UserElement";
 
 export default function ReviewsAll() {
   const { sellerId } = useParams();
-  const [seller, setSeller] = useState<User>();
+  const [seller, setSeller] = useState<User | null>();
   const { auth } = useAuth();
   const [reviewsUrl, setReviewsUrl] = useState<string>(`/${apiPrefix}/reviews?${sellerParamName}=${sellerId}`);
   const { limit, page } = useContext(SearchContext);
@@ -48,14 +48,15 @@ export default function ReviewsAll() {
     onError: handleSubmitError,
   });
 
+  
   useEffect(() => {
     // get user details
     configuredAxios.get(`/${apiPrefix}/users/${sellerId}`)
       .then((response) => {
         setSeller(response?.data || null);
       })
-      // in case of error user is not logged in
       .catch(() => {
+        setSeller(null);
       })
   }, [sellerId]);
 
@@ -128,6 +129,15 @@ export default function ReviewsAll() {
     setInsertReviewTextError('');
   }
 
+
+  if( seller === null ) {
+    return (
+      <>
+        <h2 className="error">User reviews not found!</h2>
+        <h3 className="clickable text-center fst-italic text-decoration-underline" onClick={() => navigate('/announcements')}>Announcements</h3>
+      </>
+    ) 
+  }
 
   if (isLoading) {
     return (

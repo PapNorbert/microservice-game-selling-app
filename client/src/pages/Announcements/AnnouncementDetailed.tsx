@@ -1,6 +1,6 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { useState } from "react";
-import { AxiosResponse } from "axios";
+import { AxiosError, AxiosResponse } from "axios";
 import { useQuery } from "@tanstack/react-query";
 
 
@@ -14,10 +14,12 @@ import AnnouncementDetailedLong from "../../components/Announcements/Announcemen
 export default function AnnouncementDetailed() {
   const { announcementId } = useParams();
   const [announcementUrl] = useState<string>(`/${apiPrefix}/announcements/${announcementId}`);
+  const navigate = useNavigate();
 
-  const { data: announcementData, isError, error, isLoading } = useQuery<AxiosResponse<AnnouncementDetailedResponse>>({
+  const { data: announcementData, isError, error, isLoading } = useQuery<AxiosResponse<AnnouncementDetailedResponse>, AxiosError>({
     queryKey: ["announcementDetailed", announcementUrl],
     queryFn: queryFunction,
+    retry: false
   });
 
   function queryFunction() {
@@ -34,6 +36,15 @@ export default function AnnouncementDetailed() {
   }
 
   if (isError) {
+    if (error.response?.status === 404) {
+      return (
+        <>
+          <SearchBar />
+          <h2 className="error">Announcement not found! </h2>
+          <h3 className="clickable text-center fst-italic text-decoration-underline" onClick={() => navigate('/announcements')}>Announcements</h3>
+        </>
+      )
+    }
     return (
       <>
         <SearchBar />
@@ -46,7 +57,7 @@ export default function AnnouncementDetailed() {
     <>
       <SearchBar />
       {announcementData?.data &&
-        <AnnouncementDetailedLong announcement={announcementData.data} key={announcementId}/>
+        <AnnouncementDetailedLong announcement={announcementData.data} key={announcementId} />
       }
     </>
   )

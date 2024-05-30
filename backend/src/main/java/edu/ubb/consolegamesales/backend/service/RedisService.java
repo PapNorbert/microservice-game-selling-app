@@ -94,6 +94,14 @@ public class RedisService {
         return order;
     }
 
+    public void deleteCachedGameDisc(Long gameDiscId) {
+        try {
+            redisTemplateGameDisc.delete(KEY_PREFIX_GAMEDISC + gameDiscId);
+        } catch (Exception e) {
+            LOGGER.error("Error deleting gameDisc in Redis cache: {}", e.getMessage());
+        }
+    }
+
     public void storeGameDiscInCache(Long gameDiscId, GameDisc gameDisc) {
         try {
             String key = KEY_PREFIX_GAMEDISC + gameDiscId;
@@ -116,11 +124,11 @@ public class RedisService {
         return gameDisc;
     }
 
-    public void deleteCachedGameDisc(Long gameDiscId) {
+    public void deleteCachedOrder(Long orderId) {
         try {
-            redisTemplateGameDisc.delete(KEY_PREFIX_GAMEDISC + gameDiscId);
+            redisTemplateOrder.delete(KEY_PREFIX_ORDER + orderId);
         } catch (Exception e) {
-            LOGGER.error("Error deleting gameDisc in Redis cache: {}", e.getMessage());
+            LOGGER.error("Error deleting order in Redis cache: {}", e.getMessage());
         }
     }
 

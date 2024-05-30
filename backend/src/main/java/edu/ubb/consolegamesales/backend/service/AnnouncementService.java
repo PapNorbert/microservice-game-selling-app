@@ -7,14 +7,13 @@ import edu.ubb.consolegamesales.backend.controller.exception.NotFoundException;
 import edu.ubb.consolegamesales.backend.controller.exception.NotUpdatedException;
 import edu.ubb.consolegamesales.backend.controller.mapper.AnnouncementMapper;
 import edu.ubb.consolegamesales.backend.controller.mapper.GameDiscMapper;
-import edu.ubb.consolegamesales.backend.model.Announcement;
-import edu.ubb.consolegamesales.backend.model.GameDisc;
-import edu.ubb.consolegamesales.backend.model.GameDiscType;
-import edu.ubb.consolegamesales.backend.model.User;
+import edu.ubb.consolegamesales.backend.model.*;
+import edu.ubb.consolegamesales.backend.repository.AnnouncementEventRepository;
 import edu.ubb.consolegamesales.backend.repository.AnnouncementRepository;
 import edu.ubb.consolegamesales.backend.repository.AnnouncementsSavesRepository;
 import edu.ubb.consolegamesales.backend.repository.GameDiscRepository;
 import edu.ubb.consolegamesales.backend.repository.jpa.AnnouncementSpecifications;
+import edu.ubb.consolegamesales.backend.service.security.AuthenticationInformation;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -28,6 +27,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @AllArgsConstructor
@@ -38,6 +38,7 @@ public class AnnouncementService {
     private final GameDiscMapper gameDiscMapper;
     private final AnnouncementsSavesRepository announcementsSavesRepository;
     private final RedisService redisService;
+    private final AnnouncementEventRepository announcementEventRepository;
 
 
     public AnnouncementsListWithPaginationDto findAnnouncementsPaginated(
@@ -122,27 +123,50 @@ public class AnnouncementService {
         announcement.setCreationDate(new Date());
         Announcement savedAnnouncement = announcementRepository.saveAndFlush(announcement);
         redisService.storeAnnouncementInCache(savedAnnouncement.getEntityId(), savedAnnouncement);
+        AnnouncementEvent announcementEvent = new AnnouncementEvent(
+                announcement, "Announcement created", new Date(), announcement.getSeller());
+        announcementEventRepository.saveAndFlush(announcementEvent);
         return announcementMapper.modelToCreatedObjDto(savedAnnouncement);
     }
 
-    public void update(Long id, AnnouncementUpdateDto announcementUpdateDto)
+    public void update(Long id, AnnouncementUpdateDto announcementUpdateDto,
+                       Authentication authentication)
             throws NotFoundException, NotUpdatedException {
         try {
+
             if (announcementRepository.update(id,
                     announcementMapper.updateDtoToModel(announcementUpdateDto)) <= 0) {
                 throw new NotUpdatedException("No update done for announcement with ID " + id);
             }
+            // update cache
             redisService.deleteCachedAnnouncement(id);
+            // save event
+            Announcement announcement = new Announcement();
+            announcement.setEntityId(id);
+            User user = AuthenticationInformation.extractUser(authentication);
+            AnnouncementEvent announcementEvent = new AnnouncementEvent(
+                    announcement, "Announcement data updated", new Date(), user);
+            announcementEventRepository.saveAndFlush(announcementEvent);
         } catch (EntityNotFoundException e) {
             throw new NotFoundException("Announcement with ID " + id + " not found", e);
         }
     }
 
 
-    public void delete(Long id) throws NotFoundException {
+    public void delete(Long id, Authentication authentication) throws NotFoundException {
         try {
             Announcement announcement = announcementRepository.getById(id);
             if (announcement != null) {
+                User user = AuthenticationInformation.extractUser(authentication);
+                if (!Objects.equals(user.getEntityId(), announcement.getSeller().getEntityId())) {
+                    throw new AccessDeniedException("You cannot delete announcement of another user!");
+                }
+                // save announcement event
+                AnnouncementEvent announcementEvent = new AnnouncementEvent(
+                        announcement, "Announcement deleted", new Date(), user);
+                announcementEventRepository.saveAndFlush(announcementEvent);
+
+                // delete resources
                 announcementsSavesRepository.deleteByAnnouncementEntityId(announcement.getEntityId());
                 announcementRepository.delete(announcement);
                 redisService.deleteCachedAnnouncement(announcement.getEntityId());

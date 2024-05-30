@@ -8,6 +8,7 @@ import edu.ubb.consolegamesales.backend.controller.exception.NotFoundException;
 import edu.ubb.consolegamesales.backend.service.OrderService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -33,9 +34,9 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public OrderListDto findById(@PathVariable("id") Long id) throws NotFoundException {
+    public OrderListDto findById(@PathVariable("id") Long id, Authentication authentication) throws NotFoundException {
         LOGGER.info("GET order at orders/{} api", id);
-        return orderService.findOrderById(id);
+        return orderService.findOrderById(id, authentication);
     }
 
     @PostMapping
@@ -44,5 +45,13 @@ public class OrderController {
                                    Authentication authentication) {
         LOGGER.info("POST request at orders api");
         return orderService.createOrder(orderCreationDto, authentication);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void delete(@PathVariable("id") @PositiveOrZero Long id,
+                       Authentication authentication) {
+        LOGGER.info("DELETE request at orders/{} api", id);
+        orderService.deleteOrderById(id, authentication);
     }
 }

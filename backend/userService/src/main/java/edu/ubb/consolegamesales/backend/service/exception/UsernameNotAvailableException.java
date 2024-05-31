@@ -6,7 +6,4 @@ public class UsernameNotAvailableException extends RuntimeException {
         super(message);
     }
 
-    public UsernameNotAvailableException(String message, Throwable cause) {
-        super(message, cause);
-    }
 }

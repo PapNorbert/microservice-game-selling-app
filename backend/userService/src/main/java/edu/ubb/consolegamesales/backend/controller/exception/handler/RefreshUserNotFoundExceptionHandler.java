@@ -13,6 +13,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class RefreshUserNotFoundExceptionHandler {
     @ExceptionHandler(RefreshUserNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public void handleFailedConstraintException(RefreshUserNotFoundException exception) {
+    public void handleFailedConstraintException(RefreshUserNotFoundException ignoredException) {
     }
 }

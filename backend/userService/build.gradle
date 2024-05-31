@@ -1,0 +1,47 @@
+import se.bjurr.violations.gradle.plugin.ViolationsGradlePlugin
+import se.bjurr.violations.gradle.plugin.ViolationsTask
+
+// checkstyle linting and validations
+buildscript {
+    repositories {
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        maven { url 'https://plugins.gradle.org/m2/' }
+    }
+    dependencies {
+        classpath group: 'se.bjurr.violations', name: 'violations-gradle-plugin', version: '1.37'
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '3.2.1'
+    id 'checkstyle'
+}
+
+apply plugin: ViolationsGradlePlugin
+
+group = 'edu.ubb.consolegamesales.backend.userService'
+version = '1.0-SNAPSHOT'
+
+checkstyle {
+    toolVersion = '10.3.4'
+    ignoreFailures = true
+    showViolations = true
+    configProperties = [
+            'minSeverity': 'info'
+    ]
+}
+
+tasks.register('violations', ViolationsTask) {
+    maxRuleColumnWidth = 25
+    maxMessageColumnWidth = 80
+
+    minSeverity = 'INFO' // INFO, WARN or ERROR
+    detailLevel = 'VERBOSE' // PER_FILE_COMPACT, COMPACT or VERBOSE
+    maxViolations = 0 // Will fail the build if total number of found violations is higher
+
+    violations = [
+            ["CHECKSTYLE", buildDir.path, ".*/checkstyle/.*\\.xml\$", "Checkstyle"]
+    ]
+}
+
+check.finalizedBy violations

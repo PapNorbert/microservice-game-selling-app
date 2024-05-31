@@ -1,8 +1,8 @@
 package edu.ubb.consolegamesales.backend.controller.rest;
 
-import edu.ubb.consolegamesales.backend.controller.dto.incoming.UserCreationDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
 import edu.ubb.consolegamesales.backend.controller.mapper.UserMapper;
+import edu.ubb.consolegamesales.backend.dto.incoming.UserCreationDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.CreatedObjectDto;
 import edu.ubb.consolegamesales.backend.model.User;
 import edu.ubb.consolegamesales.backend.service.AuthenticationService;
 import jakarta.validation.Valid;
@@ -26,7 +26,7 @@ public class RegistrationController {
     public CreatedObjectDto register(@RequestBody @Valid UserCreationDto userCreationDto) {
         LOGGER.info("Registration request");
         User createdUser = authenticationService.register(userMapper.creationDtoToModel(userCreationDto));
-        LOGGER.info("User registered with username '" + createdUser.getUsername() + "'");
+        LOGGER.info("User registered with username '{}'", createdUser.getUsername());
         return userMapper.modelToCreatedObjDto(createdUser);
     }
 

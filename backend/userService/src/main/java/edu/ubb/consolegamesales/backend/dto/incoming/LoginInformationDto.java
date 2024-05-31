@@ -1,4 +1,4 @@
-package edu.ubb.consolegamesales.backend.controller.dto.incoming;
+package edu.ubb.consolegamesales.backend.dto.incoming;
 
 
 import jakarta.validation.constraints.NotBlank;

@@ -6,12 +6,6 @@ spring:
 
   datasource:
     driver_class_name: "com.mysql.cj.jdbc.Driver"
-    url: "jdbc:mysql://localhost:3306/console_game_sales?allowPublicKeyRetrieval=true&useSSL=false"
+    url: "jdbc:mysql://localhost:3306/cgs_users"
     username: "salesUser"
     password: "consoleGameSales334"
-
-# cgs_users
-# cgs_messages
-# cgs_reviews
-# cgs_announcements
-# cgs_orders

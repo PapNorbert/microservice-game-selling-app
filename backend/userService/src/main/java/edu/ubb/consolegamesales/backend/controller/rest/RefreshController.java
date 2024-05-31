@@ -1,6 +1,6 @@
 package edu.ubb.consolegamesales.backend.controller.rest;
 
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.TokenDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.TokenDto;
 import edu.ubb.consolegamesales.backend.service.AuthenticationService;
 import edu.ubb.consolegamesales.backend.util.TokenExtraction;
 import jakarta.servlet.http.HttpServletRequest;

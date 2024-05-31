@@ -1,8 +1,8 @@
 package edu.ubb.consolegamesales.backend.controller.rest;
 
-import edu.ubb.consolegamesales.backend.controller.dto.incoming.LoginInformationDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.TokenDto;
 import edu.ubb.consolegamesales.backend.controller.mapper.UserMapper;
+import edu.ubb.consolegamesales.backend.dto.incoming.LoginInformationDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.TokenDto;
 import edu.ubb.consolegamesales.backend.model.User;
 import edu.ubb.consolegamesales.backend.service.AuthenticationService;
 import jakarta.servlet.http.Cookie;
@@ -25,7 +25,8 @@ public class LoginController {
 
 
     @PostMapping
-    public TokenDto login(@RequestBody @Valid LoginInformationDto loginInformationDto, HttpServletResponse response) {
+    public TokenDto login(@RequestBody @Valid LoginInformationDto loginInformationDto,
+                          HttpServletResponse response) {
         LOGGER.info("Login request");
         User loginUser = userMapper.loginDtoToModel(loginInformationDto);
         // first is the accesToken, second the refreshToken
@@ -38,7 +39,7 @@ public class LoginController {
         authCookie.setMaxAge(5 * 60 * 60);
         authCookie.setAttribute("SameSite", "None");
         response.addCookie(authCookie);
-        LOGGER.info("User with username '" + loginUser.getUsername() + "' logged in");
+        LOGGER.info("User with username '{}' logged in", loginUser.getUsername());
         // accesToken sent to the client application
         return new TokenDto(tokens.getFirst());
     }

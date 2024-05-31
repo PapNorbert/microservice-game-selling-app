@@ -1,11 +1,11 @@
 package edu.ubb.consolegamesales.backend.controller.rest;
 
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.Pagination;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.UserAddressDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.UserResponseDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.UsersResponseWithPaginationDto;
 import edu.ubb.consolegamesales.backend.controller.exception.NotFoundException;
 import edu.ubb.consolegamesales.backend.controller.mapper.UserMapper;
+import edu.ubb.consolegamesales.backend.dto.outgoing.Pagination;
+import edu.ubb.consolegamesales.backend.dto.outgoing.UserAddressDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.UserResponseDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.UsersResponseWithPaginationDto;
 import edu.ubb.consolegamesales.backend.model.User;
 import edu.ubb.consolegamesales.backend.repository.UserRepository;
 import edu.ubb.consolegamesales.backend.service.UserService;
@@ -30,22 +30,23 @@ public class UserController {
     private final UserMapper userMapper;
     private final UserService userService;
 
-    @GetMapping
-    public UsersResponseWithPaginationDto getUsersChatedWith(
-            @RequestParam @Positive Long chattedWithUser,
-            @RequestParam(defaultValue = "1", required = false) @Positive int page,
-            @RequestParam(defaultValue = "5", required = false) @Positive int limit) {
-        LOGGER.info("GET request at users api, get users that has messages with user with id {}", chattedWithUser);
-        // get users list based if there is a message between them
-        PageRequest pageRequest =
-                PageRequest.of(page - 1, limit);
-        Page<User> usersChattedWith =
-                userRepository.findUsersChattedWith(chattedWithUser, pageRequest);
-        List<UserResponseDto> userResponseDtos = userMapper.modelsToResponseDtos(usersChattedWith.getContent());
-        Pagination pagination = new Pagination(page, limit,
-                usersChattedWith.getTotalElements(), usersChattedWith.getTotalPages());
-        return new UsersResponseWithPaginationDto(userResponseDtos, pagination);
-    }
+//    @GetMapping
+//    public UsersResponseWithPaginationDto getUsersChatedWith(
+//            @RequestParam @Positive Long chattedWithUser,
+//            @RequestParam(defaultValue = "1", required = false) @Positive int page,
+//            @RequestParam(defaultValue = "5", required = false) @Positive int limit) {
+//        LOGGER.info("GET request at users api, get users that has messages with user with id {}", chattedWithUser);
+//        // get users list based if there is a message between them
+//        PageRequest pageRequest =
+//                PageRequest.of(page - 1, limit);
+//        Page<User> usersChattedWith =
+//                userRepository.findUsersChattedWith(chattedWithUser, pageRequest);
+//        List<UserResponseDto> userResponseDtos = userMapper.modelsToResponseDtos(usersChattedWith.getContent());
+//        Pagination pagination = new Pagination(page, limit,
+//                usersChattedWith.getTotalElements(), usersChattedWith.getTotalPages());
+//        return new UsersResponseWithPaginationDto(userResponseDtos, pagination);
+//    }
+// TODO getUsersChatedWith controller
 
     @GetMapping("/{id}")
     public UserResponseDto findById(@PathVariable("id") Long id) throws NotFoundException {

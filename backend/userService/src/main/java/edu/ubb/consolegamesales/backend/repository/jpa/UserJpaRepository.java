@@ -30,12 +30,13 @@ public interface UserJpaRepository extends UserRepository, JpaRepository<User, L
     Optional<User> findByEntityId(Long id);
 
 
-    @Query("SELECT DISTINCT u "
-            + "FROM User u "
-            + "JOIN Message m ON u = m.sender OR u = m.receiver "
-            + "WHERE (m.sender.entityId = :userId OR m.receiver.entityId = :userId) "
-            + "AND u.entityId <> :userId")
-    Page<User> findUsersChattedWith(Long userId, Pageable pageable);
+//    @Query("SELECT DISTINCT u "
+//            + "FROM User u "
+//            + "JOIN Message m ON u = m.sender OR u = m.receiver "
+//            + "WHERE (m.sender.entityId = :userId OR m.receiver.entityId = :userId) "
+//            + "AND u.entityId <> :userId")
+//    Page<User> findUsersChattedWith(Long userId, Pageable pageable);
+    // TODO change findUsersChattedWith, message-user service communication
 
     @Query("SELECT u.address FROM User u WHERE u.entityId = :userId")
     Optional<String> findAddressByUserId(Long userId);

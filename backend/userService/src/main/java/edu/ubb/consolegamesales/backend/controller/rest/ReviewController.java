@@ -1,8 +1,8 @@
 package edu.ubb.consolegamesales.backend.controller.rest;
 
-import edu.ubb.consolegamesales.backend.controller.dto.incoming.ReviewCreationDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.ReviewResponseWithPaginationDto;
+import edu.ubb.consolegamesales.backend.dto.incoming.ReviewCreationDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.CreatedObjectDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.ReviewResponseWithPaginationDto;
 import edu.ubb.consolegamesales.backend.service.ReviewService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;

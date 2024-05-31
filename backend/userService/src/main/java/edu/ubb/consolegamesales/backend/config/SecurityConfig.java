@@ -5,6 +5,7 @@ import edu.ubb.consolegamesales.backend.service.security.UserDetailsServiceImp;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
@@ -59,7 +60,9 @@ public class SecurityConfig {
                                 .requestMatchers(
                                         "/" + apiPrefix + "/login/**", "/" + apiPrefix + "/register/**",
                                         "/" + apiPrefix + "/refresh")
-                                .permitAll()
+                                    .permitAll()
+                                .requestMatchers(HttpMethod.GET, "/" + apiPrefix + "/reviews/**")
+                                    .permitAll()
                                 .anyRequest().authenticated())
                 .userDetailsService(userDetailsServiceImp)
                 // unauthorized response code for accesDenied

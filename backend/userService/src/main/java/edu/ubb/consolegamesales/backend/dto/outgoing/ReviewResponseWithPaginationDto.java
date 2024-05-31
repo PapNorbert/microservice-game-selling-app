@@ -1,4 +1,4 @@
-package edu.ubb.consolegamesales.backend.controller.dto.outgoing;
+package edu.ubb.consolegamesales.backend.dto.outgoing;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

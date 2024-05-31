@@ -1,8 +1,8 @@
 package edu.ubb.consolegamesales.backend.controller.mapper;
 
-import edu.ubb.consolegamesales.backend.controller.dto.incoming.ReviewCreationDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.ReviewResponseDto;
+import edu.ubb.consolegamesales.backend.dto.incoming.ReviewCreationDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.CreatedObjectDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.ReviewResponseDto;
 import edu.ubb.consolegamesales.backend.model.Review;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

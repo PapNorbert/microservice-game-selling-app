@@ -13,9 +13,8 @@ import java.util.Date;
 @Entity
 @Table(name = "announcements")
 public class Announcement extends BaseEntity {
-    @ManyToOne
-    @JoinColumn(name = "seller_id")
-    private User seller; // TODO change to long
+    @Column(name = "seller_id")
+    private Long sellerId;
     @ManyToOne
     @JoinColumn(name = "game_disc_id")
     private GameDisc soldGameDisc;

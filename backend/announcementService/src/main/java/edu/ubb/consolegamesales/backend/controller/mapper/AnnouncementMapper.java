@@ -15,9 +15,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface AnnouncementMapper {
     @Mapping(target = "announcementId", source = "entityId")
-    @Mapping(target = "sellerId", source = "seller.entityId")
-    @Mapping(target = "sellerUsername", source = "seller.username")
-    @Mapping(target = "sellerRegistrationDate", source = "seller.registrationDate")
     @Mapping(target = "savedByUser", expression = "java(false)")
     AnnouncementDetailedDto modelToDetailedDto(Announcement announcement);
 
@@ -28,11 +25,10 @@ public interface AnnouncementMapper {
     @Mapping(target = "sold", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "soldGameDisc", ignore = true)
-    @Mapping(target = "seller.entityId", source = "sellerId")
     Announcement creationDtoToModel(AnnouncementCreationDto announcementCreationDto);
 
     @Mapping(target = "entityId", ignore = true)
-    @Mapping(target = "seller", ignore = true)
+    @Mapping(target = "sellerId", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "soldGameDisc", ignore = true)
     Announcement updateDtoToModel(AnnouncementUpdateDto announcementUpdateDto);
@@ -42,12 +38,10 @@ public interface AnnouncementMapper {
     @Mapping(target = "soldGameDiscType", source = "soldGameDisc.type")
     @Mapping(target = "announcementId", source = "entityId")
     @Mapping(target = "savedByUser", expression = "java(false)")
-    @Mapping(target = "sellerId", source = "seller.entityId")
     AnnouncementListShortDto modelToListShortDto(Announcement announcement);
 
     @Mapping(target = "soldGameDiscName", source = "soldGameDisc.name")
     @Mapping(target = "announcementId", source = "entityId")
     @Mapping(target = "savedByUser", expression = "java(false)")
-    @Mapping(target = "sellerId", source = "seller.entityId")
     List<AnnouncementListShortDto> modelsToListShortDto(List<Announcement> announcements);
 }

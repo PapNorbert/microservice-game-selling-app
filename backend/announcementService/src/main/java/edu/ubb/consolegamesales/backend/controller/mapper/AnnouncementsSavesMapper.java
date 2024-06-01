@@ -13,7 +13,6 @@ public interface AnnouncementsSavesMapper {
 
 
     @Mapping(target = "entityId", ignore = true)
-    @Mapping(target = "user.entityId", source = "userId")
     @Mapping(target = "announcement.entityId", source = "announcementId")
     AnnouncementsSaves creationDtoToModel(AnnouncementsSavesCreationDto announcementsSavesCreationDto);
 }

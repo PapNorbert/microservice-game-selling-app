@@ -1,6 +1,5 @@
 package edu.ubb.consolegamesales.backend.model;
 
-
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,8 +20,6 @@ public class AnnouncementEvent extends BaseEntity {
     private String event;
     @Column(nullable = false)
     private Date date;
-    @ManyToOne
-    @JoinColumn(name = "changed_by_user_id")
-    private User changedByUser;
-    // TODO change user
+    @Column(name = "changed_by_user_id")
+    private Long changedByUserId;
 }

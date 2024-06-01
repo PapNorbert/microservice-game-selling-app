@@ -72,7 +72,7 @@ public class AnnouncementService {
             User user = (User) authentication.getPrincipal();
             for (AnnouncementListShortDto announcementListShortDto : announcementListShortDtos) {
                 announcementListShortDto.setSavedByUser(
-                        announcementsSavesRepository.existsByAnnouncementEntityIdAndUserEntityId(
+                        announcementsSavesRepository.existsByAnnouncementEntityIdAndUserId(
                                 announcementListShortDto.getAnnouncementId(), user.getEntityId()
                         )
                 );
@@ -101,7 +101,7 @@ public class AnnouncementService {
                         && authentication.getPrincipal() != null) {
                     User user = (User) authentication.getPrincipal();
                     savedByUser = announcementsSavesRepository
-                            .existsByAnnouncementEntityIdAndUserEntityId(
+                            .existsByAnnouncementEntityIdAndUserId(
                                     id, user.getEntityId()
                             );
                 }
@@ -124,7 +124,7 @@ public class AnnouncementService {
         Announcement savedAnnouncement = announcementRepository.saveAndFlush(announcement);
         redisService.storeAnnouncementInCache(savedAnnouncement.getEntityId(), savedAnnouncement);
         AnnouncementEvent announcementEvent = new AnnouncementEvent(
-                announcement, "Announcement created", new Date(), announcement.getSeller());
+                announcement, "Announcement created", new Date(), announcement.getSellerId());
         announcementEventRepository.saveAndFlush(announcementEvent);
         return announcementMapper.modelToCreatedObjDto(savedAnnouncement);
     }
@@ -145,7 +145,7 @@ public class AnnouncementService {
             announcement.setEntityId(id);
             User user = AuthenticationInformation.extractUser(authentication);
             AnnouncementEvent announcementEvent = new AnnouncementEvent(
-                    announcement, "Announcement data updated", new Date(), user);
+                    announcement, "Announcement data updated", new Date(), user.getEntityId());
             announcementEventRepository.saveAndFlush(announcementEvent);
         } catch (EntityNotFoundException e) {
             throw new NotFoundException("Announcement with ID " + id + " not found", e);
@@ -158,12 +158,12 @@ public class AnnouncementService {
             Announcement announcement = announcementRepository.getById(id);
             if (announcement != null) {
                 User user = AuthenticationInformation.extractUser(authentication);
-                if (!Objects.equals(user.getEntityId(), announcement.getSeller().getEntityId())) {
+                if (!Objects.equals(user.getEntityId(), announcement.getSellerId())) {
                     throw new AccessDeniedException("You cannot delete announcement of another user!");
                 }
                 // save announcement event
                 AnnouncementEvent announcementEvent = new AnnouncementEvent(
-                        announcement, "Announcement deleted", new Date(), user);
+                        announcement, "Announcement deleted", new Date(), user.getEntityId());
                 announcementEventRepository.saveAndFlush(announcementEvent);
 
                 // delete resources

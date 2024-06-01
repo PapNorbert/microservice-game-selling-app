@@ -1,6 +1,5 @@
 package edu.ubb.consolegamesales.backend.repository.jpa;
 
-import edu.ubb.consolegamesales.backend.model.Announcement;
 import edu.ubb.consolegamesales.backend.model.AnnouncementsSaves;
 import edu.ubb.consolegamesales.backend.repository.AnnouncementsSavesRepository;
 import jakarta.transaction.Transactional;
@@ -24,10 +23,10 @@ public interface AnnouncementsSavesJpaRepository extends
     @Override
     Integer update(Long id, AnnouncementsSaves entity);
 
-    boolean existsByAnnouncementEntityIdAndUserEntityId(Long announcementEntityId, Long userEntityId);
+    boolean existsByAnnouncementEntityIdAndUserId(Long announcementEntityId, Long userEntityId);
 
     @Transactional
-    void deleteByAnnouncementEntityIdAndUserEntityId(Long announcementEntityId, Long userEntityId);
+    void deleteByAnnouncementEntityIdAndUserId(Long announcementEntityId, Long userEntityId);
 
     @Transactional
     void deleteByAnnouncementEntityId(Long announcementEntityId);

@@ -50,7 +50,7 @@ public class AnnouncementsSavesController {
                     user.getEntityId(), user.getUsername(), userId);
             throw new AccessDeniedException("You do not have permission to delete this resource");
         }
-        announcementsSavesRepository.deleteByAnnouncementEntityIdAndUserEntityId(announcementId, userId);
+        announcementsSavesRepository.deleteByAnnouncementEntityIdAndUserId(announcementId, userId);
     }
 
     @DeleteMapping("/{id}")

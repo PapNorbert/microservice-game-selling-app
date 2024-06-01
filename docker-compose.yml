@@ -53,3 +53,11 @@ services:
       DYNAMIC_CONFIG_ENABLED: 'true'
       KAFKA_CLUSTERS_0_NAME: kafka
       KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:9092
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - 80:80
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro

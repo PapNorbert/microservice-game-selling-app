@@ -38,20 +38,21 @@ public class OrderController {
         LOGGER.info("GET order at orders/{} api", id);
         return orderService.findOrderById(id, authentication);
     }
+// TODO create delete
 
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public CreatedObjectDto create(@RequestBody @Valid OrderCreationDto orderCreationDto,
-                                   Authentication authentication) {
-        LOGGER.info("POST request at orders api");
-        return orderService.createOrder(orderCreationDto, authentication);
-    }
-
-    @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable("id") @PositiveOrZero Long id,
-                       Authentication authentication) {
-        LOGGER.info("DELETE request at orders/{} api", id);
-        orderService.deleteOrderById(id, authentication);
-    }
+//    @PostMapping
+//    @ResponseStatus(HttpStatus.CREATED)
+//    public CreatedObjectDto create(@RequestBody @Valid OrderCreationDto orderCreationDto,
+//                                   Authentication authentication) {
+//        LOGGER.info("POST request at orders api");
+//        return orderService.createOrder(orderCreationDto, authentication);
+//    }
+//
+//    @DeleteMapping("/{id}")
+//    @ResponseStatus(HttpStatus.NO_CONTENT)
+//    public void delete(@PathVariable("id") @PositiveOrZero Long id,
+//                       Authentication authentication) {
+//        LOGGER.info("DELETE request at orders/{} api", id);
+//        orderService.deleteOrderById(id, authentication);
+//    }
 }

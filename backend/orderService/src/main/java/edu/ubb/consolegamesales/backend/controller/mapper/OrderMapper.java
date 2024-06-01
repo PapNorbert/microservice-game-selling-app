@@ -14,8 +14,6 @@ public interface OrderMapper {
     CreatedObjectDto modelToCreatedObjDto(Order order);
 
     @Mapping(target = "entityId", ignore = true)
-    @Mapping(target = "buyer.entityId", source = "buyerId")
-    @Mapping(target = "announcement.entityId", source = "announcementId")
     @Mapping(target = "orderDate", expression = "java(new java.util.Date())")
     Order creationDtoToModel(OrderCreationDto orderCreationDto);
 

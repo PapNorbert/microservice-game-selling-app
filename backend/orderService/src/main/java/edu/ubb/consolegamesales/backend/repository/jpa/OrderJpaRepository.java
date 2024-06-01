@@ -25,7 +25,8 @@ public interface OrderJpaRepository extends OrderRepository, JpaRepository<Order
     @Override
     Integer update(Long id, Order entity);
 
-    Page<Order> findAllByBuyerEntityId(Long buyerId, Pageable pageable);
+    @Override
+    Page<Order> findAllByBuyerId(Long buyerId, Pageable pageable);
 
     @Override
     Optional<Order> findByEntityId(Long orderId);

@@ -50,7 +50,7 @@ public class AnnouncementSpecifications {
             Subquery<Announcement> subquery = criteriaQuery.subquery(Announcement.class);
             Root<AnnouncementsSaves> announcementsSavesRoot = subquery.from(AnnouncementsSaves.class);
             subquery.select(announcementsSavesRoot.get("announcement"));
-            subquery.where(criteriaBuilder.equal(announcementsSavesRoot.get("user").get("id"), savedByUserWithId));
+            subquery.where(criteriaBuilder.equal(announcementsSavesRoot.get("userId"), savedByUserWithId));
             return criteriaQuery.where(announcementRoot.in(subquery)).getRestriction();
         };
     }
@@ -62,6 +62,6 @@ public class AnnouncementSpecifications {
 
     public static Specification<Announcement> isCreatedByUserWithId(Long userId) {
         return (announcementRoot, criteriaQuery, criteriaBuilder) ->
-                criteriaBuilder.equal(announcementRoot.get("seller").get("id"), userId);
+                criteriaBuilder.equal(announcementRoot.get("sellerId"), userId);
     }
 }

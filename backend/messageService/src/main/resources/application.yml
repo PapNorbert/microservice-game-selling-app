@@ -1,0 +1,19 @@
+spring:
+  profiles:
+    active: jpa
+  data:
+    redis:
+      port: 6379
+      host: localhost
+      timeout: 5000
+      repositories:
+        enabled: false
+
+server:
+  port: 8084
+
+jwtSecret: 2cdc5639dae1c27de9a074386c5dc8f526fc6c77921d4d34e07a1fceb7cfb9fb
+
+cors:
+  allowed-origin:
+    http://localhost:5173

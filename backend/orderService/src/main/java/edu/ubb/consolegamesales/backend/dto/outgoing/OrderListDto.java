@@ -1,4 +1,4 @@
-package edu.ubb.consolegamesales.backend.controller.dto.outgoing;
+package edu.ubb.consolegamesales.backend.dto.outgoing;
 
 import lombok.Data;
 
@@ -11,4 +11,5 @@ public class OrderListDto {
     private Double price;
     private String orderAddress;
     private AnnouncementListShortDto announcement;
+    // TODO change AnnouncementListShortDto
 }

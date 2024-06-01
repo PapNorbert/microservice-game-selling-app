@@ -1,15 +1,15 @@
 package edu.ubb.consolegamesales.backend.controller.mapper;
 
-import edu.ubb.consolegamesales.backend.controller.dto.incoming.OrderCreationDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.OrderListDto;
+import edu.ubb.consolegamesales.backend.dto.incoming.OrderCreationDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.CreatedObjectDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.OrderListDto;
 import edu.ubb.consolegamesales.backend.model.Order;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import java.util.List;
 
-@Mapper(componentModel = "spring", uses = {AnnouncementMapper.class})
+@Mapper(componentModel = "spring")
 public interface OrderMapper {
     CreatedObjectDto modelToCreatedObjDto(Order order);
 

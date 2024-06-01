@@ -16,9 +16,11 @@ public class Order extends BaseEntity {
     @ManyToOne
     @JoinColumn(name = "buyer_id")
     private User buyer;
+    // TODO change User
     @ManyToOne
     @JoinColumn(name = "announcement_id")
     private Announcement announcement;
+    // TODO change Announcement
     @Column(nullable = false, name = "order_date")
     private Date orderDate;
     @Column(nullable = false)

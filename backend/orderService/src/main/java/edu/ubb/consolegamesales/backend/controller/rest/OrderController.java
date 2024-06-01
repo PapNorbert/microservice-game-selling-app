@@ -1,9 +1,9 @@
 package edu.ubb.consolegamesales.backend.controller.rest;
 
-import edu.ubb.consolegamesales.backend.controller.dto.incoming.OrderCreationDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.CreatedObjectDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.OrderListDto;
-import edu.ubb.consolegamesales.backend.controller.dto.outgoing.OrderListWithPaginationDto;
+import edu.ubb.consolegamesales.backend.dto.incoming.OrderCreationDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.CreatedObjectDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.OrderListDto;
+import edu.ubb.consolegamesales.backend.dto.outgoing.OrderListWithPaginationDto;
 import edu.ubb.consolegamesales.backend.controller.exception.NotFoundException;
 import edu.ubb.consolegamesales.backend.service.OrderService;
 import jakarta.validation.Valid;

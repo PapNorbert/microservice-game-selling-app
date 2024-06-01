@@ -1,7 +1,7 @@
 package edu.ubb.consolegamesales.backend.filter;
 
 import edu.ubb.consolegamesales.backend.service.JwtService;
-import edu.ubb.consolegamesales.backend.service.UserService;
+import edu.ubb.consolegamesales.backend.service.RedisService;
 import edu.ubb.consolegamesales.backend.util.TokenExtraction;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,8 +23,7 @@ import java.io.IOException;
 @Component
 public class AuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
-    private final UserService userService;
-// TODO rewrite without user service
+    private final RedisService redisService;
     @Override
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
@@ -44,7 +43,7 @@ public class AuthenticationFilter extends OncePerRequestFilter {
         if (userId != null && securityContext.getAuthentication() == null) {
             // user not already authenticated
             // get user data
-            UserDetails userDetails = userService.loadUserByUserId(userId);
+            UserDetails userDetails = redisService.getCachedUser(userId);
 
             if (userDetails != null && jwtService.verifyToken(token, userDetails)) {
                 // valid token, authenticate user

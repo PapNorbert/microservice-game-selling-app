@@ -19,8 +19,6 @@ public class RedisService {
     private final RedisTemplate<String, GameDisc> redisTemplateGameDisc;
     private final RedisTemplate<String, Announcement> redisTemplateAnnouncement;
     private static final String KEY_PREFIX_USER = "users:";
-    private static final String KEY_POSTFIX_USER_ADDRESS = ":address";
-    private static final String KEY_PREFIX_ORDER = "orders:";
     private static final String KEY_PREFIX_GAMEDISC = "gameDiscs:";
     private static final String KEY_PREFIX_ANNOUNCEMENT = "announcements:";
 

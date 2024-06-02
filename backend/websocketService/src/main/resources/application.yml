@@ -33,6 +33,7 @@ spring:
 kafkaMessageSaveProduceTopic: message-save-topic
 kafkaMessageHistoryProduceTopic: message-history-request-topic
 kafkaMessageHistoryConsumeTopic: message-history-response-topic
+kafkaUsersChattedWithResponseConsumeTopic: user-chatted-with-response-topic
 
 server:
   port: 8084

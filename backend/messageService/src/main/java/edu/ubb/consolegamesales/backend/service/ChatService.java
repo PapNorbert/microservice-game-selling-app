@@ -9,8 +9,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public class ChatService {
     private final MessageRepository messageRepository;
@@ -32,7 +30,10 @@ public class ChatService {
                 PageRequest.of(page - 1, limit);
         Page<Long> userIdsChattedWithPage =
                 messageRepository.findDistinctUserIdsByUserChattedWith(user.getEntityId(), pageRequest);
-        UserChattedWithDto userChattedWithDto = new UserChattedWithDto(userIdsChattedWithPage, user.getEntityId());
-        kafkaTemplate.send(kafkaProduceTopicUserChattedWith, UUID.randomUUID().toString(), userChattedWithDto);
+        UserChattedWithDto userChattedWithDto = new UserChattedWithDto(
+                userIdsChattedWithPage.getContent(), page, limit,
+                userIdsChattedWithPage.getTotalPages(), userIdsChattedWithPage.getNumberOfElements(),
+                user.getEntityId());
+        kafkaTemplate.send(kafkaProduceTopicUserChattedWith, user.getEntityId().toString(), userChattedWithDto);
     }
 }

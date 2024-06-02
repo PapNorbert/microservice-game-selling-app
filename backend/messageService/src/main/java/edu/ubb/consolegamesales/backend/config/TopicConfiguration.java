@@ -14,7 +14,7 @@ public class TopicConfiguration {
     public TopicConfiguration(
             @Value("${kafkaUsersChatProduceTopic}") String kafkaProduceTopicUserChattedWith,
             @Value("${kafkaMessageHistoryProduceTopic}") String kafkaMessageHistoryProduceTopic
-            ) {
+    ) {
         this.kafkaProduceTopicUserChattedWith = kafkaProduceTopicUserChattedWith;
         this.kafkaMessageHistoryProduceTopic = kafkaMessageHistoryProduceTopic;
     }
@@ -26,6 +26,7 @@ public class TopicConfiguration {
                 .replicas(1)
                 .build();
     }
+
     @Bean
     public NewTopic produceTopicMessageHistory() {
         return TopicBuilder.name(kafkaMessageHistoryProduceTopic)

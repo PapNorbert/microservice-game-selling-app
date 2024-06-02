@@ -1,14 +1,14 @@
 import { useContext, useEffect, useState } from "react";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { Container } from "react-bootstrap";
 import { Navigate, useLocation } from "react-router-dom";
+import { useSubscription } from "react-stomp-hooks";
 
-import SearchBar from "../../layouts/SearchBar";
 import { SearchContext } from "../../context/SearchContextProvider";
 import {
-  apiPrefix, chattedWithParamName,
-  limitQuerryParamDefault, limitQuerryParamName, pageQuerryParamDefault, pageQuerryParamName,
+  apiPrefix, limitQuerryParamDefault, limitQuerryParamName,
+  pageQuerryParamDefault, pageQuerryParamName,
 } from '../../config/application.json';
 import configuredAxios from "../../axios/configuredAxios";
 import PaginationElement from "../../components/PaginationElement";
@@ -21,25 +21,30 @@ import ChatBoxComponent from "../../components/ChatBoxComponent";
 
 export default function MessagesAll() {
   const { auth } = useAuth();
-  const [usersChattedWithUrl, setUsersChattedWithUrl] = useState<string>(`/${apiPrefix}/users?${chattedWithParamName}=${auth.userId}`);
+  const [usersChattedWithUrl, setUsersChattedWithUrl] = useState<string>(`/${apiPrefix}/chats/users`);
   const { limit, page } = useContext(SearchContext);
   const location = useLocation();
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [chattedWithData, setChattedWithData] = useState<UsersChattedWith>();
 
-  const { data: chattedWithData, isError, error, isLoading } =
-    useQuery<AxiosResponse<UsersChattedWith>, AxiosError>({
+  const { isError, error, isLoading } =
+    useQuery<AxiosResponse, AxiosError>({
       queryKey: ["usersChattedWith", usersChattedWithUrl],
       queryFn: queryFunction,
       retry: false,
-      placeholderData: keepPreviousData, // keeps the last succesful fetch as well beside current 
     });
+
+  useSubscription(`/queue/chats/${auth.userId}`, (message) => {
+    // queue format:  /queue/chats/{requestUserId}
+    const data: UsersChattedWith = JSON.parse(message.body);
+    setChattedWithData(data);
+  });
 
   useEffect(() => {
     if (!auth.userId) {
       return;
     }
     const queryParams = new URLSearchParams();
-    queryParams.set(chattedWithParamName, auth.userId.toString());
 
     if (limit !== limitQuerryParamDefault) {
       queryParams.set(limitQuerryParamName, limit);
@@ -48,7 +53,7 @@ export default function MessagesAll() {
       queryParams.set(pageQuerryParamName, page);
     }
 
-    setUsersChattedWithUrl(`/${apiPrefix}/users?${queryParams.toString()}`)
+    setUsersChattedWithUrl(`/${apiPrefix}/chats/users?${queryParams.toString()}`)
   }, [limit, page, auth.userId
   ]);
 
@@ -59,7 +64,6 @@ export default function MessagesAll() {
   if (isLoading) {
     return (
       <>
-        <SearchBar showFilter={true} />
         <h2 className="text-center">Loading...</h2>
       </>
     )
@@ -73,28 +77,27 @@ export default function MessagesAll() {
     }
     return (
       <>
-        <SearchBar showFilter={true} />
         <h2 className="error">{error.message || 'Sorry, there was an error!'}</h2>
       </>
     )
   }
 
-  return (
+  return (chattedWithData ?
     <>
       <h1>Messages</h1>
       <Container>
-        <h3>Found {chattedWithData?.data.pagination.totalCount} results</h3>
+        <h3>Found {chattedWithData.pagination.totalCount} results</h3>
         <Limit />
         {
-          chattedWithData?.data &&
-            chattedWithData.data.users.length > 0 ? (
+          chattedWithData.users.length > 0 ? (
             <Container>
-              {chattedWithData?.data.users.map(currentElement => (
-                <Container className="clickable" onClick={() => setSelectedUser(currentElement)}>
+              {chattedWithData.users.map(currentElement => (
+                <Container className="clickable" onClick={() => setSelectedUser(currentElement)}
+                  key={`container${currentElement.userId}`}>
                   <UserElement user={currentElement} key={currentElement.userId} />
                 </Container>
               ))}
-              < PaginationElement totalPages={chattedWithData?.data.pagination.totalPages} />
+              < PaginationElement totalPages={chattedWithData.pagination.totalPages} />
               {
                 selectedUser !== null &&
                 <ChatBoxComponent receiverId={selectedUser.userId} receiverUsername={selectedUser.username} />
@@ -105,6 +108,11 @@ export default function MessagesAll() {
             <h3>No Messages found!</h3>
         }
       </Container>
+    </>
+    :
+    <>
+      <h1>Messages</h1>
+      <Container className="fst-italic fs-3">Loading users...</Container>
     </>
   )
 }

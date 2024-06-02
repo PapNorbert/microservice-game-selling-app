@@ -30,20 +30,23 @@ public class KafkaConsumerService {
 
     @KafkaListener(topics = "${kafkaMessageSaveConsumeTopic}",
             groupId = "${spring.kafka.consumer.group-id}",
-            properties = {"spring.json.value.default.type=edu.ubb.consolegamesales.backend.dto.kafka.MessageToSaveDto"})
+            properties =
+                    {"spring.json.value.default.type=edu.ubb.consolegamesales.backend.dto.kafka.MessageToSaveDto"})
     public void listenToUserChattedWithTopic(MessageToSaveDto messageToSaveDto) {
         messageRepository.saveAndFlush(messageToSaveDto.getMessage());
     }
 
     @KafkaListener(topics = "${kafkaMessageHistoryConsumeTopic}",
             groupId = "${spring.kafka.consumer.group-id}",
-            properties = {"spring.json.value.default.type=edu.ubb.consolegamesales.backend.dto.kafka.MessageHistoryRequestDto"})
+            properties =
+                    {"spring.json.value.default.type="
+                            + "edu.ubb.consolegamesales.backend.dto.kafka.MessageHistoryRequestDto"})
     public void listenToMessageHistoryRequestTopic(MessageHistoryRequestDto messageHistoryRequestDto) {
         List<Message> messageList =
                 messageRepository.findMessagesBetweenUsersOrderedBySentTime(
                         messageHistoryRequestDto.getFirstUserId(), messageHistoryRequestDto.getOtherUserId());
         MessageHistoryResponseDto messageHistoryResponseDto =
-                new MessageHistoryResponseDto(  messageHistoryRequestDto.getFirstUserId(),
+                new MessageHistoryResponseDto(messageHistoryRequestDto.getFirstUserId(),
                         messageHistoryRequestDto.getOtherUserId(), messageList);
         kafkaTemplateMessageHistory.send(kafkaMessageHistoryProduceTopic,
                 UUID.randomUUID().toString(), messageHistoryResponseDto);

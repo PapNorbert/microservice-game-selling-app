@@ -31,7 +31,7 @@ spring:
 
 
 kafkaUsersChatConsumeTopic: user-chatted-with-topic
-
+kafkaUsersChattedWithResponseProduceTopic: user-chatted-with-response-topic
 
 server:
   port: 8081

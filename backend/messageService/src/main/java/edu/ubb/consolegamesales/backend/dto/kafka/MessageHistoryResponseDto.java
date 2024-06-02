@@ -13,5 +13,5 @@ import java.util.List;
 public class MessageHistoryResponseDto {
     private Long firstUserId;
     private Long otherUserId;
-    List<Message> messageList;
+    private List<Message> messageList;
 }

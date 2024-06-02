@@ -13,7 +13,7 @@ spring:
       auto-create: true
     bootstrap-servers: localhost:29092
     consumer:
-      group-id: userServiceGroup
+      group-id: websocketServiceGroup
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
@@ -30,13 +30,13 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 
-kafkaUsersChatConsumeTopic: user-chatted-with-topic
-
+kafkaMessageSaveProduceTopic: message-save-topic
+kafkaMessageHistoryProduceTopic: message-history-request-topic
+kafkaMessageHistoryConsumeTopic: message-history-response-topic
 
 server:
-  port: 8081
+  port: 8084
 
-apiPrefix: api
 jwtSecret: 2cdc5639dae1c27de9a074386c5dc8f526fc6c77921d4d34e07a1fceb7cfb9fb
 
 cors:

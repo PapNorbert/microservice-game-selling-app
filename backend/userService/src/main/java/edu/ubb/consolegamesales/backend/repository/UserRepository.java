@@ -9,7 +9,5 @@ public interface UserRepository extends Repository<User, Long> {
 
     Optional<User> findByEntityId(Long id);
 
-    //    Page<User> findUsersChattedWith(Long userId, Pageable pageable);
-// TODO findUsersChattedWith
     Optional<String> findAddressByUserId(Long userId);
 }

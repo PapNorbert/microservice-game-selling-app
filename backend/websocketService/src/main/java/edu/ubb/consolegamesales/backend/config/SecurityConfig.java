@@ -46,6 +46,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
+                                .requestMatchers("/ws/**", "websocket/**").permitAll()
                                 .anyRequest().authenticated())
                 // unauthorized response code for accesDenied
                 .exceptionHandling((exception) ->

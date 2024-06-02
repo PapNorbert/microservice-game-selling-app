@@ -3,4 +3,5 @@ include 'userService'
 include 'announcementService'
 include 'orderService'
 include 'messageService'
+include 'websocketService'
 

@@ -1,9 +1,8 @@
 package edu.ubb.consolegamesales.backend.service;
 
 import edu.ubb.consolegamesales.backend.controller.mapper.AnnouncementMapper;
-import edu.ubb.consolegamesales.backend.dto.kafka.OrderAnnouncementReqDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.OrderDataReqDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.OrderListOfUserReqDto;
+import edu.ubb.consolegamesales.backend.dto.incoming.OrderCreationDto;
+import edu.ubb.consolegamesales.backend.dto.kafka.*;
 import edu.ubb.consolegamesales.backend.dto.outgoing.OrderListDto;
 import edu.ubb.consolegamesales.backend.model.Announcement;
 import edu.ubb.consolegamesales.backend.model.Order;
@@ -30,6 +29,11 @@ public class OrderService {
     private final KafkaTemplate<String, OrderDataReqDto> kafkaTemplateOrderDataReq;
     private final String kafkaOrderAnnouncementReqProduceTopic;
     private final KafkaTemplate<String, OrderAnnouncementReqDto> kafkaTemplateOrderAnnouncementReq;
+    // order transactions
+    private final String kafkaOrderTransactionOrderCreateProduceTopic;
+    private final KafkaTemplate<String, TransactionOrderCreationDto> kafkaTemplateOrderTransactionOrderCreate;
+    private final String kafkaOrderTransactionOrderDeleteProduceTopic;
+    private final KafkaTemplate<String, TransactionOrderDeletionDto> kafkaTemplateOrderTransactionOrderDelete;
 
 
     public OrderService(
@@ -40,7 +44,14 @@ public class OrderService {
             @Value("${kafkaOrderDataReqProduceTopic}") String kafkaOrderDataReqProduceTopic,
             KafkaTemplate<String, OrderDataReqDto> kafkaTemplateOrderDataReq,
             @Value("${kafkaOrderAnnouncementReqProduceTopic}") String kafkaOrderAnnouncementReqProduceTopic,
-            KafkaTemplate<String, OrderAnnouncementReqDto> kafkaTemplateOrderAnnouncementReq
+            KafkaTemplate<String, OrderAnnouncementReqDto> kafkaTemplateOrderAnnouncementReq,
+
+            @Value("${kafkaOrderTransactionOrderCreateProduceTopic}")
+            String kafkaOrderTransactionOrderCreateProduceTopic,
+            KafkaTemplate<String, TransactionOrderCreationDto> kafkaTemplateOrderTransactionOrderCreate,
+            @Value("${kafkaOrderTransactionOrderDeleteProduceTopic}")
+            String kafkaOrderTransactionOrderDeleteProduceTopic,
+            KafkaTemplate<String, TransactionOrderDeletionDto> kafkaTemplateOrderTransactionOrderDelete
     ) {
         this.redisService = redisService;
         this.announcementMapper = announcementMapper;
@@ -50,6 +61,10 @@ public class OrderService {
         this.kafkaOrderAnnouncementReqProduceTopic = kafkaOrderAnnouncementReqProduceTopic;
         this.kafkaTemplateOrderDataReq = kafkaTemplateOrderDataReq;
         this.kafkaTemplateOrderAnnouncementReq = kafkaTemplateOrderAnnouncementReq;
+        this.kafkaOrderTransactionOrderCreateProduceTopic = kafkaOrderTransactionOrderCreateProduceTopic;
+        this.kafkaTemplateOrderTransactionOrderCreate = kafkaTemplateOrderTransactionOrderCreate;
+        this.kafkaOrderTransactionOrderDeleteProduceTopic = kafkaOrderTransactionOrderDeleteProduceTopic;
+        this.kafkaTemplateOrderTransactionOrderDelete = kafkaTemplateOrderTransactionOrderDelete;
     }
 
     public void requestOrdersOfBuyerPaginated(Long buyerId,
@@ -88,4 +103,22 @@ public class OrderService {
         );
     }
 
+    public void createOrder(OrderCreationDto orderCreationDto, Authentication authentication) {
+        User user = AuthenticationInformation.extractUser(authentication);
+        if (!Objects.equals(user.getEntityId(), orderCreationDto.getBuyerId())) {
+            throw new AccessDeniedException("You cannot order in the name of another user!");
+        }
+        kafkaTemplateOrderTransactionOrderCreate.send(
+                kafkaOrderTransactionOrderCreateProduceTopic, orderCreationDto.getAnnouncementId().toString(),
+                new TransactionOrderCreationDto(orderCreationDto)
+        );
+    }
+
+    public void deleteOrderById(Long orderId, Authentication authentication) {
+        User user = AuthenticationInformation.extractUser(authentication);
+        kafkaTemplateOrderTransactionOrderDelete.send(
+                kafkaOrderTransactionOrderDeleteProduceTopic, orderId.toString(),
+                new TransactionOrderDeletionDto(orderId, user)
+        );
+    }
 }

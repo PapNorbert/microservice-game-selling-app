@@ -96,10 +96,7 @@ public class OrderService {
 //    public CreatedObjectDto createOrder(OrderCreationDto orderCreationDto,
 //                                        Authentication authentication) {
 //        User user = AuthenticationInformation.extractUser(authentication);
-//        if (!Objects.equals(user.getEntityId(), orderCreationDto.getBuyerId())) {
-//            throw new AccessDeniedException("You cannot order in the name of another user!");
-//        }
-//
+
 //        Announcement announcement = announcementRepository.getById(orderCreationDto.getAnnouncementId());
 //        if (announcement == null) {
 //            throw new NotFoundException("No announcement found for id " + orderCreationDto.getAnnouncementId());

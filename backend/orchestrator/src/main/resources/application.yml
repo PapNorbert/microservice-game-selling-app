@@ -33,6 +33,20 @@ kafkaOrderListOfUserReqTopic: orders-request-topic
 kafkaOrderDataReqProduceTopic: order-request-topic
 kafkaOrderAnnouncementReqProduceTopic: order-announcement-request-topic
 
+kafkaOrderTransactionOrderCreateProduceTopic: order-transaction-create-order-req-topic
+kafkaOrderTransactionOrderCreateConsumeTopic: order-transaction-create-order-resp-topic
+
+kafkaOrderTransactionOrderDeleteProduceTopic: order-transaction-delete-order-req-topic
+kafkaOrderTransactionOrderDeleteConsumeTopic: order-transaction-delete-order-resp-topic
+
+kafkaOrderTransactionAnnouncCreateProduceTopic: order-transaction-create-announc-req-topic
+kafkaOrderTransactionAnnouncCreateConsumeTopic: order-transaction-create-announc-resp-topic
+
+kafkaOrderTransactionAnnouncDeleteProduceTopic: order-transaction-delete-announc-req-topic
+kafkaOrderTransactionAnnouncDeleteConsumeTopic: order-transaction-delete-announc-resp-topic
+
+kafkaOrderTransactionRespProduceTopic: order-transaction-resp-topic
+
 server:
   port: 8086
 

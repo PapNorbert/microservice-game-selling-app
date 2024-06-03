@@ -1,8 +1,11 @@
 package edu.ubb.consolegamesales.backend.controller.rest;
 
+import edu.ubb.consolegamesales.backend.dto.incoming.OrderCreationDto;
 import edu.ubb.consolegamesales.backend.dto.outgoing.OrderListDto;
 import edu.ubb.consolegamesales.backend.service.OrderService;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -38,19 +41,22 @@ public class OrderController {
         return orderService.loadOrderByID(id, authentication);
     }
 
-//    @PostMapping
-//    @ResponseStatus(HttpStatus.CREATED)
-//    public CreatedObjectDto create(@RequestBody @Valid OrderCreationDto orderCreationDto,
-//                                   Authentication authentication) {
-//        LOGGER.info("POST request at orders api");
-//        return orderService.createOrder(orderCreationDto, authentication);
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    public void delete(@PathVariable("id") @PositiveOrZero Long id,
-//                       Authentication authentication) {
-//        LOGGER.info("DELETE request at orders/{} api", id);
-//        orderService.deleteOrderById(id, authentication);
-//    }
+    @PostMapping
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void create(@RequestBody @Valid OrderCreationDto orderCreationDto,
+                                   Authentication authentication) {
+        LOGGER.info("POST request at orders api");
+        // creation is handled as transaction, result will be sent on websocket
+        orderService.createOrder(orderCreationDto, authentication);
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void delete(@PathVariable("id") @PositiveOrZero Long id,
+                       Authentication authentication) {
+        LOGGER.info("DELETE request at orders/{} api", id);
+        // deletion is handled as transaction, result will be sent on websocket
+        orderService.deleteOrderById(id, authentication);
+    }
+
 }

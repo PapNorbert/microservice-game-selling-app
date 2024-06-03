@@ -2,6 +2,7 @@ package edu.ubb.consolegamesales.backend.service;
 
 import edu.ubb.consolegamesales.backend.controller.mapper.MessageMapper;
 import edu.ubb.consolegamesales.backend.dto.kafka.MessageHistoryResponseDto;
+import edu.ubb.consolegamesales.backend.dto.kafka.OrdersOfUserResponseDto;
 import edu.ubb.consolegamesales.backend.dto.kafka.UsersChattedWithResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -46,4 +47,19 @@ public class KafkaConsumerService {
                 usersChattedWithResponseDto.getUsersResponse()
         );
     }
+
+    @KafkaListener(topics = "${kafkaOrdersListAnnouncementsResponseConsumeTopic}",
+            groupId = "${spring.kafka.consumer.group-id}",
+            properties = {"spring.json.value.default.type="
+                    + "edu.ubb.consolegamesales.backend.dto.kafka.OrdersOfUserResponseDto"})
+    public void listenToUserChattedWithResponseTopic(OrdersOfUserResponseDto ordersOfUserResponseDto) {
+        // sending on websocket to listener orders of user
+        // queue format:  /queue/orders/{requestUserId}
+        String destination = "/queue/orders/" + ordersOfUserResponseDto.getUserId().toString();
+        LOGGER.info("Sending response with user orders to {}", destination);
+        messagingTemplate.convertAndSend(destination,
+                ordersOfUserResponseDto.getOrders()
+        );
+    }
+
 }

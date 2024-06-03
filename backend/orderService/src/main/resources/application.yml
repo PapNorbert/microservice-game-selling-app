@@ -29,6 +29,10 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
+kafkaOrderListOfUserReqTopic: orders-request-topic
+kafkaOrdersListAnnouncementsReq: orders-announcements-request-topic
+
+
 server:
   port: 8083
 

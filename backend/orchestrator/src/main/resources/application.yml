@@ -13,7 +13,7 @@ spring:
       auto-create: true
     bootstrap-servers: localhost:29092
     consumer:
-      group-id: announcementServiceGroup
+      group-id: orchestratorServiceGroup
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
@@ -29,11 +29,10 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
-kafkaOrdersListAnnouncementsReq: orders-announcements-request-topic
-kafkaOrdersListAnnouncementsResponse: orders-announcements-response-topic
+kafkaOrderListOfUserReqTopic: orders-request-topic
 
 server:
-  port: 8082
+  port: 8086
 
 apiPrefix: api
 jwtSecret: 2cdc5639dae1c27de9a074386c5dc8f526fc6c77921d4d34e07a1fceb7cfb9fb

@@ -6,6 +6,8 @@ import edu.ubb.consolegamesales.backend.controller.mapper.AnnouncementMapper;
 import edu.ubb.consolegamesales.backend.controller.mapper.GameDiscMapper;
 import edu.ubb.consolegamesales.backend.dto.incoming.AnnouncementCreationDto;
 import edu.ubb.consolegamesales.backend.dto.incoming.AnnouncementUpdateDto;
+import edu.ubb.consolegamesales.backend.dto.kafka.OrdersListAnnouncementsReqDto;
+import edu.ubb.consolegamesales.backend.dto.kafka.OrdersOfUserResponseDto;
 import edu.ubb.consolegamesales.backend.dto.outgoing.*;
 import edu.ubb.consolegamesales.backend.model.*;
 import edu.ubb.consolegamesales.backend.repository.AnnouncementEventRepository;
@@ -15,22 +17,25 @@ import edu.ubb.consolegamesales.backend.repository.GameDiscRepository;
 import edu.ubb.consolegamesales.backend.repository.jpa.AnnouncementSpecifications;
 import edu.ubb.consolegamesales.backend.service.security.AuthenticationInformation;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 @Service
-@AllArgsConstructor
+@Slf4j
 public class AnnouncementService {
     private final AnnouncementRepository announcementRepository;
     private final GameDiscRepository gameDiscRepository;
@@ -39,7 +44,30 @@ public class AnnouncementService {
     private final AnnouncementsSavesRepository announcementsSavesRepository;
     private final RedisService redisService;
     private final AnnouncementEventRepository announcementEventRepository;
+    private final String kafkaOrdersListAnnouncementsResponseTopic;
+    private final KafkaTemplate<String, OrdersOfUserResponseDto> kafkaTemplateOrdersResponse;
 
+
+    public AnnouncementService(AnnouncementRepository announcementRepository,
+                               GameDiscRepository gameDiscRepository,
+                               AnnouncementMapper announcementMapper,
+                               GameDiscMapper gameDiscMapper,
+                               AnnouncementsSavesRepository announcementsSavesRepository,
+                               RedisService redisService,
+                               AnnouncementEventRepository announcementEventRepository,
+                               @Value("${kafkaOrdersListAnnouncementsResponse}")
+                               String kafkaOrdersListAnnouncementsResponseTopic,
+                               KafkaTemplate<String, OrdersOfUserResponseDto> kafkaTemplateOrdersResponse) {
+        this.announcementRepository = announcementRepository;
+        this.gameDiscRepository = gameDiscRepository;
+        this.announcementMapper = announcementMapper;
+        this.gameDiscMapper = gameDiscMapper;
+        this.announcementsSavesRepository = announcementsSavesRepository;
+        this.redisService = redisService;
+        this.announcementEventRepository = announcementEventRepository;
+        this.kafkaOrdersListAnnouncementsResponseTopic = kafkaOrdersListAnnouncementsResponseTopic;
+        this.kafkaTemplateOrdersResponse = kafkaTemplateOrdersResponse;
+    }
 
     public AnnouncementsListWithPaginationDto findAnnouncementsPaginated(
             int page, int limit, String productName, String consoleType,
@@ -85,12 +113,7 @@ public class AnnouncementService {
     public AnnouncementDetailedDto findAnnouncementById(Long id, Authentication authentication)
             throws NotFoundException {
         try {
-            Announcement announcement = redisService.getCachedAnnouncement(id);
-            if (announcement == null) {
-                announcement = announcementRepository.findByEntityId(id).orElseThrow(
-                        () -> new NotFoundException("Announcement with ID " + id + " not found"));
-                redisService.storeAnnouncementInCache(announcement.getEntityId(), announcement);
-            }
+            Announcement announcement = loadAnnouncementById(id);
             AnnouncementDetailedDto announcementDetailedDto = announcementMapper.modelToDetailedDto(
                     announcement);
             if (announcementDetailedDto == null) {
@@ -248,6 +271,43 @@ public class AnnouncementService {
             default -> specification;
         };
 
+    }
+
+    private Announcement loadAnnouncementById(Long id) {
+        Announcement announcement = redisService.getCachedAnnouncement(id);
+        if (announcement == null) {
+            announcement = announcementRepository.findByEntityId(id).orElseThrow(
+                    () -> new NotFoundException("Announcement with ID " + id + " not found"));
+            redisService.storeAnnouncementInCache(announcement.getEntityId(), announcement);
+        }
+        return announcement;
+    }
+
+    public void loadAnnouncementsOfOrders(
+            OrdersListAnnouncementsReqDto ordersListAnnouncementsReqDto) {
+        List<OrderListDto> orders = new ArrayList<>();
+        for (Order currentOrder : ordersListAnnouncementsReqDto.getOrders()) {
+            try {
+                Announcement announcement = loadAnnouncementById(currentOrder.getAnnouncementId());
+                OrderListDto orderListDto = new OrderListDto(
+                        currentOrder.getEntityId(), currentOrder.getOrderDate(),
+                        currentOrder.getPrice(), currentOrder.getOrderAddress(),
+                        announcementMapper.modelToListShortDto(announcement)
+                );
+                orders.add(orderListDto);
+            } catch (NotFoundException e) {
+                LOGGER.error(e.getMessage());
+            }
+        }
+        OrderListWithPaginationDto orderListWithPaginationDto =
+                new OrderListWithPaginationDto(orders, ordersListAnnouncementsReqDto.getPagination());
+        OrdersOfUserResponseDto ordersOfUserResponseDto =
+                new OrdersOfUserResponseDto(ordersListAnnouncementsReqDto.getUserId(), orderListWithPaginationDto);
+        kafkaTemplateOrdersResponse.send(
+                kafkaOrdersListAnnouncementsResponseTopic,
+                ordersListAnnouncementsReqDto.getUserId().toString(),
+                ordersOfUserResponseDto
+        );
     }
 
 }

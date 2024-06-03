@@ -4,4 +4,5 @@ include 'announcementService'
 include 'orderService'
 include 'messageService'
 include 'websocketService'
+include 'orchestrator'
 

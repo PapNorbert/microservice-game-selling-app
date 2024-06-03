@@ -1,18 +1,10 @@
 package edu.ubb.consolegamesales.backend.controller.rest;
 
-import edu.ubb.consolegamesales.backend.dto.incoming.OrderCreationDto;
-import edu.ubb.consolegamesales.backend.dto.outgoing.CreatedObjectDto;
-import edu.ubb.consolegamesales.backend.dto.outgoing.OrderListDto;
-import edu.ubb.consolegamesales.backend.dto.outgoing.OrderListWithPaginationDto;
-import edu.ubb.consolegamesales.backend.controller.exception.NotFoundException;
 import edu.ubb.consolegamesales.backend.service.OrderService;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -24,21 +16,22 @@ public class OrderController {
     private final OrderService orderService;
 
     @GetMapping
-    public OrderListWithPaginationDto findPaginated(
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    public void findPaginated(
             @RequestParam @Positive Long buyerId,
             @RequestParam(defaultValue = "1", required = false) @Positive int page,
             @RequestParam(defaultValue = "5", required = false) @Positive int limit) {
         LOGGER.info("GET paginated orders of user with id {} at orders api, "
                 + "page: {}, limit: {}", buyerId, page, limit);
-        return orderService.findAllOrdersOfUser(buyerId, page, limit);
+        orderService.requestOrdersOfBuyerPaginated(buyerId, page, limit);
+        // response status is ACCEPTED, data will be sent later through websocket
     }
 
-    @GetMapping("/{id}")
-    public OrderListDto findById(@PathVariable("id") Long id, Authentication authentication) throws NotFoundException {
-        LOGGER.info("GET order at orders/{} api", id);
-        return orderService.findOrderById(id, authentication);
-    }
-// TODO create delete
+//    @GetMapping("/{id}")
+//    public OrderListDto findById(@PathVariable("id") Long id, Authentication authentication) throws NotFoundException {
+//        LOGGER.info("GET order at orders/{} api", id);
+//        return orderService.findOrderById(id, authentication);
+//    }
 
 //    @PostMapping
 //    @ResponseStatus(HttpStatus.CREATED)

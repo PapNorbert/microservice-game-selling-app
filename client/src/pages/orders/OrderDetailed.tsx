@@ -3,19 +3,28 @@ import { AxiosError, AxiosResponse } from "axios";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
 
 import configuredAxios from "../../axios/configuredAxios";
-import {apiPrefix} from '../../config/application.json'
+import { apiPrefix } from '../../config/application.json'
 import { Order } from "../../interface/OrdersInterface";
 import OrderDetailedElement from "../../components/Orders/OrderDetailedElement";
+import { Container } from "react-bootstrap";
+import { useState } from "react";
+import { useSubscription } from "react-stomp-hooks";
 
 export default function OrderDetailed() {
   const { orderId } = useParams();
   const orderUrl = `/${apiPrefix}/orders/${orderId}`;
   const navigate = useNavigate();
-
+  const [orderDataWs, setOrderDataWs] = useState<Order>();
   const { data: orderData, isError, error, isLoading } = useQuery<AxiosResponse<Order>, AxiosError>({
     queryKey: ["orderDetailed", orderUrl],
     queryFn: queryFunction,
     retry: false
+  });
+
+  useSubscription(`/queue/order/${orderId}`, (message) => {
+    // queue format:  /queue/order/{orderId}
+    const data: Order = JSON.parse(message.body);
+    setOrderDataWs(data);
   });
 
   function queryFunction() {
@@ -36,7 +45,7 @@ export default function OrderDetailed() {
         <Navigate to='/login' state={{ from: location }} replace />
       )
     }
-    
+
     if (error?.response?.status === 403 || error?.response?.status === 404) {
       return (
         <>
@@ -53,11 +62,28 @@ export default function OrderDetailed() {
     )
   }
 
-  return (
-    <>
-      {orderData?.data &&
-        <OrderDetailedElement order={orderData.data} key={orderId}/>
-      }
-    </>
-  )
+
+  if (orderDataWs) {
+    return (
+      <>
+        <OrderDetailedElement order={orderDataWs} key={orderId} />
+      </>
+    )
+  }
+
+  if (orderData?.status === 202 && !orderDataWs) {
+    return (
+      <Container className="fst-italic fs-3 text-center">Loading order...</Container>
+    )
+  }
+
+  if (orderData?.data) {
+    return (
+      <>
+        <OrderDetailedElement order={orderData.data} key={orderId} />
+      </>
+    )
+  }
+
+
 }

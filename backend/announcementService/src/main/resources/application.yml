@@ -31,6 +31,8 @@ spring:
 
 kafkaOrdersListAnnouncementsReq: orders-announcements-request-topic
 kafkaOrdersListAnnouncementsResponse: orders-announcements-response-topic
+kafkaOrderAnnouncementReqConsumeTopic: order-announcement-request-topic
+kafkaOrderResponseProduceTopic: order-response-topic
 
 server:
   port: 8082

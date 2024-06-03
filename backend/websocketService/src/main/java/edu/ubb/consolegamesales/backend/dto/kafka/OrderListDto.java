@@ -1,5 +1,6 @@
-package edu.ubb.consolegamesales.backend.dto.outgoing;
+package edu.ubb.consolegamesales.backend.dto.kafka;
 
+import edu.ubb.consolegamesales.backend.dto.outgoing.AnnouncementListShortDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

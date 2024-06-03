@@ -1,8 +1,11 @@
 package edu.ubb.consolegamesales.backend.service;
 
 import edu.ubb.consolegamesales.backend.controller.mapper.OrderMapper;
+import edu.ubb.consolegamesales.backend.dto.kafka.OrderAnnouncementReqDto;
+import edu.ubb.consolegamesales.backend.dto.kafka.OrderResponseDto;
 import edu.ubb.consolegamesales.backend.dto.kafka.OrdersListAnnouncementsReqDto;
 import edu.ubb.consolegamesales.backend.dto.outgoing.Pagination;
+import edu.ubb.consolegamesales.backend.model.Announcement;
 import edu.ubb.consolegamesales.backend.model.Order;
 import edu.ubb.consolegamesales.backend.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,20 +25,33 @@ public class OrderService {
     private final static int TIME_ALLOWED_FOR_ORDER_CANCEL_IN_MILI_SEC = 8640000;
     private final String kafkaOrdersListAnnouncementsReqTopic;
     private final KafkaTemplate<String, OrdersListAnnouncementsReqDto> kafkaOrdersListAnnouncementsTemplate;
+    private final String kafkaOrderAnnouncementReqProduceTopic;
+    private final KafkaTemplate<String, OrderAnnouncementReqDto> kafkaTemplateOrderAnnouncementReq;
+    private final String kafkaOrderResponseProduceTopic;
+    private final KafkaTemplate<String, OrderResponseDto> kafkaTemplateOrderResponse;
+
 
     public OrderService(OrderRepository orderRepository,
                         OrderMapper orderMapper,
                         RedisService redisService,
                         @Value("${kafkaOrdersListAnnouncementsReq}") String kafkaOrdersListAnnouncementsReqTopic,
-                        KafkaTemplate<String, OrdersListAnnouncementsReqDto> kafkaOrdersListAnnouncementsTemplate
-
+                        KafkaTemplate<String, OrdersListAnnouncementsReqDto> kafkaOrdersListAnnouncementsTemplate,
+                        @Value("${kafkaOrderAnnouncementReqProduceTopic}") String kafkaOrderAnnouncementReqProduceTopic,
+                        KafkaTemplate<String, OrderAnnouncementReqDto> kafkaTemplateOrderAnnouncementReq,
+                        @Value("${kafkaOrderResponseProduceTopic}") String kafkaOrderResponseProduceTopic,
+                        KafkaTemplate<String, OrderResponseDto> kafkaTemplateOrderResponse
     ) {
         this.orderRepository = orderRepository;
         this.orderMapper = orderMapper;
         this.redisService = redisService;
         this.kafkaOrdersListAnnouncementsReqTopic = kafkaOrdersListAnnouncementsReqTopic;
         this.kafkaOrdersListAnnouncementsTemplate = kafkaOrdersListAnnouncementsTemplate;
+        this.kafkaOrderAnnouncementReqProduceTopic = kafkaOrderAnnouncementReqProduceTopic;
+        this.kafkaTemplateOrderAnnouncementReq = kafkaTemplateOrderAnnouncementReq;
+        this.kafkaOrderResponseProduceTopic = kafkaOrderResponseProduceTopic;
+        this.kafkaTemplateOrderResponse = kafkaTemplateOrderResponse;
     }
+
 
     public void findAllOrdersOfUser(Long userId, int page, int limit) {
         PageRequest pageRequest = PageRequest.of(page - 1, limit,
@@ -50,16 +66,31 @@ public class OrderService {
                 kafkaOrdersListAnnouncementsReqTopic, userId.toString(), ordersListAnnouncementsReqDto);
     }
 
-//    public OrderListDto findOrderById(Long orderId, Authentication authentication) {
-//        try {
-//            User user = AuthenticationInformation.extractUser(authentication);
-//            Order order = loadOrderById(orderId, user);
-//            redisService.storeOrderInCache(orderId, order);
-//            return orderMapper.modelToOrderListDto(order);
-//        } catch (EntityNotFoundException e) {
-//            throw new NotFoundException("Order with ID " + orderId + " not found", e);
-//        }
-//    }
+    public void findOrderById(Long orderId) {
+        Order order = loadOrderById(orderId);
+        if (order == null) {
+            // order not found
+            kafkaTemplateOrderResponse.send(
+                    kafkaOrderResponseProduceTopic, orderId.toString(),
+                    new OrderResponseDto(orderId, null, null)
+            );
+            return;
+        }
+        Announcement announcement = redisService.getCachedAnnouncement(order.getAnnouncementId());
+        if (announcement == null) {
+            // send request to announcements service for announcement data
+            kafkaTemplateOrderAnnouncementReq.send(
+                    kafkaOrderAnnouncementReqProduceTopic, orderId.toString(),
+                    new OrderAnnouncementReqDto(orderId, order)
+            );
+            return;
+        }
+        // we have all the data, send to websocket to send response
+        kafkaTemplateOrderResponse.send(
+                kafkaOrderResponseProduceTopic, orderId.toString(),
+                new OrderResponseDto(orderId, order, announcement)
+        );
+    }
 
 
 //    public CreatedObjectDto createOrder(OrderCreationDto orderCreationDto,
@@ -110,17 +141,14 @@ public class OrderService {
 //    }
 
 
-//    private Order loadOrderById(Long orderId, User user)
-//            throws EntityNotFoundException, AccessDeniedException {
-//        Order order = redisService.getCachedOrder(orderId);
-//        if (order == null) {
-//            order = orderRepository.findByEntityId(orderId).orElseThrow(
-//                    () -> new NotFoundException("Order with ID " + orderId + " not found"));
-//        }
-//        // check order of the user
-//        if (!Objects.equals(user.getEntityId(), order.getBuyerId())) {
-//            throw new AccessDeniedException("You cannot access this resource!");
-//        }
-//        return order;
-//    }
+    private Order loadOrderById(Long orderId) {
+        Order order = redisService.getCachedOrder(orderId);
+        if (order == null) {
+            order = orderRepository.findByEntityId(orderId).orElse(null);
+            if (order != null) {
+                redisService.storeOrderInCache(order.getEntityId(), order);
+            }
+        }
+        return order;
+    }
 }

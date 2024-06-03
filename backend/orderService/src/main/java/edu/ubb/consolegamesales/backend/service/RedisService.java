@@ -1,5 +1,6 @@
 package edu.ubb.consolegamesales.backend.service;
 
+import edu.ubb.consolegamesales.backend.model.Announcement;
 import edu.ubb.consolegamesales.backend.model.Order;
 import edu.ubb.consolegamesales.backend.model.User;
 import lombok.AllArgsConstructor;
@@ -16,8 +17,10 @@ public class RedisService {
 
     private final RedisTemplate<String, User> redisTemplateUser;
     private final RedisTemplate<String, Order> redisTemplateOrder;
+    private final RedisTemplate<String, Announcement> redisTemplateAnnouncement;
     private static final String KEY_PREFIX_USER = "users:";
     private static final String KEY_PREFIX_ORDER = "orders:";
+    private static final String KEY_PREFIX_ANNOUNCEMENT = "announcements:";
 
 
     public User getCachedUser(Long userId) {
@@ -58,6 +61,16 @@ public class RedisService {
         } catch (Exception e) {
             LOGGER.error("Error deleting order in Redis cache: {}", e.getMessage());
         }
+    }
+
+    public Announcement getCachedAnnouncement(Long announcementId) {
+        Announcement announcement = null;
+        try {
+            announcement = redisTemplateAnnouncement.opsForValue().get(KEY_PREFIX_ANNOUNCEMENT + announcementId);
+        } catch (Exception e) {
+            LOGGER.error("Error accessing announcement in Redis cache: {}", e.getMessage());
+        }
+        return announcement;
     }
 
 }

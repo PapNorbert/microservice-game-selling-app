@@ -31,14 +31,11 @@ spring:
 
 kafkaOrderListOfUserReqTopic: orders-request-topic
 kafkaOrdersListAnnouncementsReq: orders-announcements-request-topic
-
+kafkaOrderDataReqConsumeTopic: order-request-topic
+kafkaOrderAnnouncementReqProduceTopic: order-announcement-request-topic
+kafkaOrderResponseProduceTopic: order-response-topic
 
 server:
   port: 8083
 
-apiPrefix: api
 jwtSecret: 2cdc5639dae1c27de9a074386c5dc8f526fc6c77921d4d34e07a1fceb7cfb9fb
-
-cors:
-  allowed-origin:
-    http://localhost:5173

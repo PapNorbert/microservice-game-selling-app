@@ -1,10 +1,12 @@
 package edu.ubb.consolegamesales.backend.controller.rest;
 
+import edu.ubb.consolegamesales.backend.dto.outgoing.OrderListDto;
 import edu.ubb.consolegamesales.backend.service.OrderService;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -27,11 +29,14 @@ public class OrderController {
         // response status is ACCEPTED, data will be sent later through websocket
     }
 
-//    @GetMapping("/{id}")
-//    public OrderListDto findById(@PathVariable("id") Long id, Authentication authentication) throws NotFoundException {
-//        LOGGER.info("GET order at orders/{} api", id);
-//        return orderService.findOrderById(id, authentication);
-//    }
+    @GetMapping("/{id}")
+    public OrderListDto findById(@PathVariable("id") Long id, Authentication authentication) {
+        LOGGER.info("GET order at orders/{} api", id);
+        // returns the orders if necessary data is available
+        // otherwise service requests the data, Accepted status code will be returned
+        // and data is sent through websocket
+        return orderService.loadOrderByID(id, authentication);
+    }
 
 //    @PostMapping
 //    @ResponseStatus(HttpStatus.CREATED)

@@ -1,9 +1,9 @@
 package edu.ubb.consolegamesales.backend.service;
 
+import edu.ubb.consolegamesales.backend.controller.mapper.AnnouncementMapper;
 import edu.ubb.consolegamesales.backend.controller.mapper.MessageMapper;
-import edu.ubb.consolegamesales.backend.dto.kafka.MessageHistoryResponseDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.OrdersOfUserResponseDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.UsersChattedWithResponseDto;
+import edu.ubb.consolegamesales.backend.dto.kafka.*;
+import edu.ubb.consolegamesales.backend.model.Order;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class KafkaConsumerService {
     private final SimpMessagingTemplate messagingTemplate;
     private final MessageMapper messageMapper;
+    private final AnnouncementMapper announcementMapper;
 
 
     @KafkaListener(topics = "${kafkaMessageHistoryConsumeTopic}",
@@ -59,6 +60,29 @@ public class KafkaConsumerService {
         LOGGER.info("Sending response with user orders to {}", destination);
         messagingTemplate.convertAndSend(destination,
                 ordersOfUserResponseDto.getOrders()
+        );
+    }
+
+    @KafkaListener(topics = "${kafkaOrderResponseConsumeTopic}",
+            groupId = "${spring.kafka.consumer.group-id}",
+            properties = {"spring.json.value.default.type="
+                    + "edu.ubb.consolegamesales.backend.dto.kafka.OrderResponseDto"})
+    public void listenToOrderResponseConsumeTopic(OrderResponseDto orderResponseDto) {
+        // sending on websocket to listener order
+        // queue format:  /queue/order/{orderId}
+        String destination = "/queue/order/" + orderResponseDto.getOrderId().toString();
+        LOGGER.info("Sending response with order to {}", destination);
+        Order order = orderResponseDto.getOrder();
+        if (order == null || orderResponseDto.getAnnouncement() == null) {
+            messagingTemplate.convertAndSend(destination, new OrderResponseDto());
+            return;
+        }
+        messagingTemplate.convertAndSend(destination,
+                new OrderListDto(
+                        order.getEntityId(), order.getOrderDate(),
+                        order.getPrice(), order.getOrderAddress(),
+                        announcementMapper.modelToListShortDto(orderResponseDto.getAnnouncement())
+                )
         );
     }
 

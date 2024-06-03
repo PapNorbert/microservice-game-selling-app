@@ -1,5 +1,6 @@
 package edu.ubb.consolegamesales.backend.config;
 
+import edu.ubb.consolegamesales.backend.model.Announcement;
 import edu.ubb.consolegamesales.backend.model.Order;
 import edu.ubb.consolegamesales.backend.model.User;
 import org.springframework.beans.factory.annotation.Value;
@@ -57,4 +58,16 @@ public class RedisConfig {
         return redisTemplate;
     }
 
+    @Bean
+    @ConditionalOnProperty(name = "spring.data.redis.port")
+    public RedisTemplate<String, Announcement> redisTemplateAnnouncement() {
+        RedisTemplate<String, Announcement> redisTemplate = new RedisTemplate<>();
+        redisTemplate.setConnectionFactory(jedisConnectionFactory());
+        redisTemplate.setKeySerializer(new StringRedisSerializer());
+        redisTemplate.setHashKeySerializer(new StringRedisSerializer());
+        redisTemplate.setValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.setHashValueSerializer(new GenericJackson2JsonRedisSerializer());
+        redisTemplate.afterPropertiesSet();
+        return redisTemplate;
+    }
 }

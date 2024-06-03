@@ -6,6 +6,8 @@ import edu.ubb.consolegamesales.backend.controller.mapper.AnnouncementMapper;
 import edu.ubb.consolegamesales.backend.controller.mapper.GameDiscMapper;
 import edu.ubb.consolegamesales.backend.dto.incoming.AnnouncementCreationDto;
 import edu.ubb.consolegamesales.backend.dto.incoming.AnnouncementUpdateDto;
+import edu.ubb.consolegamesales.backend.dto.kafka.OrderAnnouncementReqDto;
+import edu.ubb.consolegamesales.backend.dto.kafka.OrderResponseDto;
 import edu.ubb.consolegamesales.backend.dto.kafka.OrdersListAnnouncementsReqDto;
 import edu.ubb.consolegamesales.backend.dto.kafka.OrdersOfUserResponseDto;
 import edu.ubb.consolegamesales.backend.dto.outgoing.*;
@@ -46,7 +48,8 @@ public class AnnouncementService {
     private final AnnouncementEventRepository announcementEventRepository;
     private final String kafkaOrdersListAnnouncementsResponseTopic;
     private final KafkaTemplate<String, OrdersOfUserResponseDto> kafkaTemplateOrdersResponse;
-
+    private final String kafkaOrderResponseProduceTopic;
+    private final KafkaTemplate<String, OrderResponseDto> kafkaTemplateOrderResponse;
 
     public AnnouncementService(AnnouncementRepository announcementRepository,
                                GameDiscRepository gameDiscRepository,
@@ -57,7 +60,10 @@ public class AnnouncementService {
                                AnnouncementEventRepository announcementEventRepository,
                                @Value("${kafkaOrdersListAnnouncementsResponse}")
                                String kafkaOrdersListAnnouncementsResponseTopic,
-                               KafkaTemplate<String, OrdersOfUserResponseDto> kafkaTemplateOrdersResponse) {
+                               KafkaTemplate<String, OrdersOfUserResponseDto> kafkaTemplateOrdersResponse,
+                               @Value("${kafkaOrderResponseProduceTopic}") String kafkaOrderResponseProduceTopic,
+                               KafkaTemplate<String, OrderResponseDto> kafkaTemplateOrderResponse
+    ) {
         this.announcementRepository = announcementRepository;
         this.gameDiscRepository = gameDiscRepository;
         this.announcementMapper = announcementMapper;
@@ -67,6 +73,8 @@ public class AnnouncementService {
         this.announcementEventRepository = announcementEventRepository;
         this.kafkaOrdersListAnnouncementsResponseTopic = kafkaOrdersListAnnouncementsResponseTopic;
         this.kafkaTemplateOrdersResponse = kafkaTemplateOrdersResponse;
+        this.kafkaOrderResponseProduceTopic = kafkaOrderResponseProduceTopic;
+        this.kafkaTemplateOrderResponse = kafkaTemplateOrderResponse;
     }
 
     public AnnouncementsListWithPaginationDto findAnnouncementsPaginated(
@@ -307,6 +315,32 @@ public class AnnouncementService {
                 kafkaOrdersListAnnouncementsResponseTopic,
                 ordersListAnnouncementsReqDto.getUserId().toString(),
                 ordersOfUserResponseDto
+        );
+    }
+
+    public void loadAnnouncementOfOrderById(OrderAnnouncementReqDto orderAnnouncementReqDto) {
+        Long orderId = orderAnnouncementReqDto.getOrderId();
+        Announcement announcement = redisService.getCachedAnnouncement(
+                orderId);
+        if (announcement == null) {
+            announcement = announcementRepository.findByEntityId(
+                    orderId).orElse(null);
+            if (announcement == null) {
+                // necessary data not found
+                kafkaTemplateOrderResponse.send(
+                        kafkaOrderResponseProduceTopic, orderId.toString(),
+                        new OrderResponseDto(orderId, null, null)
+                );
+                return;
+            }
+            redisService.storeAnnouncementInCache(announcement.getEntityId(), announcement);
+        }
+        // we have all the data, send to websocket to send response
+        kafkaTemplateOrderResponse.send(
+                kafkaOrderResponseProduceTopic, orderId.toString(),
+                new OrderResponseDto(
+                        orderId,
+                        orderAnnouncementReqDto.getOrder(), announcement)
         );
     }
 

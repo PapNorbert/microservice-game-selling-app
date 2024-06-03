@@ -9,20 +9,29 @@ import org.springframework.kafka.config.TopicBuilder;
 @Configuration
 public class TopicConfiguration {
     private final String kafkaOrdersListAnnouncementsReqTopic;
+    private final String kafkaOrderResponseProduceTopic;
 
     public TopicConfiguration(
-            @Value("${kafkaOrdersListAnnouncementsReq}") String kafkaOrdersListAnnouncementsReqTopic
+            @Value("${kafkaOrdersListAnnouncementsReq}") String kafkaOrdersListAnnouncementsReqTopic,
+            @Value("${kafkaOrderResponseProduceTopic}") String kafkaOrderResponseProduceTopic
     ) {
         this.kafkaOrdersListAnnouncementsReqTopic = kafkaOrdersListAnnouncementsReqTopic;
+        this.kafkaOrderResponseProduceTopic = kafkaOrderResponseProduceTopic;
     }
 
     @Bean
-    public NewTopic produceTopickafkaOrdersListAnnouncementsReq() {
+    public NewTopic produceTopicOrdersListAnnouncementsReq() {
         return TopicBuilder.name(kafkaOrdersListAnnouncementsReqTopic)
                 .partitions(2)
                 .replicas(1)
                 .build();
     }
 
-
+    @Bean
+    public NewTopic produceTopicOrderResponse() {
+        return TopicBuilder.name(kafkaOrderResponseProduceTopic)
+                .partitions(2)
+                .replicas(1)
+                .build();
+    }
 }

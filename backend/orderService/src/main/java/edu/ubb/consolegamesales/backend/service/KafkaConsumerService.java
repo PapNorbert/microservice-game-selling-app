@@ -1,5 +1,6 @@
 package edu.ubb.consolegamesales.backend.service;
 
+import edu.ubb.consolegamesales.backend.dto.kafka.OrderDataReqDto;
 import edu.ubb.consolegamesales.backend.dto.kafka.OrderListOfUserReqDto;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,9 +17,18 @@ public class KafkaConsumerService {
             groupId = "${spring.kafka.consumer.group-id}",
             properties = {"spring.json.value.default.type="
                     + "edu.ubb.consolegamesales.backend.dto.kafka.OrderListOfUserReqDto"})
-    public void listenToMessageHistoryTopic(OrderListOfUserReqDto orderListOfUserReqDto) {
+    public void listenToOrderListOfUserReqTopic(OrderListOfUserReqDto orderListOfUserReqDto) {
         LOGGER.info("Got request of orders of user {}", orderListOfUserReqDto.getUserId());
         orderService.findAllOrdersOfUser(orderListOfUserReqDto.getUserId(),
                 orderListOfUserReqDto.getPage(), orderListOfUserReqDto.getLimit());
+    }
+
+    @KafkaListener(topics = "${kafkaOrderDataReqConsumeTopic}",
+            groupId = "${spring.kafka.consumer.group-id}",
+            properties = {"spring.json.value.default.type="
+                    + "edu.ubb.consolegamesales.backend.dto.kafka.OrderDataReqDto"})
+    public void listenToOrderDataReqTopic(OrderDataReqDto orderDataReqDto) {
+        LOGGER.info("Got request of order {}", orderDataReqDto.getOrderId());
+        orderService.findOrderById(orderDataReqDto.getOrderId());
     }
 }

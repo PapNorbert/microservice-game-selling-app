@@ -37,7 +37,7 @@ public class TopicConfiguration {
             String kafkaOrderTransactionCompensationProduceTopic,
             @Value("${kafkaAnnouncementEventProduceTopic}")
             String kafkaAnnouncementEventProduceTopic
-            ) {
+    ) {
         this.kafkaOrderListOfUserReqTopic = kafkaOrderListOfUserReqTopic;
         this.kafkaOrderDataReqProduceTopic = kafkaOrderDataReqProduceTopic;
         this.kafkaOrderAnnouncementReqProduceTopic = kafkaOrderAnnouncementReqProduceTopic;

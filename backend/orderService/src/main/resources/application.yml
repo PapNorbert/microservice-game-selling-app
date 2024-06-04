@@ -41,6 +41,9 @@ kafkaOrderTransactionOrderCreateProduceTopic: order-transaction-create-order-res
 kafkaOrderTransactionOrderDeleteConsumeTopic: order-transaction-delete-order-req-topic
 kafkaOrderTransactionOrderDeleteProduceTopic: order-transaction-delete-order-resp-topic
 
+kafkaOrderTransactionCompensationProduceTopic: order-transaction-compensation-topic
+
+
 server:
   port: 8083
 

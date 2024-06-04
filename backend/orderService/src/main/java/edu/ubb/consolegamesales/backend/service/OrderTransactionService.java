@@ -2,10 +2,7 @@ package edu.ubb.consolegamesales.backend.service;
 
 import edu.ubb.consolegamesales.backend.controller.mapper.OrderMapper;
 import edu.ubb.consolegamesales.backend.dto.incoming.OrderCreationDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.TransactionOrderCreateRespDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.TransactionOrderCreationDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.TransactionOrderDeleteRespDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.TransactionOrderDeletionDto;
+import edu.ubb.consolegamesales.backend.dto.kafka.*;
 import edu.ubb.consolegamesales.backend.model.Order;
 import edu.ubb.consolegamesales.backend.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +17,7 @@ public class OrderTransactionService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final RedisService redisService;
-    private final static int TIME_ALLOWED_FOR_ORDER_CANCEL_IN_MILI_SEC = 8640000;
+    private static final int TIME_ALLOWED_FOR_ORDER_CANCEL_IN_MILI_SEC = 8640000;
     //    order creation topic
     private final String kafkaOrderTransactionOrderCreateProduceTopic;
     private final KafkaTemplate<String, TransactionOrderCreateRespDto> kafkaOrderTransactionCreateResponseTemplate;
@@ -67,7 +64,6 @@ public class OrderTransactionService {
             );
         }
     }
-
 
     public void deleteOrder(TransactionOrderDeletionDto transactionOrderDeletionDto) {
         Long orderId = transactionOrderDeletionDto.getOrderId();
@@ -124,6 +120,15 @@ public class OrderTransactionService {
             );
         }
 
+    }
+
+    public void compensateTransaction(
+            TransactionCompensationDto transactionCompensationDto) {
+        if (transactionCompensationDto.isCreationTransaction()) {
+            orderRepository.delete(transactionCompensationDto.getOrder());
+        } else {
+            orderRepository.saveAndFlush(transactionCompensationDto.getOrder());
+        }
     }
 
     private Order loadOrderById(Long orderId) {

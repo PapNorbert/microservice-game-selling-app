@@ -1,9 +1,6 @@
 package edu.ubb.consolegamesales.backend.service;
 
-import edu.ubb.consolegamesales.backend.dto.kafka.OrderDataReqDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.OrderListOfUserReqDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.TransactionOrderCreationDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.TransactionOrderDeletionDto;
+import edu.ubb.consolegamesales.backend.dto.kafka.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -53,5 +50,16 @@ public class KafkaConsumerService {
         LOGGER.info("Delete request of order {}",
                 transactionOrderDeletionDto.getOrderId());
         orderTransactionService.deleteOrder(transactionOrderDeletionDto);
+    }
+
+    @KafkaListener(topics = "${kafkaOrderTransactionCompensationProduceTopic}",
+            groupId = "${spring.kafka.consumer.group-id}",
+            properties = {"spring.json.value.default.type="
+                    + "edu.ubb.consolegamesales.backend.dto.kafka.TransactionCompensationDto"})
+    public void listenToOrderDeleteTopic(
+            TransactionCompensationDto transactionCompensationDto) {
+        LOGGER.info("Transaction failed, received compensation request, order {}",
+                transactionCompensationDto.getOrder().getEntityId());
+        orderTransactionService.compensateTransaction(transactionCompensationDto);
     }
 }

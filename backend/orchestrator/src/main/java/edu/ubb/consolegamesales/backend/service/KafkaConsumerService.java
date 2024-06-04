@@ -170,7 +170,14 @@ public class KafkaConsumerService {
                             true
                     )
             );
-            // TODO transaction compensation
+            // transaction compensation
+            kafkaTemplateOrderTransactionCompensation.send(
+                    kafkaOrderTransactionCompensationProduceTopic,
+                    new TransactionCompensationDto(
+                            transactionAnnouncementRespDto.getOrder(),
+                            true
+                    )
+            );
         }
     }
 
@@ -217,7 +224,14 @@ public class KafkaConsumerService {
                             false
                     )
             );
-            // TODO transaction compensation
+            // transaction compensation
+            kafkaTemplateOrderTransactionCompensation.send(
+                    kafkaOrderTransactionCompensationProduceTopic,
+                    new TransactionCompensationDto(
+                            transactionAnnouncementRespDto.getOrder(),
+                            true
+                    )
+            );
         }
     }
 }

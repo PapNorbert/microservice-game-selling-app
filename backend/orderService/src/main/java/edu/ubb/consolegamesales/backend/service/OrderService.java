@@ -1,6 +1,5 @@
 package edu.ubb.consolegamesales.backend.service;
 
-import edu.ubb.consolegamesales.backend.controller.mapper.OrderMapper;
 import edu.ubb.consolegamesales.backend.dto.kafka.OrderAnnouncementReqDto;
 import edu.ubb.consolegamesales.backend.dto.kafka.OrderResponseDto;
 import edu.ubb.consolegamesales.backend.dto.kafka.OrdersListAnnouncementsReqDto;
@@ -20,9 +19,7 @@ import java.util.List;
 @Service
 public class OrderService {
     private final OrderRepository orderRepository;
-    private final OrderMapper orderMapper;
     private final RedisService redisService;
-    private final static int TIME_ALLOWED_FOR_ORDER_CANCEL_IN_MILI_SEC = 8640000;
     private final String kafkaOrdersListAnnouncementsReqTopic;
     private final KafkaTemplate<String, OrdersListAnnouncementsReqDto> kafkaOrdersListAnnouncementsTemplate;
     private final String kafkaOrderAnnouncementReqProduceTopic;
@@ -32,7 +29,6 @@ public class OrderService {
 
 
     public OrderService(OrderRepository orderRepository,
-                        OrderMapper orderMapper,
                         RedisService redisService,
                         @Value("${kafkaOrdersListAnnouncementsReq}") String kafkaOrdersListAnnouncementsReqTopic,
                         KafkaTemplate<String, OrdersListAnnouncementsReqDto> kafkaOrdersListAnnouncementsTemplate,
@@ -42,7 +38,6 @@ public class OrderService {
                         KafkaTemplate<String, OrderResponseDto> kafkaTemplateOrderResponse
     ) {
         this.orderRepository = orderRepository;
-        this.orderMapper = orderMapper;
         this.redisService = redisService;
         this.kafkaOrdersListAnnouncementsReqTopic = kafkaOrdersListAnnouncementsReqTopic;
         this.kafkaOrdersListAnnouncementsTemplate = kafkaOrdersListAnnouncementsTemplate;
@@ -92,10 +87,10 @@ public class OrderService {
         );
     }
 
+    // TODO AnnouncementEvents create/delete
 
 //    public CreatedObjectDto createOrder(OrderCreationDto orderCreationDto,
 //                                        Authentication authentication) {
-//        User user = AuthenticationInformation.extractUser(authentication);
 
 //        Announcement announcement = announcementRepository.getById(orderCreationDto.getAnnouncementId());
 //        if (announcement == null) {
@@ -107,8 +102,7 @@ public class OrderService {
 //        announcement.setSold(true);
 //        announcementRepository.update(announcement.getEntityId(), announcement);
 //        redisService.deleteCachedAnnouncement(announcement.getEntityId());
-//        Order order = orderRepository.saveAndFlush(
-//                orderMapper.creationDtoToModel(orderCreationDto));
+
 //        AnnouncementEvent announcementEvent = new AnnouncementEvent(
 //                announcement, "Announcement sold, order created", new Date(), user);
 //        announcementEventRepository.saveAndFlush(announcementEvent);
@@ -117,14 +111,6 @@ public class OrderService {
 //    }
 //
 //    public void deleteOrderById(Long id, Authentication authentication) {
-//        User user = AuthenticationInformation.extractUser(authentication);
-//        Order order = loadOrderById(id, user);
-//        // order exists and logged-in user owns it
-//
-//        if (new Date().getTime() - order.getOrderDate().getTime() > TIME_ALLOWED_FOR_ORDER_CANCEL_IN_MILI_SEC) {
-//            throw new AccessDeniedException("You cannot cancel the order, too much time passed");
-//        }
-//        orderRepository.delete(order);
 //        // update announcement
 //        Announcement announcement = announcementRepository.getById(order.getAnnouncement().getEntityId());
 //        announcement.setSold(false);
@@ -134,7 +120,6 @@ public class OrderService {
 //        announcementEventRepository.saveAndFlush(announcementEvent);
 //        // update cache
 //        redisService.deleteCachedAnnouncement(announcement.getEntityId());
-//        redisService.deleteCachedOrder(id);
 //    }
 
 

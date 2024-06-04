@@ -10,13 +10,21 @@ import org.springframework.kafka.config.TopicBuilder;
 public class TopicConfiguration {
     private final String kafkaOrdersListAnnouncementsReqTopic;
     private final String kafkaOrderResponseProduceTopic;
+    private final String kafkaOrderTransactionOrderCreateProduceTopic;
+    private final String kafkaOrderTransactionOrderDeleteProduceTopic;
 
     public TopicConfiguration(
             @Value("${kafkaOrdersListAnnouncementsReq}") String kafkaOrdersListAnnouncementsReqTopic,
-            @Value("${kafkaOrderResponseProduceTopic}") String kafkaOrderResponseProduceTopic
+            @Value("${kafkaOrderResponseProduceTopic}") String kafkaOrderResponseProduceTopic,
+            @Value("${kafkaOrderTransactionOrderCreateProduceTopic}")
+            String kafkaOrderTransactionOrderCreateProduceTopic,
+            @Value("${kafkaOrderTransactionOrderDeleteProduceTopic}")
+            String kafkaOrderTransactionOrderDeleteProduceTopic
     ) {
         this.kafkaOrdersListAnnouncementsReqTopic = kafkaOrdersListAnnouncementsReqTopic;
         this.kafkaOrderResponseProduceTopic = kafkaOrderResponseProduceTopic;
+        this.kafkaOrderTransactionOrderCreateProduceTopic = kafkaOrderTransactionOrderCreateProduceTopic;
+        this.kafkaOrderTransactionOrderDeleteProduceTopic = kafkaOrderTransactionOrderDeleteProduceTopic;
     }
 
     @Bean
@@ -30,6 +38,22 @@ public class TopicConfiguration {
     @Bean
     public NewTopic produceTopicOrderResponse() {
         return TopicBuilder.name(kafkaOrderResponseProduceTopic)
+                .partitions(2)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic produceTopicOrderTransactionOrderCreate() {
+        return TopicBuilder.name(kafkaOrderTransactionOrderCreateProduceTopic)
+                .partitions(2)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic produceTopicOrderTransactionOrderDelete() {
+        return TopicBuilder.name(kafkaOrderTransactionOrderDeleteProduceTopic)
                 .partitions(2)
                 .replicas(1)
                 .build();

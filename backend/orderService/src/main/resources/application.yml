@@ -35,6 +35,12 @@ kafkaOrderDataReqConsumeTopic: order-request-topic
 kafkaOrderAnnouncementReqProduceTopic: order-announcement-request-topic
 kafkaOrderResponseProduceTopic: order-response-topic
 
+kafkaOrderTransactionOrderCreateConsumeTopic: order-transaction-create-order-req-topic
+kafkaOrderTransactionOrderCreateProduceTopic: order-transaction-create-order-resp-topic
+
+kafkaOrderTransactionOrderDeleteConsumeTopic: order-transaction-delete-order-req-topic
+kafkaOrderTransactionOrderDeleteProduceTopic: order-transaction-delete-order-resp-topic
+
 server:
   port: 8083
 

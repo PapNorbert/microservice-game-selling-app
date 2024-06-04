@@ -55,6 +55,7 @@ public class KafkaConsumerService {
         this.kafkaTemplateOrderTransactionCompensation = kafkaTemplateOrderTransactionCompensation;
     }
 
+    // TODO AnnouncementEvents create/delete
 
     @KafkaListener(topics = "${kafkaOrderTransactionOrderCreateConsumeTopic}",
             groupId = "${spring.kafka.consumer.group-id}",
@@ -68,7 +69,7 @@ public class KafkaConsumerService {
                     kafkaOrderTransactionAnnouncCreateProduceTopic,
                     transactionOrderCreateRespDto.getAnnouncementId().toString(),
                     new TransactionAnnouncementUpdateDto(
-                            transactionOrderCreateRespDto.getOrder().getEntityId(),
+                            transactionOrderCreateRespDto.getOrder(),
                             transactionOrderCreateRespDto.getAnnouncementId()
                     )
             );
@@ -90,7 +91,7 @@ public class KafkaConsumerService {
                     kafkaOrderTransactionAnnouncDeleteProduceTopic,
                     transactionOrderDeleteRespDto.getAnnouncementId().toString(),
                     new TransactionAnnouncementUpdateDto(
-                            transactionOrderDeleteRespDto.getOrderId(),
+                            transactionOrderDeleteRespDto.getOrder(),
                             transactionOrderDeleteRespDto.getAnnouncementId()
                     )
             );

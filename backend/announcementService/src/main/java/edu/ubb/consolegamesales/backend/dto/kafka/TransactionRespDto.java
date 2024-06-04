@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TransactionOrderDeleteRespDto {
+public class TransactionRespDto {
     private Order order;
     private Long announcementId;
     private boolean transactionSuccess;

@@ -87,42 +87,6 @@ public class OrderService {
         );
     }
 
-    // TODO AnnouncementEvents create/delete
-
-//    public CreatedObjectDto createOrder(OrderCreationDto orderCreationDto,
-//                                        Authentication authentication) {
-
-//        Announcement announcement = announcementRepository.getById(orderCreationDto.getAnnouncementId());
-//        if (announcement == null) {
-//            throw new NotFoundException("No announcement found for id " + orderCreationDto.getAnnouncementId());
-//        }
-//        if (announcement.getSold()) {
-//            throw new AnnouncementAlreadySoldException();
-//        }
-//        announcement.setSold(true);
-//        announcementRepository.update(announcement.getEntityId(), announcement);
-//        redisService.deleteCachedAnnouncement(announcement.getEntityId());
-
-//        AnnouncementEvent announcementEvent = new AnnouncementEvent(
-//                announcement, "Announcement sold, order created", new Date(), user);
-//        announcementEventRepository.saveAndFlush(announcementEvent);
-//
-//        return orderMapper.modelToCreatedObjDto(order);
-//    }
-//
-//    public void deleteOrderById(Long id, Authentication authentication) {
-//        // update announcement
-//        Announcement announcement = announcementRepository.getById(order.getAnnouncement().getEntityId());
-//        announcement.setSold(false);
-//        announcementRepository.update(announcement.getEntityId(), announcement);
-//        AnnouncementEvent announcementEvent = new AnnouncementEvent(
-//                announcement, "Announcement order canceled, announcement not sold", new Date(), user);
-//        announcementEventRepository.saveAndFlush(announcementEvent);
-//        // update cache
-//        redisService.deleteCachedAnnouncement(announcement.getEntityId());
-//    }
-
-
     private Order loadOrderById(Long orderId) {
         Order order = redisService.getCachedOrder(orderId);
         if (order == null) {

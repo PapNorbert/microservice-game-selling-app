@@ -34,6 +34,12 @@ kafkaOrdersListAnnouncementsResponse: orders-announcements-response-topic
 kafkaOrderAnnouncementReqConsumeTopic: order-announcement-request-topic
 kafkaOrderResponseProduceTopic: order-response-topic
 
+kafkaOrderTransactionAnnouncCreateConsumeTopic: order-transaction-create-announc-req-topic
+kafkaOrderTransactionAnnouncCreateProduceTopic: order-transaction-create-announc-resp-topic
+
+kafkaOrderTransactionAnnouncDeleteConsumeTopic: order-transaction-delete-announc-req-topic
+kafkaOrderTransactionAnnouncDeleteProduceTopic: order-transaction-delete-announc-resp-topic
+
 server:
   port: 8082
 

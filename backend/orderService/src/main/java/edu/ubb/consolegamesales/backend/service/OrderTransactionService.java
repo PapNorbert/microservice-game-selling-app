@@ -75,7 +75,7 @@ public class OrderTransactionService {
             kafkaOrderTransactionDeleteResponseTemplate.send(
                     kafkaOrderTransactionOrderDeleteProduceTopic, orderId.toString(),
                     new TransactionOrderDeleteRespDto(
-                            orderId, null, false)
+                            null, null, false)
             );
             return;
         }
@@ -84,7 +84,7 @@ public class OrderTransactionService {
             kafkaOrderTransactionDeleteResponseTemplate.send(
                     kafkaOrderTransactionOrderDeleteProduceTopic, order.getAnnouncementId().toString(),
                     new TransactionOrderDeleteRespDto(
-                            order.getEntityId(), order.getAnnouncementId(), false)
+                            order, order.getAnnouncementId(), false)
             );
             return;
         }
@@ -94,7 +94,7 @@ public class OrderTransactionService {
             kafkaOrderTransactionDeleteResponseTemplate.send(
                     kafkaOrderTransactionOrderDeleteProduceTopic, order.getAnnouncementId().toString(),
                     new TransactionOrderDeleteRespDto(
-                            order.getEntityId(), order.getAnnouncementId(), false)
+                            order, order.getAnnouncementId(), false)
             );
             return;
         }
@@ -104,14 +104,14 @@ public class OrderTransactionService {
             kafkaOrderTransactionDeleteResponseTemplate.send(
                     kafkaOrderTransactionOrderDeleteProduceTopic, order.getAnnouncementId().toString(),
                     new TransactionOrderDeleteRespDto(
-                            order.getEntityId(), order.getAnnouncementId(), true)
+                            order, order.getAnnouncementId(), true)
             );
         } catch (Exception e) {
             // if any exception is thrown during delete the transaction fails
             kafkaOrderTransactionDeleteResponseTemplate.send(
                     kafkaOrderTransactionOrderDeleteProduceTopic, order.getAnnouncementId().toString(),
                     new TransactionOrderDeleteRespDto(
-                            orderId, order.getAnnouncementId(), false)
+                            order, order.getAnnouncementId(), false)
             );
         }
 

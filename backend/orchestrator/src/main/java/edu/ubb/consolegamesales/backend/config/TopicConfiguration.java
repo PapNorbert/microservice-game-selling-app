@@ -16,6 +16,7 @@ public class TopicConfiguration {
     private final String kafkaOrderTransactionAnnouncCreateProduceTopic;
     private final String kafkaOrderTransactionAnnouncDeleteProduceTopic;
     private final String kafkaOrderTransactionRespProduceTopic;
+    private final String kafkaOrderTransactionCompensationProduceTopic;
 
     public TopicConfiguration(
             @Value("${kafkaOrderListOfUserReqTopic}") String kafkaOrderListOfUserReqTopic,
@@ -29,9 +30,11 @@ public class TopicConfiguration {
             String kafkaOrderTransactionAnnouncCreateProduceTopic,
             @Value("${kafkaOrderTransactionAnnouncDeleteProduceTopic}")
             String kafkaOrderTransactionAnnouncDeleteProduceTopic,
-            @Value("${kafkaOrderTransactionRespProduceTopic}") String kafkaOrderTransactionRespProduceTopic
-
-    ) {
+            @Value("${kafkaOrderTransactionRespProduceTopic}")
+            String kafkaOrderTransactionRespProduceTopic,
+            @Value("${kafkaOrderTransactionCompensationProduceTopic}")
+            String kafkaOrderTransactionCompensationProduceTopic
+            ) {
         this.kafkaOrderListOfUserReqTopic = kafkaOrderListOfUserReqTopic;
         this.kafkaOrderDataReqProduceTopic = kafkaOrderDataReqProduceTopic;
         this.kafkaOrderAnnouncementReqProduceTopic = kafkaOrderAnnouncementReqProduceTopic;
@@ -40,6 +43,7 @@ public class TopicConfiguration {
         this.kafkaOrderTransactionAnnouncCreateProduceTopic = kafkaOrderTransactionAnnouncCreateProduceTopic;
         this.kafkaOrderTransactionAnnouncDeleteProduceTopic = kafkaOrderTransactionAnnouncDeleteProduceTopic;
         this.kafkaOrderTransactionRespProduceTopic = kafkaOrderTransactionRespProduceTopic;
+        this.kafkaOrderTransactionCompensationProduceTopic = kafkaOrderTransactionCompensationProduceTopic;
     }
 
     @Bean
@@ -93,6 +97,14 @@ public class TopicConfiguration {
     @Bean
     public NewTopic produceTopicOrderTransactionAnnouncDelete() {
         return TopicBuilder.name(kafkaOrderTransactionAnnouncDeleteProduceTopic)
+                .partitions(2)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic produceTopicOrderTransactionCompensation() {
+        return TopicBuilder.name(kafkaOrderTransactionCompensationProduceTopic)
                 .partitions(2)
                 .replicas(1)
                 .build();

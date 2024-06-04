@@ -45,6 +45,8 @@ kafkaOrderTransactionAnnouncCreateConsumeTopic: order-transaction-create-announc
 kafkaOrderTransactionAnnouncDeleteProduceTopic: order-transaction-delete-announc-req-topic
 kafkaOrderTransactionAnnouncDeleteConsumeTopic: order-transaction-delete-announc-resp-topic
 
+kafkaOrderTransactionCompensationProduceTopic: order-transaction-compensation-topic
+
 kafkaOrderTransactionRespProduceTopic: order-transaction-resp-topic
 
 server:

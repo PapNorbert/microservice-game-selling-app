@@ -55,7 +55,6 @@ public class KafkaConsumerService {
         this.kafkaTemplateOrderTransactionCompensation = kafkaTemplateOrderTransactionCompensation;
     }
 
-    // TODO AnnouncementEvents create/delete
 
     @KafkaListener(topics = "${kafkaOrderTransactionOrderCreateConsumeTopic}",
             groupId = "${spring.kafka.consumer.group-id}",
@@ -74,7 +73,16 @@ public class KafkaConsumerService {
                     )
             );
         } else {
-            // TODO transaction failed
+            // transaction failed, can send response to client with failure
+            kafkaTemplateOrderTransactionResp.send(
+                    kafkaOrderTransactionRespProduceTopic,
+                    new TransactionRespDto(
+                            null,
+                            null,
+                            false,
+                            true
+                    )
+            );
         }
     }
 
@@ -96,7 +104,93 @@ public class KafkaConsumerService {
                     )
             );
         } else {
-            // TODO transaction failed
+            // transaction failed, can send response to client with failure
+            kafkaTemplateOrderTransactionResp.send(
+                    kafkaOrderTransactionRespProduceTopic,
+                    new TransactionRespDto(
+                            transactionOrderDeleteRespDto.getOrder().getEntityId(),
+                            null,
+                            false,
+                            false
+                    )
+            );
+        }
+    }
+
+    @KafkaListener(topics = "${kafkaOrderTransactionAnnouncCreateConsumeTopic}",
+            groupId = "${spring.kafka.consumer.group-id}",
+            properties = {"spring.json.value.default.type="
+                    + "edu.ubb.consolegamesales.backend.dto.kafka.TransactionAnnouncementRespDto"})
+    public void listenToOrderTransactionAnnouncCreate(
+            TransactionAnnouncementRespDto transactionAnnouncementRespDto
+    ) {
+        LOGGER.info("Got response from order creation transaction, announcement part");
+        Long announcementId = transactionAnnouncementRespDto.getAnnouncementId();
+        if (transactionAnnouncementRespDto.isTransactionSuccess()) {
+            // transaction successful, can send response to client
+            kafkaTemplateOrderTransactionResp.send(
+                    kafkaOrderTransactionRespProduceTopic,
+                    announcementId.toString(),
+                    new TransactionRespDto(
+                            transactionAnnouncementRespDto.getOrder().getEntityId(),
+                            announcementId,
+                            true,
+                            true
+                    )
+            );
+            // TODO AnnouncementEvents create
+
+        } else {
+            // transaction failed, can send response to client with failure
+            kafkaTemplateOrderTransactionResp.send(
+                    kafkaOrderTransactionRespProduceTopic,
+                    new TransactionRespDto(
+                            null,
+                            null,
+                            false,
+                            true
+                    )
+            );
+            // TODO transaction compensation
+        }
+    }
+
+
+    @KafkaListener(topics = "${kafkaOrderTransactionAnnouncDeleteConsumeTopic}",
+            groupId = "${spring.kafka.consumer.group-id}",
+            properties = {"spring.json.value.default.type="
+                    + "edu.ubb.consolegamesales.backend.dto.kafka.TransactionAnnouncementRespDto"})
+    public void listenToOrderTransactionAnnouncDelete(
+            TransactionAnnouncementRespDto transactionAnnouncementRespDto
+    ) {
+        LOGGER.info("Got response from order deletion transaction, announcement part");
+        Long announcementId = transactionAnnouncementRespDto.getAnnouncementId();
+        if (transactionAnnouncementRespDto.isTransactionSuccess()) {
+            // transaction successful, can send response to client
+            kafkaTemplateOrderTransactionResp.send(
+                    kafkaOrderTransactionRespProduceTopic,
+                    announcementId.toString(),
+                    new TransactionRespDto(
+                            transactionAnnouncementRespDto.getOrder().getEntityId(),
+                            announcementId,
+                            true,
+                            false
+                    )
+            );
+            // TODO AnnouncementEvents delete
+
+        } else {
+            // transaction failed, can send response to client with failure
+            kafkaTemplateOrderTransactionResp.send(
+                    kafkaOrderTransactionRespProduceTopic,
+                    new TransactionRespDto(
+                            transactionAnnouncementRespDto.getOrder().getEntityId(),
+                            null,
+                            false,
+                            false
+                    )
+            );
+            // TODO transaction compensation
         }
     }
 }

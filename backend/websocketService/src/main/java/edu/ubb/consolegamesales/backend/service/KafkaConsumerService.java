@@ -86,4 +86,25 @@ public class KafkaConsumerService {
         );
     }
 
+
+    @KafkaListener(topics = "${kafkaOrderTransactionRespConsumeTopic}",
+            groupId = "${spring.kafka.consumer.group-id}",
+            properties = {"spring.json.value.default.type="
+                    + "edu.ubb.consolegamesales.backend.dto.kafka.TransactionRespDto"})
+    public void listenToUserChattedWithResponseTopic(TransactionRespDto transactionRespDto) {
+        // sending on websocket to listener transaction for deleting/creating order
+        // queue formats:
+        //          /queue/order/delete/orderID
+        //          /queue/order/create
+        String destination;
+        if (transactionRespDto.isOrderCreation()) {
+            destination = "/queue/order/create";
+        } else {
+            destination = "/queue/order/delete/" + transactionRespDto.getOrderId();
+        }
+        LOGGER.info("Sending response with order transaction successful: {}, destination: {}",
+                transactionRespDto.isTransactionSuccess(), destination);
+
+        // TODO  send response to destination, create response based on succes
+    }
 }

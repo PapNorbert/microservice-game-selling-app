@@ -72,10 +72,12 @@ public class OrderTransactionService {
         Order order = loadOrderById(orderId);
         if (order == null) {
             // order not found
+            order = new Order();
+            order.setEntityId(orderId);
             kafkaOrderTransactionDeleteResponseTemplate.send(
                     kafkaOrderTransactionOrderDeleteProduceTopic, orderId.toString(),
                     new TransactionOrderDeleteRespDto(
-                            null, null, false)
+                            order, null, false)
             );
             return;
         }

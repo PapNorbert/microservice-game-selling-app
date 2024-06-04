@@ -1,6 +1,5 @@
 package edu.ubb.consolegamesales.backend.dto.kafka;
 
-import edu.ubb.consolegamesales.backend.model.Order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,7 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TransactionRespDto {
-    private Order order;
+    private Long orderId;
     private Long announcementId;
     private boolean transactionSuccess;
+    private boolean orderCreation;
 }

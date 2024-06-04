@@ -1,7 +1,7 @@
 package edu.ubb.consolegamesales.backend.service;
 
 import edu.ubb.consolegamesales.backend.dto.kafka.TransactionAnnouncementUpdateDto;
-import edu.ubb.consolegamesales.backend.dto.kafka.TransactionRespDto;
+import edu.ubb.consolegamesales.backend.dto.kafka.TransactionAnnouncementRespDto;
 import edu.ubb.consolegamesales.backend.model.Announcement;
 import edu.ubb.consolegamesales.backend.repository.AnnouncementRepository;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,20 +14,20 @@ public class AnnouncementTransactionService {
     private final RedisService redisService;
 
     private final String kafkaOrderTransactionAnnouncCreateProduceTopic;
-    private final KafkaTemplate<String, TransactionRespDto> kafkaTemplateCreateResp;
+    private final KafkaTemplate<String, TransactionAnnouncementRespDto> kafkaTemplateCreateResp;
 
     private final String kafkaOrderTransactionAnnouncDeleteProduceTopic;
-    private final KafkaTemplate<String, TransactionRespDto> kafkaTemplateDeleteResp;
+    private final KafkaTemplate<String, TransactionAnnouncementRespDto> kafkaTemplateDeleteResp;
 
     public AnnouncementTransactionService(
             AnnouncementRepository announcementRepository,
             RedisService redisService,
             @Value("${kafkaOrderTransactionAnnouncCreateProduceTopic}")
             String kafkaOrderTransactionAnnouncCreateProduceTopic,
-            KafkaTemplate<String, TransactionRespDto> kafkaTemplateCreateResp,
+            KafkaTemplate<String, TransactionAnnouncementRespDto> kafkaTemplateCreateResp,
             @Value("${kafkaOrderTransactionAnnouncDeleteProduceTopic}")
             String kafkaOrderTransactionAnnouncDeleteProduceTopic,
-            KafkaTemplate<String, TransactionRespDto> kafkaTemplateDeleteResp
+            KafkaTemplate<String, TransactionAnnouncementRespDto> kafkaTemplateDeleteResp
     ) {
         this.announcementRepository = announcementRepository;
         this.redisService = redisService;
@@ -47,7 +47,7 @@ public class AnnouncementTransactionService {
             announcement = announcementRepository.findByEntityId(
                     announcementId).orElse(null);
         }
-        TransactionRespDto transactionRespDtoFailed = new TransactionRespDto(
+        TransactionAnnouncementRespDto transactionAnnouncementRespDtoFailed = new TransactionAnnouncementRespDto(
                 transactionAnnouncementUpdateDto.getOrder(),
                 announcementId,
                 false);
@@ -56,7 +56,7 @@ public class AnnouncementTransactionService {
             kafkaTemplateCreateResp.send(
                     kafkaOrderTransactionAnnouncCreateProduceTopic,
                     announcementId.toString(),
-                    transactionRespDtoFailed
+                    transactionAnnouncementRespDtoFailed
             );
             return;
         }
@@ -65,7 +65,7 @@ public class AnnouncementTransactionService {
             kafkaTemplateCreateResp.send(
                     kafkaOrderTransactionAnnouncCreateProduceTopic,
                     announcementId.toString(),
-                    transactionRespDtoFailed
+                    transactionAnnouncementRespDtoFailed
             );
             return;
         }
@@ -77,7 +77,7 @@ public class AnnouncementTransactionService {
             kafkaTemplateCreateResp.send(
                     kafkaOrderTransactionAnnouncCreateProduceTopic,
                     announcementId.toString(),
-                    new TransactionRespDto(
+                    new TransactionAnnouncementRespDto(
                             transactionAnnouncementUpdateDto.getOrder(),
                             announcementId,
                             true
@@ -88,7 +88,7 @@ public class AnnouncementTransactionService {
             kafkaTemplateCreateResp.send(
                     kafkaOrderTransactionAnnouncCreateProduceTopic,
                     announcementId.toString(),
-                    transactionRespDtoFailed
+                    transactionAnnouncementRespDtoFailed
             );
         }
 
@@ -104,7 +104,7 @@ public class AnnouncementTransactionService {
             announcement = announcementRepository.findByEntityId(
                     announcementId).orElse(null);
         }
-        TransactionRespDto transactionRespDtoFailed = new TransactionRespDto(
+        TransactionAnnouncementRespDto transactionAnnouncementRespDtoFailed = new TransactionAnnouncementRespDto(
                 transactionAnnouncementUpdateDto.getOrder(),
                 announcementId,
                 false);
@@ -113,7 +113,7 @@ public class AnnouncementTransactionService {
             kafkaTemplateDeleteResp.send(
                     kafkaOrderTransactionAnnouncDeleteProduceTopic,
                     announcementId.toString(),
-                    transactionRespDtoFailed
+                    transactionAnnouncementRespDtoFailed
             );
             return;
         }
@@ -124,7 +124,7 @@ public class AnnouncementTransactionService {
             kafkaTemplateDeleteResp.send(
                     kafkaOrderTransactionAnnouncDeleteProduceTopic,
                     announcementId.toString(),
-                    new TransactionRespDto(
+                    new TransactionAnnouncementRespDto(
                             transactionAnnouncementUpdateDto.getOrder(),
                             announcementId,
                             true)
@@ -134,7 +134,7 @@ public class AnnouncementTransactionService {
             kafkaTemplateDeleteResp.send(
                     kafkaOrderTransactionAnnouncDeleteProduceTopic,
                     announcementId.toString(),
-                    transactionRespDtoFailed
+                    transactionAnnouncementRespDtoFailed
             );
         }
 

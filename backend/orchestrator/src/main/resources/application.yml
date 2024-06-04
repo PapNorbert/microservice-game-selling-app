@@ -49,6 +49,9 @@ kafkaOrderTransactionCompensationProduceTopic: order-transaction-compensation-to
 
 kafkaOrderTransactionRespProduceTopic: order-transaction-resp-topic
 
+kafkaAnnouncementEventProduceTopic: announcement-event-topic
+
+
 server:
   port: 8086
 

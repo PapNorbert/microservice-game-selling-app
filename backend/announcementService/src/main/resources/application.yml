@@ -40,6 +40,9 @@ kafkaOrderTransactionAnnouncCreateProduceTopic: order-transaction-create-announc
 kafkaOrderTransactionAnnouncDeleteConsumeTopic: order-transaction-delete-announc-req-topic
 kafkaOrderTransactionAnnouncDeleteProduceTopic: order-transaction-delete-announc-resp-topic
 
+kafkaAnnouncementEventConsumeTopic: announcement-event-topic
+
+
 server:
   port: 8082
 

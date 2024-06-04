@@ -12,4 +12,5 @@ public class TransactionOrderDeleteRespDto {
     private Order order;
     private Long announcementId;
     private boolean transactionSuccess;
+    private Long userId;
 }

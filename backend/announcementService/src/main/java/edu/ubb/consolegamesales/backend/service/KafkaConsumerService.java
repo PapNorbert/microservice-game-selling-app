@@ -1,12 +1,18 @@
 package edu.ubb.consolegamesales.backend.service;
 
+import edu.ubb.consolegamesales.backend.dto.kafka.AnnouncementEventDto;
 import edu.ubb.consolegamesales.backend.dto.kafka.OrderAnnouncementReqDto;
 import edu.ubb.consolegamesales.backend.dto.kafka.OrdersListAnnouncementsReqDto;
 import edu.ubb.consolegamesales.backend.dto.kafka.TransactionAnnouncementUpdateDto;
+import edu.ubb.consolegamesales.backend.model.Announcement;
+import edu.ubb.consolegamesales.backend.model.AnnouncementEvent;
+import edu.ubb.consolegamesales.backend.repository.AnnouncementEventRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 @Service
 @Slf4j
@@ -14,6 +20,7 @@ import org.springframework.stereotype.Service;
 public class KafkaConsumerService {
     private final AnnouncementService announcementService;
     private final AnnouncementTransactionService announcementTransactionService;
+    private final AnnouncementEventRepository announcementEventRepository;
 
     @KafkaListener(topics = "${kafkaOrdersListAnnouncementsReq}",
             groupId = "${spring.kafka.consumer.group-id}",
@@ -58,5 +65,24 @@ public class KafkaConsumerService {
                 transactionAnnouncementUpdateDto.getAnnouncementId());
         announcementTransactionService.transactionAnnouncementNotSold(
                 transactionAnnouncementUpdateDto);
+    }
+
+    @KafkaListener(topics = "${kafkaAnnouncementEventConsumeTopic}",
+            groupId = "${spring.kafka.consumer.group-id}",
+            properties = {"spring.json.value.default.type="
+                    + "edu.ubb.consolegamesales.backend.dto.kafka.AnnouncementEventDto"})
+    public void listenToAnnouncementEvent(
+            AnnouncementEventDto announcementEventDto) {
+        LOGGER.info("Got Announcement event for announcement {}",
+                announcementEventDto.getAnnouncementId());
+        Announcement announcement = new Announcement();
+        announcement.setEntityId(announcementEventDto.getAnnouncementId());
+        announcementEventRepository.saveAndFlush(
+                new AnnouncementEvent(
+                        announcement, announcementEventDto.getEvent(),
+                        new Date(), announcementEventDto.getChangedByUserId()
+                )
+        );
+
     }
 }

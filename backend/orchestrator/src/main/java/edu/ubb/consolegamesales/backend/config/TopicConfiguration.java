@@ -17,6 +17,7 @@ public class TopicConfiguration {
     private final String kafkaOrderTransactionAnnouncDeleteProduceTopic;
     private final String kafkaOrderTransactionRespProduceTopic;
     private final String kafkaOrderTransactionCompensationProduceTopic;
+    private final String kafkaAnnouncementEventProduceTopic;
 
     public TopicConfiguration(
             @Value("${kafkaOrderListOfUserReqTopic}") String kafkaOrderListOfUserReqTopic,
@@ -33,7 +34,9 @@ public class TopicConfiguration {
             @Value("${kafkaOrderTransactionRespProduceTopic}")
             String kafkaOrderTransactionRespProduceTopic,
             @Value("${kafkaOrderTransactionCompensationProduceTopic}")
-            String kafkaOrderTransactionCompensationProduceTopic
+            String kafkaOrderTransactionCompensationProduceTopic,
+            @Value("${kafkaAnnouncementEventProduceTopic}")
+            String kafkaAnnouncementEventProduceTopic
             ) {
         this.kafkaOrderListOfUserReqTopic = kafkaOrderListOfUserReqTopic;
         this.kafkaOrderDataReqProduceTopic = kafkaOrderDataReqProduceTopic;
@@ -44,6 +47,7 @@ public class TopicConfiguration {
         this.kafkaOrderTransactionAnnouncDeleteProduceTopic = kafkaOrderTransactionAnnouncDeleteProduceTopic;
         this.kafkaOrderTransactionRespProduceTopic = kafkaOrderTransactionRespProduceTopic;
         this.kafkaOrderTransactionCompensationProduceTopic = kafkaOrderTransactionCompensationProduceTopic;
+        this.kafkaAnnouncementEventProduceTopic = kafkaAnnouncementEventProduceTopic;
     }
 
     @Bean
@@ -113,6 +117,14 @@ public class TopicConfiguration {
     @Bean
     public NewTopic produceTopicOrderTransactionResp() {
         return TopicBuilder.name(kafkaOrderTransactionRespProduceTopic)
+                .partitions(2)
+                .replicas(1)
+                .build();
+    }
+
+    @Bean
+    public NewTopic produceTopicAnnouncementEvent() {
+        return TopicBuilder.name(kafkaAnnouncementEventProduceTopic)
                 .partitions(2)
                 .replicas(1)
                 .build();

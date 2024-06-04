@@ -1,15 +1,14 @@
 package edu.ubb.consolegamesales.backend.dto.kafka;
 
-import edu.ubb.consolegamesales.backend.model.Order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
-@AllArgsConstructor
+@Data()
 @NoArgsConstructor
-public class TransactionAnnouncementUpdateDto {
-    private Order order;
+@AllArgsConstructor
+public class AnnouncementEventDto {
     private Long announcementId;
-    private Long userId;
+    private String event;
+    private Long changedByUserId;
 }

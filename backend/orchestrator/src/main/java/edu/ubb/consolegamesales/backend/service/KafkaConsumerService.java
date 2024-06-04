@@ -26,6 +26,9 @@ public class KafkaConsumerService {
     private final KafkaTemplate<String, TransactionCompensationDto>
             kafkaTemplateOrderTransactionCompensation;
 
+    private final String kafkaAnnouncementEventProduceTopic;
+    private final KafkaTemplate<String, AnnouncementEventDto>
+            kafkaTemplateAnnouncementEvent;
 
     public KafkaConsumerService(
             @Value("${kafkaOrderTransactionAnnouncCreateProduceTopic}")
@@ -43,7 +46,11 @@ public class KafkaConsumerService {
             @Value("${kafkaOrderTransactionCompensationProduceTopic}")
             String kafkaOrderTransactionCompensationProduceTopic,
             KafkaTemplate<String, TransactionCompensationDto>
-                    kafkaTemplateOrderTransactionCompensation
+                    kafkaTemplateOrderTransactionCompensation,
+            @Value("${kafkaAnnouncementEventProduceTopic}")
+            String kafkaAnnouncementEventProduceTopic,
+            KafkaTemplate<String, AnnouncementEventDto>
+                    kafkaTemplateAnnouncementEvent
     ) {
         this.kafkaOrderTransactionAnnouncCreateProduceTopic = kafkaOrderTransactionAnnouncCreateProduceTopic;
         this.kafkaTemplateOrderTransactionAnnouncCreate = kafkaTemplateOrderTransactionAnnouncCreate;
@@ -53,6 +60,8 @@ public class KafkaConsumerService {
         this.kafkaTemplateOrderTransactionResp = kafkaTemplateOrderTransactionResp;
         this.kafkaOrderTransactionCompensationProduceTopic = kafkaOrderTransactionCompensationProduceTopic;
         this.kafkaTemplateOrderTransactionCompensation = kafkaTemplateOrderTransactionCompensation;
+        this.kafkaAnnouncementEventProduceTopic = kafkaAnnouncementEventProduceTopic;
+        this.kafkaTemplateAnnouncementEvent = kafkaTemplateAnnouncementEvent;
     }
 
 
@@ -69,7 +78,8 @@ public class KafkaConsumerService {
                     transactionOrderCreateRespDto.getAnnouncementId().toString(),
                     new TransactionAnnouncementUpdateDto(
                             transactionOrderCreateRespDto.getOrder(),
-                            transactionOrderCreateRespDto.getAnnouncementId()
+                            transactionOrderCreateRespDto.getAnnouncementId(),
+                            transactionOrderCreateRespDto.getUserId()
                     )
             );
         } else {
@@ -100,7 +110,8 @@ public class KafkaConsumerService {
                     transactionOrderDeleteRespDto.getAnnouncementId().toString(),
                     new TransactionAnnouncementUpdateDto(
                             transactionOrderDeleteRespDto.getOrder(),
-                            transactionOrderDeleteRespDto.getAnnouncementId()
+                            transactionOrderDeleteRespDto.getAnnouncementId(),
+                            transactionOrderDeleteRespDto.getUserId()
                     )
             );
         } else {
@@ -138,7 +149,15 @@ public class KafkaConsumerService {
                             true
                     )
             );
-            // TODO AnnouncementEvents create
+            // send AnnouncementEvents create
+            kafkaTemplateAnnouncementEvent.send(
+                    kafkaAnnouncementEventProduceTopic,
+                    announcementId.toString(),
+                    new AnnouncementEventDto(
+                            announcementId, "Order created for announcement, set status to sold",
+                            transactionAnnouncementRespDto.getUserId()
+                    )
+            );
 
         } else {
             // transaction failed, can send response to client with failure
@@ -177,7 +196,15 @@ public class KafkaConsumerService {
                             false
                     )
             );
-            // TODO AnnouncementEvents delete
+            // send AnnouncementEvents delete
+            kafkaTemplateAnnouncementEvent.send(
+                    kafkaAnnouncementEventProduceTopic,
+                    announcementId.toString(),
+                    new AnnouncementEventDto(
+                            announcementId, "Announcement order canceled, set status to not sold",
+                            transactionAnnouncementRespDto.getUserId()
+                    )
+            );
 
         } else {
             // transaction failed, can send response to client with failure

@@ -55,13 +55,15 @@ public class OrderTransactionService {
             Order order = orderRepository.saveAndFlush(orderMapper.creationDtoToModel(orderCreationDto));
             kafkaOrderTransactionCreateResponseTemplate.send(
                     kafkaOrderTransactionOrderCreateProduceTopic, announcementId.toString(),
-                    new TransactionOrderCreateRespDto(announcementId, order, true)
+                    new TransactionOrderCreateRespDto(announcementId, order,
+                            true, orderCreationDto.getBuyerId())
             );
         } catch (Exception e) {
             // if any exception is thrown during saving the transaction fails
             kafkaOrderTransactionCreateResponseTemplate.send(
                     kafkaOrderTransactionOrderCreateProduceTopic, announcementId.toString(),
-                    new TransactionOrderCreateRespDto(announcementId, null, false)
+                    new TransactionOrderCreateRespDto(announcementId, null,
+                            false, orderCreationDto.getBuyerId())
             );
         }
     }
@@ -77,7 +79,8 @@ public class OrderTransactionService {
             kafkaOrderTransactionDeleteResponseTemplate.send(
                     kafkaOrderTransactionOrderDeleteProduceTopic, orderId.toString(),
                     new TransactionOrderDeleteRespDto(
-                            order, null, false)
+                            order, null, false,
+                            transactionOrderDeletionDto.getUser().getEntityId())
             );
             return;
         }
@@ -86,7 +89,8 @@ public class OrderTransactionService {
             kafkaOrderTransactionDeleteResponseTemplate.send(
                     kafkaOrderTransactionOrderDeleteProduceTopic, order.getAnnouncementId().toString(),
                     new TransactionOrderDeleteRespDto(
-                            order, order.getAnnouncementId(), false)
+                            order, order.getAnnouncementId(), false,
+                            transactionOrderDeletionDto.getUser().getEntityId())
             );
             return;
         }
@@ -96,7 +100,8 @@ public class OrderTransactionService {
             kafkaOrderTransactionDeleteResponseTemplate.send(
                     kafkaOrderTransactionOrderDeleteProduceTopic, order.getAnnouncementId().toString(),
                     new TransactionOrderDeleteRespDto(
-                            order, order.getAnnouncementId(), false)
+                            order, order.getAnnouncementId(), false,
+                            transactionOrderDeletionDto.getUser().getEntityId())
             );
             return;
         }
@@ -106,14 +111,16 @@ public class OrderTransactionService {
             kafkaOrderTransactionDeleteResponseTemplate.send(
                     kafkaOrderTransactionOrderDeleteProduceTopic, order.getAnnouncementId().toString(),
                     new TransactionOrderDeleteRespDto(
-                            order, order.getAnnouncementId(), true)
+                            order, order.getAnnouncementId(), true,
+                            transactionOrderDeletionDto.getUser().getEntityId())
             );
         } catch (Exception e) {
             // if any exception is thrown during delete the transaction fails
             kafkaOrderTransactionDeleteResponseTemplate.send(
                     kafkaOrderTransactionOrderDeleteProduceTopic, order.getAnnouncementId().toString(),
                     new TransactionOrderDeleteRespDto(
-                            order, order.getAnnouncementId(), false)
+                            order, order.getAnnouncementId(), false,
+                            transactionOrderDeletionDto.getUser().getEntityId())
             );
         }
 

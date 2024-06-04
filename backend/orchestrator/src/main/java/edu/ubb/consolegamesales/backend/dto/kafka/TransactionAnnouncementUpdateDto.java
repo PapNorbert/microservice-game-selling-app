@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 public class TransactionAnnouncementUpdateDto {
     private Order order;
     private Long announcementId;
+    private Long userId;
 }

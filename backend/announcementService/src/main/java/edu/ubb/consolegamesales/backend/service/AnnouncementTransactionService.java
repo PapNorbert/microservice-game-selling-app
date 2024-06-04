@@ -49,8 +49,8 @@ public class AnnouncementTransactionService {
         }
         TransactionAnnouncementRespDto transactionAnnouncementRespDtoFailed = new TransactionAnnouncementRespDto(
                 transactionAnnouncementUpdateDto.getOrder(),
-                announcementId,
-                false);
+                announcementId, false,
+                transactionAnnouncementUpdateDto.getUserId());
         if (announcement == null) {
             // announcement not found
             kafkaTemplateCreateResp.send(
@@ -80,7 +80,8 @@ public class AnnouncementTransactionService {
                     new TransactionAnnouncementRespDto(
                             transactionAnnouncementUpdateDto.getOrder(),
                             announcementId,
-                            true
+                            true,
+                            transactionAnnouncementUpdateDto.getUserId()
                     )
             );
         } catch (Exception e) {
@@ -106,8 +107,8 @@ public class AnnouncementTransactionService {
         }
         TransactionAnnouncementRespDto transactionAnnouncementRespDtoFailed = new TransactionAnnouncementRespDto(
                 transactionAnnouncementUpdateDto.getOrder(),
-                announcementId,
-                false);
+                announcementId, false,
+                transactionAnnouncementUpdateDto.getUserId());
         if (announcement == null) {
             // announcement not found
             kafkaTemplateDeleteResp.send(
@@ -127,7 +128,8 @@ public class AnnouncementTransactionService {
                     new TransactionAnnouncementRespDto(
                             transactionAnnouncementUpdateDto.getOrder(),
                             announcementId,
-                            true)
+                            true,
+                            transactionAnnouncementUpdateDto.getUserId())
             );
         } catch (Exception e) {
             // any error during update, transaction fails
@@ -137,7 +139,6 @@ public class AnnouncementTransactionService {
                     transactionAnnouncementRespDtoFailed
             );
         }
-
 
     }
 }

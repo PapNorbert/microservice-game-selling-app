@@ -15,6 +15,7 @@ export default function OrderDetailed() {
   const orderUrl = `/${apiPrefix}/orders/${orderId}`;
   const navigate = useNavigate();
   const [orderDataWs, setOrderDataWs] = useState<Order>();
+  const [foundOrder, setFoundOrder] = useState<boolean>();
   const { data: orderData, isError, error, isLoading } = useQuery<AxiosResponse<Order>, AxiosError>({
     queryKey: ["orderDetailed", orderUrl],
     queryFn: queryFunction,
@@ -24,7 +25,12 @@ export default function OrderDetailed() {
   useSubscription(`/queue/order/${orderId}`, (message) => {
     // queue format:  /queue/order/{orderId}
     const data: Order = JSON.parse(message.body);
-    setOrderDataWs(data);
+    if (data.orderId == null) {
+      setFoundOrder(false);
+    } else {
+      setFoundOrder(true);
+      setOrderDataWs(data);
+    }
   });
 
   function queryFunction() {
@@ -62,8 +68,16 @@ export default function OrderDetailed() {
     )
   }
 
+  if (foundOrder === false) {
+    return (
+      <>
+        <h2 className="error">This order was not found!</h2>
+        <h3 className="clickable text-center fst-italic text-decoration-underline" onClick={() => navigate('/orders')}>Orders</h3>
+      </>
+    )
+  }
 
-  if (orderDataWs) {
+  if ( foundOrder && orderDataWs) {
     return (
       <>
         <OrderDetailedElement order={orderDataWs} key={orderId} />

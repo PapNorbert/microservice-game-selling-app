@@ -55,14 +55,6 @@ public class RedisService {
         return order;
     }
 
-    public void deleteCachedOrder(Long orderId) {
-        try {
-            redisTemplateOrder.delete(KEY_PREFIX_ORDER + orderId);
-        } catch (Exception e) {
-            LOGGER.error("Error deleting order in Redis cache: {}", e.getMessage());
-        }
-    }
-
     public Announcement getCachedAnnouncement(Long announcementId) {
         Announcement announcement = null;
         try {

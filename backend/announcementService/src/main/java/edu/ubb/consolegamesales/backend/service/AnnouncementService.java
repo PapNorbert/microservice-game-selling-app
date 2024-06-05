@@ -320,11 +320,12 @@ public class AnnouncementService {
 
     public void loadAnnouncementOfOrderById(OrderAnnouncementReqDto orderAnnouncementReqDto) {
         Long orderId = orderAnnouncementReqDto.getOrderId();
+        Long announcementId = orderAnnouncementReqDto.getOrder().getAnnouncementId();
         Announcement announcement = redisService.getCachedAnnouncement(
-                orderId);
+                announcementId);
         if (announcement == null) {
             announcement = announcementRepository.findByEntityId(
-                    orderId).orElse(null);
+                    announcementId).orElse(null);
             if (announcement == null) {
                 // necessary data not found
                 kafkaTemplateOrderResponse.send(

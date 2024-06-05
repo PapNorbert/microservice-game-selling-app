@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class KafkaConsumerService {
+    private final RedisService redisService;
+
     private final String kafkaOrderTransactionAnnouncCreateProduceTopic;
     private final KafkaTemplate<String, TransactionAnnouncementUpdateDto>
             kafkaTemplateOrderTransactionAnnouncCreate;
@@ -31,6 +33,7 @@ public class KafkaConsumerService {
             kafkaTemplateAnnouncementEvent;
 
     public KafkaConsumerService(
+            RedisService redisService,
             @Value("${kafkaOrderTransactionAnnouncCreateProduceTopic}")
             String kafkaOrderTransactionAnnouncCreateProduceTopic,
             KafkaTemplate<String, TransactionAnnouncementUpdateDto>
@@ -52,6 +55,7 @@ public class KafkaConsumerService {
             KafkaTemplate<String, AnnouncementEventDto>
                     kafkaTemplateAnnouncementEvent
     ) {
+        this.redisService = redisService;
         this.kafkaOrderTransactionAnnouncCreateProduceTopic = kafkaOrderTransactionAnnouncCreateProduceTopic;
         this.kafkaTemplateOrderTransactionAnnouncCreate = kafkaTemplateOrderTransactionAnnouncCreate;
         this.kafkaOrderTransactionAnnouncDeleteProduceTopic = kafkaOrderTransactionAnnouncDeleteProduceTopic;
@@ -138,7 +142,13 @@ public class KafkaConsumerService {
         LOGGER.info("Got response from order creation transaction, announcement part");
         Long announcementId = transactionAnnouncementRespDto.getAnnouncementId();
         if (transactionAnnouncementRespDto.isTransactionSuccess()) {
-            // transaction successful, can send response to client
+            // transaction successful
+            // save order to cache
+            redisService.storeOrderInCache(
+                    transactionAnnouncementRespDto.getOrder().getEntityId(),
+                    transactionAnnouncementRespDto.getOrder()
+            );
+            // send response to client
             kafkaTemplateOrderTransactionResp.send(
                     kafkaOrderTransactionRespProduceTopic,
                     announcementId.toString(),

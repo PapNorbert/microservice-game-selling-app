@@ -3,6 +3,7 @@ package edu.ubb.consolegamesales.backend.service;
 import edu.ubb.consolegamesales.backend.controller.mapper.AnnouncementMapper;
 import edu.ubb.consolegamesales.backend.controller.mapper.MessageMapper;
 import edu.ubb.consolegamesales.backend.dto.kafka.*;
+import edu.ubb.consolegamesales.backend.dto.outgoing.TransactionResponseDto;
 import edu.ubb.consolegamesales.backend.model.Order;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -53,7 +54,7 @@ public class KafkaConsumerService {
             groupId = "${spring.kafka.consumer.group-id}",
             properties = {"spring.json.value.default.type="
                     + "edu.ubb.consolegamesales.backend.dto.kafka.OrdersOfUserResponseDto"})
-    public void listenToUserChattedWithResponseTopic(OrdersOfUserResponseDto ordersOfUserResponseDto) {
+    public void listenToOrdersListAnnouncementsResponseTopic(OrdersOfUserResponseDto ordersOfUserResponseDto) {
         // sending on websocket to listener orders of user
         // queue format:  /queue/orders/{requestUserId}
         String destination = "/queue/orders/" + ordersOfUserResponseDto.getUserId().toString();
@@ -74,7 +75,7 @@ public class KafkaConsumerService {
         LOGGER.info("Sending response with order to {}", destination);
         Order order = orderResponseDto.getOrder();
         if (order == null || orderResponseDto.getAnnouncement() == null) {
-            messagingTemplate.convertAndSend(destination, new OrderResponseDto());
+            messagingTemplate.convertAndSend(destination, new OrderListDto());
             return;
         }
         messagingTemplate.convertAndSend(destination,
@@ -91,7 +92,7 @@ public class KafkaConsumerService {
             groupId = "${spring.kafka.consumer.group-id}",
             properties = {"spring.json.value.default.type="
                     + "edu.ubb.consolegamesales.backend.dto.kafka.TransactionRespDto"})
-    public void listenToUserChattedWithResponseTopic(TransactionRespDto transactionRespDto) {
+    public void listenToOrderTransactionResponseTopic(TransactionRespDto transactionRespDto) {
         // sending on websocket to listener transaction for deleting/creating order
         // queue formats:
         //          /queue/order/delete/orderID
@@ -104,7 +105,13 @@ public class KafkaConsumerService {
         }
         LOGGER.info("Sending response with order transaction successful: {}, destination: {}",
                 transactionRespDto.isTransactionSuccess(), destination);
+        messagingTemplate.convertAndSend(
+                destination,
+                new TransactionResponseDto(
+                        transactionRespDto.getOrderId(),
+                        transactionRespDto.isTransactionSuccess()
+                )
+        );
 
-        // TODO  send response to destination, create response based on succes
     }
 }

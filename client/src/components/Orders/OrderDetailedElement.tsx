@@ -36,7 +36,7 @@ export default function OrderDetailedElement({ order }: PropType) {
     onSuccess: handleDeleteSubmitSucces,
     onError: handleSubmitError,
   });
-console.log(order)
+  
   useSubscription(`/queue/order/delete/${order.orderId}`, (message) => {
     // response for post request after processing finished
     const deleteResponse: OrderModificationResponse = JSON.parse(message.body);

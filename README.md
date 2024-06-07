@@ -42,6 +42,90 @@ The application serves a diverse range of individuals within the gaming communit
 - **Order Cancellation**: Allows users to cancel an order for a sold game disc within 1 day of placing the order, provided it has not yet been shipped.
 
 
+## Application Architecture
+
+The application is designed using a microservices architecture consisting of six different microservices: Announcement Service, User Management Service, Order Service, Messaging Service, WebSocket Service, and Orchestrator Service. Each microservice is responsible for specific functionalities and communicates with others through Kafka topics.
+
+### Microservices Overview
+
+1. **User Management Service**
+    - **Responsibilities**:
+       - User authentication (login, registration, logout)
+       - Managing user information
+       - Storing user reviews
+    - **Database**: Manages its own database for   user-related data
+
+2. **Announcement Service**:
+    - **Responsibilities**:
+        - Managing sale announcements (create, find, update, delete)
+        - Storing which users have saved specific announcements
+    - **Database**: Manages its own database for announcements and related information
+
+3. **Order Service**:
+    - **Responsibilities**:
+        - Managing orders (create, delete)
+    - **Database**: Manages its own database for order-related data
+
+4. **Messaging Service**:
+    - **Responsibilities**:
+        - Saving and managing messages
+    - **Database**: Manages its own database for message-related data
+
+5. **WebSocket Service**:
+    - **Responsibilities**:
+        - Facilitating real-time communication between server and client
+        - Receiving messages sent by users
+        - Sending chat histories
+        - Handling responses for requests that take longer to process (e.g., order creation/deletion)
+    - **Database**: No dedicated database required
+
+6. **Orchestrator Service**:
+    - **Responsibilities**:
+        - Processing order get requests: If data is available in Redis cache, it sends a response; otherwise, it instructs corresponding services to fetch the data and send it back through WebSocket.
+        - Managing the flow of transactions for placing and canceling orders
+    - **Database**: No dedicated database required
+
+
+### Data Management
+
+Each service, except the Orchestrator Service and the WebSocket Service, maintains its own database, ensuring that data is properly isolated and managed by the appropriate service.
+
+### Communication
+
+
+Inter-service communication is facilitated by Kafka topics, which ensure efficient and reliable message processing. Kafka topics are dynamically created by the first producer service to streamline microservice setup and scaling.
+
+### Cache Management
+
+The application uses a Redis cache to store data, improving performance by providing fast access to frequently requested data, minimizing latency, and improving the overall user experience.
+
+### Transaction management
+
+Requests to create or cancel an order are managed as a transaction using the Saga design pattern. This ensures that each step of the transaction is completed successfully, or that compensating actions are taken to undo any partial changes.
+
+
+1. **Initiation**: 
+    - The transaction begins when the orchestrator receives a request to create or cancel an order.
+
+2. **Order Service**:
+    - The orchestrator sends data to the Order Service to create or cancel the order.
+    - The Order Service processes the request and sends a response back to the orchestrator indicating success or failure.
+
+3. **Announcement Service**:
+    - If the Order Service succeeds, the orchestrator sends a request to the Announcement Service to update the announcement status (sold/not sold).
+    - The Announcement Service processes the request and sends a response back to the orchestrator indicating success or failure.
+    - If successful, the announcement event is saved.
+
+4. **Compensation**:
+    - If the orchestrator receives a failed response from any service, it sends compensation messages to the services that need to revert the changes made during the transaction.
+
+5. **Response to Client**:
+    - At the end of the transaction, the orchestrator sends data to the WebSocket Service.
+    - The WebSocket Service communicates the final outcome to the client, indicating whether the request succeeded or failed along with the relevant data.
+
+![Transaction Management Diagram](fig/transaction%20diagram.png)
+
+
 ## Used Technologies
 
 The platform utilizes the following technologies:
@@ -57,6 +141,9 @@ The platform utilizes the following technologies:
   
 - **WebSocket**: WebSocket technology enables real-time communication between users.
   
+- **Kafka**: Apache Kafka is used for communication between microservices, facilitating efficient and reliable message processing and exchange across the platform's distributed systems.
+  
+
 
 ### Similar Products
 

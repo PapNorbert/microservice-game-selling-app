@@ -8,13 +8,14 @@ import {
   pageQuerryParamDefault, pageQuerryParamName, buyerParamName
 } from '../../config/application.json'
 import configuredAxios from "../../axios/configuredAxios";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { AxiosError, AxiosResponse } from "axios";
 import { Orders } from "../../interface/OrdersInterface";
 import { Container } from "react-bootstrap";
 import Limit from "../../components/Limit";
 import PaginationElement from "../../components/PaginationElement";
 import OrderListingElement from "../../components/Orders/OrderListingElement";
+import { useSubscription } from "react-stomp-hooks";
 
 
 
@@ -23,15 +24,21 @@ export default function OrdersAll() {
   const [ordersUrl, setOrdershUrl] = useState<string>(`/${apiPrefix}/orders?${buyerParamName}=${auth.userId}`);
   const { limit, page } = useContext(SearchContext);
   const location = useLocation();
+  const [ordersData, setOrdersData] = useState<Orders>();
 
-
-  const { data: ordersData, isError, error, isLoading } =
+  const { isError, error, isLoading } =
     useQuery<AxiosResponse<Orders>, AxiosError>({
       queryKey: ["orders", ordersUrl],
       queryFn: queryFunction,
       retry: false,
-      placeholderData: keepPreviousData, // keeps the last succesful fetch as well beside current 
     });
+
+  useSubscription(`/queue/orders/${auth.userId}`, (message) => {
+    // queue format:  /queue/orders/{requestUserId}
+    const data: Orders = JSON.parse(message.body);
+    setOrdersData(data);
+  });
+
 
   useEffect(() => {
     if (!auth.userId) {
@@ -77,25 +84,30 @@ export default function OrdersAll() {
   }
 
 
-  return (
+  return (ordersData ?
     <>
       <h1>Orders</h1>
       <Container>
-        <h3>Found {ordersData?.data.pagination.totalCount} results</h3>
+        <h3>Found {ordersData.pagination.totalCount} results</h3>
         <Limit />
         {
-          ordersData?.data &&
-            ordersData.data.orders.length > 0 ? (
+          ordersData.orders.length > 0 ? (
             <Container>
-              {ordersData?.data.orders.map(currentElement => (
+              {ordersData.orders.map(currentElement => (
                 <OrderListingElement order={currentElement} key={currentElement.orderId} />
               ))}
-              < PaginationElement totalPages={ordersData?.data.pagination.totalPages} />
+              < PaginationElement totalPages={ordersData.pagination.totalPages} />
             </Container>
           )
             :
             <h3>No Orders found!</h3>
         }
       </Container>
-    </>)
+    </>
+    :
+    <>
+      <h1>Orders</h1>
+      <Container className="fst-italic fs-3">Loading orders...</Container>
+    </>
+  )
 }

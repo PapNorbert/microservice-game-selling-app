@@ -16,7 +16,8 @@ export default function ChatBoxComponent({ receiverId, receiverUsername }: PropT
   const { auth } = useAuth();
   const stompClient = useStompClient();
 
-  useSubscription('/user/queue/reply', (message) => {
+  useSubscription(`/queue/history/${auth.userId}-${receiverId}`, (message) => {
+    // queue format:  /queue/history/{selfId}-{senderId}
     const messages: ReceivedMessage[] = JSON.parse(message.body);
     messages.map(message => {
       // setting for chatBox message format

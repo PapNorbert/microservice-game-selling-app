@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { Alert, Button, Card, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { AxiosError } from "axios";
+import { useSubscription } from "react-stomp-hooks";
 
 import { Order } from "../../interface/OrdersInterface"
 import { dateFormatOptions } from "../../util/dateOptions";
@@ -27,6 +28,7 @@ export default function OrderDetailedElement({ order }: PropType) {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [deleted, setDeleted] = useState<boolean>(false);
   const deleteUrl = `${apiPrefix}/orders/${order.orderId}`;
+  const [processingRequest, setProcessingRequest] = useState<boolean>(false);
 
 
   const { mutate: mutateDelete } = useMutation({
@@ -34,13 +36,25 @@ export default function OrderDetailedElement({ order }: PropType) {
     onSuccess: handleDeleteSubmitSucces,
     onError: handleSubmitError,
   });
+  
+  useSubscription(`/queue/order/delete/${order.orderId}`, (message) => {
+    // response for post request after processing finished
+    const deleteResponse: OrderModificationResponse = JSON.parse(message.body);
+    setProcessingRequest(false);
+    if (deleteResponse.transactionSuccess) {
+      setDeleted(true);
+    } else {
+      setSubmitError("There was an error deleting your order.");
+    }
+
+  });
 
   function deleteMutationFunction() {
     return configuredAxios.delete(deleteUrl);
   }
 
   function handleDeleteSubmitSucces() {
-    setDeleted(true);
+    setProcessingRequest(true);
   }
 
   function handleSubmitError(error: AxiosError<ErrorResponseData>) {
@@ -72,7 +86,7 @@ export default function OrderDetailedElement({ order }: PropType) {
     )
   }
 
-  return (
+  return (order &&
     <>
       <h1>Details of order nr. {order.orderId}</h1>
       <Card >
@@ -94,6 +108,9 @@ export default function OrderDetailedElement({ order }: PropType) {
           }
         </Card.Body>
       </Card>
+      {processingRequest &&
+        <Container className="fst-italic fs-3 text-center mb-2">Deleting order...</Container>
+      }
       <Alert key='danger' variant='danger' show={submitError !== null} className='mt-3'
         onClose={() => setSubmitError(null)} dismissible >
         {submitError}

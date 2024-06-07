@@ -1,2 +1,8 @@
 rootProject.name = 'backend'
+include 'userService'
+include 'announcementService'
+include 'orderService'
+include 'messageService'
+include 'websocketService'
+include 'orchestrator'
 

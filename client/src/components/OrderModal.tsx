@@ -1,6 +1,7 @@
-import { Alert, Button, Col, Form, Modal, Row } from "react-bootstrap";
+import { Alert, Button, Col, Container, Form, Modal, Row } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { useSubscription } from "react-stomp-hooks";
 import { useNavigate } from "react-router-dom";
 
 import useAuth from "../hooks/useAuth";
@@ -27,12 +28,25 @@ export default function OrderModal({ showModal, setShowModal, productPrice, prod
   const orderUrl = `/${apiPrefix}/orders`;
   const [error, setError] = useState<string>('');
   const navigate = useNavigate();
+  const [processingRequest, setProcessingRequest] = useState<boolean>(false);
+
   const { mutate: mutatePost } = useMutation({
     mutationFn: postMutationFunction,
     onSuccess: handleSubmitSucces,
     onError: handleSubmitError,
   });
 
+  useSubscription(`/queue/order/create`, (message) => {
+    // response for post request after processing finished
+    const creationResponse: OrderModificationResponse = JSON.parse(message.body);
+    setProcessingRequest(false);
+    if( creationResponse.transactionSuccess) {
+      navigate(`/orders/${creationResponse.orderId}`);
+    } else {
+      setError("There was an error creating your order.");
+    }
+
+  });
 
   useEffect(() => {
     // get user address if it wasn't set
@@ -59,14 +73,16 @@ export default function OrderModal({ showModal, setShowModal, productPrice, prod
     if (error) {
       setError('');
     }
-    navigate(`/orders/${response.data.entityId}`);
+    if (response.status === 202) {
+      setProcessingRequest(true);
+    }
   }
 
   function handleSubmitError(error: AxiosError<ErrorResponseData>) {
     if (error.message === 'Network Error') {
       setError('Error connecting to the server')
     } else {
-      setError(error.response?.data.errorMessage || 'Error updating saved status');
+      setError(error.response?.data.errorMessage || 'Error creating the order');
     }
   }
 
@@ -161,6 +177,9 @@ export default function OrderModal({ showModal, setShowModal, productPrice, prod
           </Col>
         </Row>
       </Modal.Body>
+      {processingRequest &&
+        <Container className="fst-italic fs-4 text-center mb-2">Creating order...</Container>
+      }
       {
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>

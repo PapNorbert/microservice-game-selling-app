@@ -31,8 +31,7 @@ export default function AnnouncementDetailedLong({ announcement }: PropType) {
                 {!auth.logged_in &&
                   <GoToLoginCard />
                 }
-                <SellerCard sellerId={announcement.sellerId} sellerUsername={announcement.sellerUsername}
-                  sellerRegistrationDate={announcement.sellerRegistrationDate} />
+                <SellerCard sellerId={announcement.sellerId} />
 
               </Col>
               <Col lg={{ span: 4 }}>

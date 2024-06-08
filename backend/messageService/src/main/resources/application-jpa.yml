@@ -6,6 +6,6 @@ spring:
 
   datasource:
     driver_class_name: "com.mysql.cj.jdbc.Driver"
-    url: "jdbc:mysql://localhost:3306/cgs_messages"
-    username: "salesUser"
-    password: "consoleGameSales334"
+    url: ${DB_URL:jdbc:mysql://localhost:3306/cgs_messages}
+    username: ${DB_User:salesUser}
+    password: ${DB_PASSWORD:consoleGameSales334}

@@ -1,0 +1,26 @@
+architecture: "replication"
+auth:
+  rootPassword: "rootPassword12"
+  replicationUser: "repl_user"
+  replicationPassword: "repl_password"
+primary:
+  persistence:
+    enabled: true
+    size: 1Gi
+secondary:
+  replicaCount: 1
+  persistence:
+    enabled: true
+    size: 1Gi
+initdbScripts:
+  my_init_script.sh: |
+    #!/bin/sh
+    if [[ $(hostname) == *primary* ]]; then
+      echo "Primary node"
+      mysql -P 3306 -uroot -prootPassword12 -e "create database if not exists cgs_announcements";
+      mysql -P 3306 -uroot -prootPassword12 -e "create database if not exists cgs_messages";
+      mysql -P 3306 -uroot -prootPassword12 -e "create database if not exists cgs_orders";
+      mysql -P 3306 -uroot -prootPassword12 -e "create database if not exists cgs_users";
+    else
+      echo "No primary node"
+    fi

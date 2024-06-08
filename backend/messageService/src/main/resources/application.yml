@@ -5,6 +5,7 @@ spring:
     redis:
       port: ${REDIS_PORT:6379}
       host: ${REDIS_HOST:localhost}
+      password: ${REDIS_PASSWORD:}
       timeout: 5000
       repositories:
         enabled: false
@@ -28,6 +29,12 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    security:
+      protocol: ${KAFKA_SECURITY_PROTOCOL:PLAINTEXT}
+    properties:
+      sasl:
+        mechanism: SCRAM-SHA-256
+        jaas.config: org.apache.kafka.common.security.scram.ScramLoginModule required username="user1" password="${KAFKA_PASSWD:}";
 
 kafkaUsersChatProduceTopic: user-chatted-with-topic
 kafkaMessageSaveConsumeTopic: message-save-topic

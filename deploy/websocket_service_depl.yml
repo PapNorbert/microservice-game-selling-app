@@ -1,0 +1,92 @@
+# contains a deployment, a service and a hpa for the websocket service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pn-deployment-webs
+  labels:
+    owner: pn
+    app: kubernetes-cgs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pn-websocket-serv
+  template:
+    metadata:
+      labels:
+        app: pn-websocket-serv
+    spec:
+      containers:
+        - name: kubernetes-cgs-websocket
+          image: micpn.azurecr.io/websocketservice:v2
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: redis-host
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: my-redis
+                  key: redis-password
+            - name: KAFKA_SERVER
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: kafka-server
+            - name: KAFKA_SECURITY_PROTOCOL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: kafka-security-protocol
+            - name: KAFKA_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: my-kafka-user-passwords
+                  key: client-passwords
+            - name: CORS_ALLOWED_ORIGIN
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: cors-allowed-origin
+          ports:
+            - containerPort: 8084
+              protocol: TCP
+      imagePullSecrets:
+        - name: registry-secret
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pn-service-webs
+  labels:
+    owner: pn
+spec:
+  ports:
+    - name: http
+      port: 8084
+      protocol: TCP
+  selector:
+    app: pn-websocket-serv
+
+---
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: deployment-autoscaler-webs
+  labels:
+    owner: pn
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pn-deployment-webs
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 60

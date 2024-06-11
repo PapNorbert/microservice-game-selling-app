@@ -1,0 +1,90 @@
+# contains a deployment, a service and a hpa for the orchestrator service
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pn-deployment-orch
+  labels:
+    owner: pn
+    app: kubernetes-cgs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: pn-orchestrator-serv
+  template:
+    metadata:
+      labels:
+        app: pn-orchestrator-serv
+    spec:
+      containers:
+        - name: kubernetes-cgs-orchestrator
+          image: micpn.azurecr.io/orchestrator:v2
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: REDIS_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: redis-host
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: my-redis
+                  key: redis-password
+            - name: KAFKA_SERVER
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: kafka-server
+            - name: KAFKA_SECURITY_PROTOCOL
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: kafka-security-protocol
+            - name: KAFKA_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: my-kafka-user-passwords
+                  key: client-passwords
+            - name: CORS_ALLOWED_ORIGIN
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: cors-allowed-origin
+          ports:
+            - containerPort: 8086
+              protocol: TCP
+      imagePullSecrets:
+        - name: registry-secret
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pn-service-orch
+  labels:
+    owner: pn
+spec:
+  ports:
+    - name: http
+      port: 8086
+      protocol: TCP
+  selector:
+    app: pn-orchestrator-serv
+
+---
+
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: deployment-autoscaler-orch
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: pn-deployment-orch
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 60

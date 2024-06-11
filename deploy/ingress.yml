@@ -1,0 +1,102 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: pn-ingress
+  labels:
+    owner: pn
+spec:
+  ingressClassName: webapprouting.kubernetes.azure.com
+  rules:
+    - http:
+        paths:
+          - path: /api/chats
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-mess
+                port:
+                  number: 8085
+          - path: /ws/
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-webs
+                port:
+                  number: 8084
+          - path: /websocket
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-webs
+                port:
+                  number: 8084
+          - path: /api/announcements
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-ann
+                port:
+                  number: 8082
+          - path: /api/announcementsSaves
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-ann
+                port:
+                  number: 8082
+          - path: /api/games
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-ann
+                port:
+                  number: 8082
+          - path: /api/orders
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-orch
+                port:
+                  number: 8086
+          - path: /api/login
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-user
+                port:
+                  number: 8081
+          - path: /api/refresh
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-user
+                port:
+                  number: 8081
+          - path: /api/register
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-user
+                port:
+                  number: 8081
+          - path: /api/logout
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-user
+                port:
+                  number: 8081
+          - path: /api/reviews
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-user
+                port:
+                  number: 8081
+          - path: /api/users
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-user
+                port:
+                  number: 8081

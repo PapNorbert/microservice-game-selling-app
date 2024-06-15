@@ -27,11 +27,6 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: redis-host
-            - name: REDIS_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: my-redis
-                  key: redis-password
             - name: KAFKA_SERVER
               valueFrom:
                 secretKeyRef:
@@ -80,6 +75,8 @@ apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
   name: deployment-autoscaler-orch
+  labels:
+    owner: pn
 spec:
   scaleTargetRef:
     apiVersion: apps/v1

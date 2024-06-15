@@ -9,6 +9,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -18,9 +19,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 @AllArgsConstructor
 @Component
+@Slf4j
 public class AuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final RedisService redisService;
@@ -29,9 +32,12 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
 
+        LOGGER.info("Filter. Request cookie: " + Arrays.toString(request.getCookies()));
 
         // extract the jwt token from cookies
         String token = TokenExtraction.extractTokenFromRequestCookie(request);
+        LOGGER.info("Filter. Token: {}", token);
+
         if (token == null) {
             // user is not logged in
             filterChain.doFilter(request, response);
@@ -40,11 +46,13 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
         Long userId = jwtService.decodeUserId(token);
         SecurityContext securityContext = SecurityContextHolder.getContext();
+        LOGGER.info("Filter. UserId: {}", userId);
 
         if (userId != null && securityContext.getAuthentication() == null) {
             // user not already authenticated
             // get user data
             UserDetails userDetails = redisService.getCachedUser(userId);
+            LOGGER.info("Filter. userDetails: {}", userDetails);
 
             if (userDetails != null && jwtService.verifyToken(token, userDetails)) {
                 // valid token, authenticate user

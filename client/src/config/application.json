@@ -1,5 +1,5 @@
 {
-  "serverUrl": "http://localhost:80",
+  "serverUrl": "http://4.182.192.23",
   "apiPrefix": "api",
   "limitQuerryParamName": "limit",
   "limitQuerryParamDefault": "5",
@@ -20,7 +20,7 @@
   "datePostedParamDefault": "ALL",
   "sellerParamName": "sellerId",
   "soldParamName": "sold",
-  "wsServerUrl": "http://localhost:80/websocket",
+  "wsServerUrl": "http://4.182.192.23/websocket",
   "chattedWithParamName": "chattedWithUser",
   "buyerParamName": "buyerId",
   "timeAllowedForOrderCancelInMiliSec": 8640000

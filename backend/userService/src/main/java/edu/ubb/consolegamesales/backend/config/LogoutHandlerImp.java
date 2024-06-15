@@ -26,9 +26,9 @@ public class LogoutHandlerImp implements LogoutHandler {
         // remove cookie by setting maxAge to 0 overwriting the existing cookie
         Cookie authCookie = new Cookie("Auth", "");
         authCookie.setHttpOnly(true);
-        authCookie.setSecure(true);
+        //  authCookie.setSecure(true);
         authCookie.setMaxAge(0);
-        authCookie.setAttribute("SameSite", "None");
+        authCookie.setAttribute("SameSite", "Lax");
         response.addCookie(authCookie);
         String username = jwtService.decodeUsername(token);
         LOGGER.info("User with username '{}' logged out", username);

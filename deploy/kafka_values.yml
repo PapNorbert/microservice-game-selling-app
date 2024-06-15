@@ -1,4 +1,3 @@
-replicaCount: 1
 persistence:
   size: 1Gi
 controller:
@@ -7,3 +6,10 @@ controller:
     size: 1Gi
   persistence:
     size: 1Gi
+  resources:
+    requests:
+      memory: "1536Mi"
+      cpu: "400m"
+    limits:
+      memory: "1536Mi"
+      cpu: "400m"

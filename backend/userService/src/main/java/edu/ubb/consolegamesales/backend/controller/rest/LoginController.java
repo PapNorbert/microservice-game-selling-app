@@ -34,10 +34,10 @@ public class LoginController {
         // refreshToken is used in cookie
         Cookie authCookie = new Cookie("Auth", tokens.getSecond());
         authCookie.setHttpOnly(true);
-        authCookie.setSecure(true);
+        //  authCookie.setSecure(true);
         // max age to 5 hours
         authCookie.setMaxAge(5 * 60 * 60);
-        authCookie.setAttribute("SameSite", "None");
+        authCookie.setAttribute("SameSite", "Lax");
         response.addCookie(authCookie);
         LOGGER.info("User with username '{}' logged in", loginUser.getUsername());
         // accesToken sent to the client application

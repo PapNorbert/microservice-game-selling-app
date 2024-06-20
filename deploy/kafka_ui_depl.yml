@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kafka-ui
+  labels:
+    owner: pn
+    app: kubernetes-cgs
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-ui
+  template:
+    metadata:
+      labels:
+        app: kafka-ui
+    spec:
+      containers:
+        - name: kafka-ui
+          image: provectuslabs/kafka-ui:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: KAFKA_CLUSTERS_0_NAME
+              value: "kafkaKubernetes"
+            - name: KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS
+              value: "my-kafka.default.svc.cluster.local:9092"
+            - name: KAFKA_CLUSTERS_0_PROPERTIES_SECURITY_PROTOCOL
+              value: "SASL_PLAINTEXT"
+            - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_MECHANISM
+              value: "SCRAM-SHA-256"
+            - name: KAFKA_CLUSTERS_0_PROPERTIES_SASL_JAAS_CONFIG
+              value: org.apache.kafka.common.security.scram.ScramLoginModule required username="user1" password="${KAFKA_PASSWD}";
+            - name: KAFKA_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: my-kafka-user-passwords
+                  key: client-passwords
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-kafka-ui
+  labels:
+    owner: pn
+    app: kubernetes-cgs
+spec:
+  type: LoadBalancer
+  selector:
+    app: kafka-ui
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

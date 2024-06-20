@@ -32,7 +32,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response,
                                     @NotNull FilterChain filterChain) throws ServletException, IOException {
 
-        LOGGER.info("Filter. Request cookie: " + Arrays.toString(request.getCookies()));
 
         // extract the jwt token from cookies
         String token = TokenExtraction.extractTokenFromRequestCookie(request);
@@ -46,7 +45,6 @@ public class AuthenticationFilter extends OncePerRequestFilter {
 
         Long userId = jwtService.decodeUserId(token);
         SecurityContext securityContext = SecurityContextHolder.getContext();
-        LOGGER.info("Filter. UserId: {}", userId);
 
         if (userId != null && securityContext.getAuthentication() == null) {
             // user not already authenticated

@@ -7,11 +7,25 @@ primary:
   persistence:
     enabled: true
     size: 1Gi
+  resources:
+    requests:
+      memory: "736Mi"
+      cpu: "250m"
+    limits:
+      memory: "836Mi"
+      cpu: "300m"
 secondary:
   replicaCount: 1
   persistence:
     enabled: true
     size: 1Gi
+  resources:
+    requests:
+      memory: "736Mi"
+      cpu: "250m"
+    limits:
+      memory: "836Mi"
+      cpu: "300m"
 initdbScripts:
   my_init_script.sh: |
     #!/bin/sh

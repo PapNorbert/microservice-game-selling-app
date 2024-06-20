@@ -1,9 +1,9 @@
-# contains a deployment, a service and a hpa for the orchestrator service
+# contains a deployment, a service and a hpa for the order service
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pn-deployment-orch
+  name: pn-deployment-ord
   labels:
     owner: pn
     app: kubernetes-cgs
@@ -11,15 +11,15 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pn-orchestrator-serv
+      app: pn-order-serv
   template:
     metadata:
       labels:
-        app: pn-orchestrator-serv
+        app: pn-order-serv
     spec:
       containers:
-        - name: kubernetes-cgs-orchestrator
-          image: micpn.azurecr.io/orchestrator:v2
+        - name: kubernetes-cgs-order
+          image: micpn.azurecr.io/orderservice:v2
           imagePullPolicy: IfNotPresent
           env:
             - name: REDIS_HOST
@@ -40,15 +40,30 @@ spec:
             - name: KAFKA_PASSWD
               valueFrom:
                 secretKeyRef:
-                  name: my-kafka-user-passwords
+                  name: microservice-app-kafka-user-passwords
                   key: client-passwords
             - name: CORS_ALLOWED_ORIGIN
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
                   key: cors-allowed-origin
+            - name: DB_URL_ORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: db-url-ord
+            - name: DB_User
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: db-user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: db-password
           ports:
-            - containerPort: 8086
+            - containerPort: 8083
               protocol: TCP
       imagePullSecrets:
         - name: registry-secret
@@ -58,30 +73,30 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: pn-service-orch
+  name: pn-service-ord
   labels:
     owner: pn
 spec:
   ports:
     - name: http
-      port: 8086
+      port: 8083
       protocol: TCP
   selector:
-    app: pn-orchestrator-serv
+    app: pn-order-serv
 
 ---
 
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: deployment-autoscaler-orch
+  name: deployment-autoscaler-ord
   labels:
     owner: pn
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: pn-deployment-orch
+    name: pn-deployment-ord
   minReplicas: 1
   maxReplicas: 2
   targetCPUUtilizationPercentage: 60

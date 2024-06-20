@@ -1,0 +1,15 @@
+
+Services Deployed
+
+- Bitnami package for Apache Kafka
+- Bitnami package for Redis(R)
+- Bitnami package for MySQL cluster
+- App secret has been deployed
+- Ingress
+- Deployment, Service and Hpa for the User microservice
+- Deployment, Service and Hpa for the Announcement microservice
+- Deployment, Service and Hpa for the Order microservice
+- Deployment, Service and Hpa for the Orchestrator microservice
+- Deployment, Service and Hpa for the Message microservice
+- Deployment, Service and Hpa for the Websocket microservice
+- Deployment, Service for Kafka-UI

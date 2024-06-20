@@ -1,9 +1,9 @@
-# contains a deployment, a service and a hpa for the order service
+# contains a deployment, a service and a hpa for the message service
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pn-deployment-ord
+  name: pn-deployment-mess
   labels:
     owner: pn
     app: kubernetes-cgs
@@ -11,15 +11,15 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: pn-order-serv
+      app: pn-message-serv
   template:
     metadata:
       labels:
-        app: pn-order-serv
+        app: pn-message-serv
     spec:
       containers:
-        - name: kubernetes-cgs-order
-          image: micpn.azurecr.io/orderservice:v2
+        - name: kubernetes-cgs-message
+          image: micpn.azurecr.io/messageservice:v2
           imagePullPolicy: IfNotPresent
           env:
             - name: REDIS_HOST
@@ -40,18 +40,18 @@ spec:
             - name: KAFKA_PASSWD
               valueFrom:
                 secretKeyRef:
-                  name: my-kafka-user-passwords
+                  name: microservice-app-kafka-user-passwords
                   key: client-passwords
             - name: CORS_ALLOWED_ORIGIN
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
                   key: cors-allowed-origin
-            - name: DB_URL_ORD
+            - name: DB_URL_MESS
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
-                  key: db-url-ord
+                  key: db-url-mess
             - name: DB_User
               valueFrom:
                 secretKeyRef:
@@ -63,7 +63,7 @@ spec:
                   name: app-secrets
                   key: db-password
           ports:
-            - containerPort: 8083
+            - containerPort: 8085
               protocol: TCP
       imagePullSecrets:
         - name: registry-secret
@@ -73,30 +73,30 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: pn-service-ord
+  name: pn-service-mess
   labels:
     owner: pn
 spec:
   ports:
     - name: http
-      port: 8083
+      port: 8085
       protocol: TCP
   selector:
-    app: pn-order-serv
+    app: pn-message-serv
 
 ---
 
 apiVersion: autoscaling/v1
 kind: HorizontalPodAutoscaler
 metadata:
-  name: deployment-autoscaler-ord
+  name: deployment-autoscaler-mess
   labels:
     owner: pn
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: pn-deployment-ord
+    name: pn-deployment-mess
   minReplicas: 1
   maxReplicas: 2
   targetCPUUtilizationPercentage: 60

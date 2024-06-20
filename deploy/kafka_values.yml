@@ -13,3 +13,6 @@ controller:
     limits:
       memory: "1536Mi"
       cpu: "400m"
+extraConfig: |
+  offsets.topic.replication.factor=1
+  transaction.state.log.replication.factor=1

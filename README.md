@@ -1,3 +1,26 @@
+## Table of Contents
+
+- [Gaming Console Game Sales](#gaming-console-game-sales)
+  - [Target Audience](#target-audience)
+  - [Functionalities](#functionalities)
+  - [Running the application](#running-the-application)
+  - [Running Locally](#running-locally)
+  - [Deploying microservices to Kubernetes with Helm](#deploying-microservices-to-kubernetes-with-helm)
+    - [Prerequisites](#prerequisites)
+    - [Deploying the microservices](#deploying-the-microservices)
+    - [Uninstalling the backend](#uninstalling-the-backend)
+      - [Notes](#notes)
+  - [Application Architecture](#application-architecture)
+    - [Microservices Overview](#microservices-overview)
+    - [Data Management](#data-management)
+    - [Communication](#communication)
+    - [Cache Management](#cache-management)
+    - [Transaction management](#transaction-management)
+  - [Used Technologies](#used-technologies)
+    - [Similar Products](#similar-products)
+
+
+
 # Gaming Console Game Sales
 
 A web application tailored for the gaming community that simplifies the process 
@@ -152,7 +175,7 @@ Uninstalling the application deployed via Helm:
 helm uninstall microservice-app
 ```
 
-#### Notes:
+#### Notes
 
 Persistent Volume Claims (PVCs): The PVCs created by dependencies (such as Redis, MySQL, and Kafka) are not automatically deleted by Helm. You must delete these PVCs manually if needed.
 

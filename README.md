@@ -42,6 +42,125 @@ The application serves a diverse range of individuals within the gaming communit
 - **Order Cancellation**: Allows users to cancel an order for a sold game disc within 1 day of placing the order, provided it has not yet been shipped.
 
 
+## Running the application
+
+This repository provides two main configurations for running the application: locally and within Docker, or deploying the backend microservices to Kubernetes using a Helm chart.
+
+## Running Locally
+
+The repository includes a `docker-compose.yml` file that sets up several supporting services: Redis, ZooKeeper, Kafka, Kafka UI, and an NGINX reverse proxy. To start these services, simply run:
+
+``` bash
+docker-compose up
+```
+
+Next, MySQL needs to be installed locally. Once MySQL is installed, the user should create the necessary databases for the microservices by executing the following SQL commands:
+
+``` SQL
+CREATE DATABASE cgs_announcements;
+CREATE DATABASE cgs_messages;
+CREATE DATABASE cgs_orders;
+CREATE DATABASE cgs_users;
+```
+
+It is important to ensure that the MySQL user and password match the configuration in the `application-jpa.yml` files located in each microservice within the backend folder at `\src\main\resources\application-jpa.yml`.
+
+Once the databases are created, each microservice can be launched.
+
+Finally, to start the client application, the user should navigate to the client folder. First, the necessary dependencies must be installed, then the application can be launched:
+``` bash
+npm install
+npm start
+```
+
+## Deploying microservices to Kubernetes with Helm
+
+
+To deploy the application to a Kubernetes cluster using Helm, the repository includes a Helm chart located in the `deploy\helm\game-sale-app` folder. 
+
+### Prerequisites
+
+Before deploying the application using the provided Helm chart on Kubernetes, ensure the following prerequisites are met:
+
+1. Access to a Kubernetes Cluster:
+
+Access to a Kubernetes cluster is required where the application will be deployed.
+
+2. Ingress Controller Enabled:
+
+Ingress must be enabled on your Kubernetes cluster to route external traffic to the deployed services. If you are using Azure Kubernetes Service (AKS), you can enable application routing with the following command:
+```
+az aks approuting enable -g <resourceGroupName> -n <clusterName>
+```
+
+3. Access to Private Docker Registry:
+
+The Helm chart uses images stored in a private Docker registry. Each microservice in the repository has a `Dockerfile` that builds the Docker image for that microservice. These Docker images need to be accessible from the private registry using a Kubernetes Secret named `registry-secret`.
+
+To create the registry-secret in Azure AKS, the following kubectl command can be used:
+```
+kubectl create secret docker-registry registry-secret --docker-server=<registryName> --docker-username=<username> --docker-password=<password>
+```
+
+To push Docker images to an Azure Container Registry (ACR) and make them available for deployment on Azure AKS, the following steps are required:
+
+Login to Azure Container Registry
+```
+az acr login --name <registryName>
+```
+
+Tag and Push Docker Images:
+``` 
+docker tag announcementservice:v2 <registryName>.azurecr.io/announcementservice:v2
+docker push <registryName>.azurecr.io/announcementservice:v2
+
+docker tag userservice:v2 <registryName>.azurecr.io/userservice:v2
+docker push <registryName>.azurecr.io/userservice:v2
+
+docker tag messageservice:v2 <registryName>.azurecr.io/messageservice:v2
+docker push <registryName>.azurecr.io/messageservice:v2
+
+docker tag orderservice:v2 <registryName>.azurecr.io/orderservice:v2
+docker push <registryName>.azurecr.io/orderservice:v2
+
+docker tag orchestrator:v2 <registryName>.azurecr.io/orchestrator:v2
+docker push <registryName>.azurecr.io/orchestrator:v2
+
+docker tag websocketservice:v2 <registryName>.azurecr.io/websocketservice:v2
+docker push <registryName>.azurecr.io/websocketservice:v2
+```
+
+The deployments utilize these names, although they are configurable within the deployment files.
+
+### Deploying the microservices
+
+The Helm chart is configured with dependencies for Redis, MySQL, and Kafka, specified in the `Chart.yml` file, using Bitnami Helm charts.
+
+The `templates` folder within the Helm chart contains several YAML files that are essential for deploying the services. 
+
+These include configurations for **Secrets** to securely manage application configurations. There is also an **Ingress** resource to make the backend services accessible and route requests to the appropriate microservices. For the Kafka UI, a **deployment** and **load balancer** service is configured to ensure that the topic visualization is accessible from outside the cluster. In addition, each microservice has its own **deployment, service, and Horizontal Pod Autoscaler (HPA)** configurations to manage scaling and service availability.
+
+To deploy the backend services the following command can be used in the `deploy/helm` folder:
+``` bash
+helm install microservice-app ./game-sale-app
+```
+
+### Uninstalling the backend
+
+Uninstalling the application deployed via Helm:
+```
+helm uninstall microservice-app
+```
+
+#### Notes:
+
+Persistent Volume Claims (PVCs): The PVCs created by dependencies (such as Redis, MySQL, and Kafka) are not automatically deleted by Helm. You must delete these PVCs manually if needed.
+
+The **registry-secret** created before deploying the application also needs to be deleted separately when uninstalling the application:
+```
+kubectl delete secret registry-secret
+```
+
 ## Application Architecture
 
 The application is designed using a microservices architecture consisting of six different microservices: Announcement Service, User Management Service, Order Service, Messaging Service, WebSocket Service, and Orchestrator Service. Each microservice is responsible for specific functionalities and communicates with others through Kafka topics.

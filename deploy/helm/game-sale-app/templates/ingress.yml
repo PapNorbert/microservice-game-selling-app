@@ -44,6 +44,13 @@ spec:
                 name: pn-service-ann
                 port:
                   number: 8082
+          - path: /api/announcementEvents
+            pathType: Prefix
+            backend:
+              service:
+                name: pn-service-ann
+                port:
+                  number: 8082
           - path: /api/games
             pathType: Prefix
             backend:

@@ -1,9 +1,11 @@
 package edu.ubb.consolegamesales.backend.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Data()
 @EqualsAndHashCode(callSuper = true)
@@ -32,4 +34,13 @@ public class Announcement extends BaseEntity {
     private Boolean sold;
     @Column(nullable = false)
     private Date creationDate;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "announcement", cascade = CascadeType.REMOVE,
+            orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<AnnouncementEvent> announcementEvents;
+    @JsonIgnore
+    @OneToMany(mappedBy = "announcement", cascade = CascadeType.REMOVE,
+            orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<AnnouncementsSaves> announcementsSaves;
 }

@@ -206,21 +206,24 @@ export default function AnnouncementOwnCard({ announcement }: PropType) {
             savedEditableValues.title
           }
 
-          <OverlayTrigger trigger='click' placement='bottom' rootClose={true}
-            overlay={popover}
-          >
-            <span className='float-end'>
-              <Button className='btn btn-orange-dark mx-2'  >
-                Delete
-              </Button>
-            </span>
-          </OverlayTrigger>
-          <span className='float-end'>
-            <Button className='btn btn-orange mx-2' onClick={() => setEditing(true)} disabled={editing}>
-              Edit
-            </Button>
-          </span>
-
+          {!announcement.sold &&
+            <>
+              <OverlayTrigger trigger='click' placement='bottom' rootClose={true}
+                overlay={popover}
+              >
+                <span className='float-end'>
+                  <Button className='btn btn-orange-dark mx-2'  >
+                    Delete
+                  </Button>
+                </span>
+              </OverlayTrigger>
+              <span className='float-end'>
+                <Button className='btn btn-orange mx-2' onClick={() => setEditing(true)} disabled={editing}>
+                  Edit
+                </Button>
+              </span>
+            </>
+          }
         </Card.Header>
         <Card.Body>
           <Row key={`${announcement.announcementId}_creation_date`}>

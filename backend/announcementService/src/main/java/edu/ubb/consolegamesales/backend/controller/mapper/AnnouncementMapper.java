@@ -25,12 +25,16 @@ public interface AnnouncementMapper {
     @Mapping(target = "sold", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "soldGameDisc", ignore = true)
+    @Mapping(target = "announcementEvents", ignore = true)
+    @Mapping(target = "announcementsSaves", ignore = true)
     Announcement creationDtoToModel(AnnouncementCreationDto announcementCreationDto);
 
     @Mapping(target = "entityId", ignore = true)
     @Mapping(target = "sellerId", ignore = true)
     @Mapping(target = "creationDate", ignore = true)
     @Mapping(target = "soldGameDisc", ignore = true)
+    @Mapping(target = "announcementEvents", ignore = true)
+    @Mapping(target = "announcementsSaves", ignore = true)
     Announcement updateDtoToModel(AnnouncementUpdateDto announcementUpdateDto);
 
 
